@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Half Ironman — Tracker Natation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090f;
+  --bg2: #0d1117;
+  --surface: #111827;
+  --card: #131d2e;
+  --card-hover: #172236;
+  --border: #1c2d44;
+  --accent: #38bdf8;
+  --accent-dim: rgba(56,189,248,0.12);
+  --green: #4ade80;
+  --green-dim: rgba(74,222,128,0.12);
+  --orange: #fb923c;
+  --orange-dim: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --text: #e2eaf4;
+  --muted: #5a7a99;
+  --muted2: #3a5570;
+  --p1: #38bdf8;
+  --p2: #4ade80;
+  --p3: #fb923c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  background: linear-gradient(180deg, #0a1525 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 32px 24px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.logo-block h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.logo-block h1 span { color: var(--accent); }
+.logo-block p {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+.progress-global {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 180px;
+}
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.progress-track {
+  width: 180px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.progress-pct {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+/* ─── LAYOUT ─── */
+.container { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* ─── PHASE TITLE ─── */
+.phase-sep {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 40px 0 18px;
+}
+.phase-pill {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.phase-pill.p1 { color: var(--p1); border-color: var(--p1); background: rgba(56,189,248,0.08); }
+.phase-pill.p2 { color: var(--p2); border-color: var(--p2); background: rgba(74,222,128,0.08); }
+.phase-pill.p3 { color: var(--p3); border-color: var(--p3); background: rgba(251,146,60,0.08); }
+.phase-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.phase-line { flex: 1; height: 1px; background: var(--border); }
+.phase-weeks-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* ─── WEEK BLOCK ─── */
+.week-block {
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.week-block.is-recovery { border-color: rgba(74,222,128,0.25); }
+.week-block.week-done { border-color: rgba(56,189,248,0.4); }
+
+.week-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--card);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.week-header:hover { background: var(--card-hover); }
+
+.week-num-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  background: var(--border);
+  padding: 3px 9px;
+  border-radius: 4px;
+  color: var(--muted);
+}
+.week-title {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+.week-focus {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.week-progress-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.dots { display: flex; gap: 3px; }
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s;
+}
+.dot.done { background: var(--green); }
+.week-chevron {
+  font-size: 12px;
+  color: var(--muted2);
+  transition: transform 0.25s;
+}
+.week-block.open .week-chevron { transform: rotate(180deg); }
+.recovery-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid rgba(74,222,128,0.3);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.race-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--orange);
+  border: 1px solid rgba(251,146,60,0.4);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ─── SESSIONS ─── */
+.week-body {
+  display: none;
+  padding: 0 18px 18px;
+  background: var(--bg2);
+  flex-direction: column;
+  gap: 12px;
+}
+.week-block.open .week-body { display: flex; }
+
+.session-card {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.2s, opacity 0.2s;
+  margin-top: 12px;
+}
+.session-card.completed {
+  border-color: rgba(74,222,128,0.4);
+  opacity: 0.75;
+}
+.session-card.completed .session-top { background: rgba(74,222,128,0.06); }
+
+.session-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  cursor: pointer;
+}
+.session-type-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.s-endurance .session-type-dot { background: var(--accent); }
+.s-technique .session-type-dot { background: #a78bfa; }
+.s-long .session-type-dot { background: var(--green); }
+.s-intervals .session-type-dot { background: var(--orange); }
+.s-race .session-type-dot { background: var(--red); }
+
+.session-top-text { flex: 1; }
+.session-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.session-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1px;
+}
+.session-dist-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 3px 8px;
+  background: var(--accent-dim);
+  border-radius: 4px;
+}
+.check-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-size: 13px;
+  color: transparent;
+}
+.check-btn:hover { border-color: var(--green); color: var(--green); }
+.session-card.completed .check-btn {
+  background: var(--green);
+  border-color: var(--green);
+  color: #0a1a0f;
+}
+.uncheck-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--red);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: var(--red);
+  opacity: 0.7;
+}
+.uncheck-btn:hover {
+  background: var(--red);
+  color: #fff;
+  opacity: 1;
+}
+.skip-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--muted2);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-size: 12px;
+  color: var(--muted2);
+}
+.skip-btn:hover { border-color: var(--orange); color: var(--orange); }
+.unskip-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--orange);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-size: 12px;
+  color: var(--orange);
+  opacity: 0.8;
+}
+.unskip-btn:hover { background: var(--orange); color: #1a0800; opacity: 1; }
+.session-card.skipped { opacity: 0.5; border-color: rgba(251,146,60,0.3); }
+.session-card.skipped .session-top { background: rgba(251,146,60,0.05); }
+.session-card.skipped .session-name::after {
+  content: ' — SKIPPÉE';
+  font-size: 10px;
+  color: var(--orange);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+}
+
+/* ─── SESSION DETAIL ─── */
+.session-detail {
+  padding: 14px 16px;
+  background: var(--bg);
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+}
+.session-card.open .session-detail { display: flex; }
+.session-card.open .session-expand-icon { transform: rotate(180deg); }
+.session-expand-icon {
+  font-size: 10px;
+  color: var(--muted2);
+  transition: transform 0.2s;
+  margin-left: 4px;
+}
+
+/* Warmup / main / cooldown blocks */
+.phase-group { display: flex; flex-direction: column; gap: 6px; }
+.phase-group-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 2px;
+}
+.set-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--card);
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+}
+.set-row.warm { border-color: #fbbf24; }
+.set-row.main { border-color: var(--accent); }
+.set-row.interval { border-color: var(--orange); }
+.set-row.drill { border-color: #a78bfa; }
+.set-row.cool { border-color: var(--muted2); }
+.set-row.long { border-color: var(--green); }
+
+.set-dist {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 50px;
+  white-space: nowrap;
+}
+.set-body { flex: 1; }
+.set-desc {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.set-tip {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.nage-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.crawl  { background: rgba(56,189,248,0.18); color: var(--accent); border: 1px solid rgba(56,189,248,0.3); }
+.brasse { background: rgba(74,222,128,0.15); color: var(--green);  border: 1px solid rgba(74,222,128,0.3); }
+.mixte  { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.3); }
+
+.session-tip-box {
+  background: rgba(56,189,248,0.06);
+  border: 1px solid rgba(56,189,248,0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.session-tip-box strong { color: var(--accent); }
+
+/* ─── ZONE LEGEND ─── */
+.zone-legend {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.zone-legend-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  width: 100%;
+}
+.zl-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.zl-item .zone-tag { font-size: 10px; padding: 2px 7px; }
+
+/* ─── STATS BAR ─── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+@media(max-width:600px){ .stats-bar { grid-template-columns: repeat(2,1fr); } }
+.stat-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.stat-box .val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat-box .lbl {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--green);
+  color: #051008;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 99px;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 999;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">✓ Séance validée !</div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <h1>HALF <span>IRONMAN</span></h1>
+      <p>// TRACKER NATATION · 13 SEMAINES</p>
+    </div>
+    <div class="progress-global">
+      <div class="progress-label">PROGRESSION GLOBALE</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="progress-track"><div class="progress-fill" id="globalBar" style="width:0%"></div></div>
+        <div class="progress-pct" id="globalPct">0%</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-box"><div class="val" id="statDone">0</div><div class="lbl">Séances faites</div></div>
+    <div class="stat-box"><div class="val" id="statTotal">39</div><div class="lbl">Séances totales</div></div>
+    <div class="stat-box"><div class="val" id="statSkipped" style="color:var(--orange)">0</div><div class="lbl">Skippées</div></div>
+    <div class="stat-box"><div class="val" id="statKm">0</div><div class="lbl">km validés</div></div>
+  </div>
+
+  <!-- LÉGENDE NAGE -->
+  <div class="zone-legend">
+    <div class="zone-legend-title">Types de nage</div>
+    <div class="zl-item"><span class="nage-tag crawl">CRAWL</span> Effort principal — travaille le cardio et l'endurance</div>
+    <div class="zl-item"><span class="nage-tag brasse">BRASSE</span> Récupération active — reprends ton souffle</div>
+    <div class="zl-item"><span class="nage-tag mixte">MIXTE</span> Alterne crawl et brasse au feeling selon ta fatigue</div>
+  </div>
+
+  <div id="plan"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA — Programme complet détaillé
+// ═══════════════════════════════════════════════════
+const plan = [
+  {
+    phase: 1, phaseName: "BASE AÉROBIE", phaseWeeks: "Semaines 1–4",
+    weeks: [
+      {
+        num: 1, title: "Semaine 1", focus: "Fondation & découverte", volume: 2000,
+        sessions: [
+          {
+            id:"s1w1a", name:"S1 — Endurance de base", type:"s-endurance", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"mixte", desc:"Échauffement libre — crawl ou brasse, au choix", tip:"Commence en brasse si tu veux. Prends le temps de sentir l'eau, dérouille les épaules. Passe au crawl quand tu te sens prêt. Sensation visée : tu pourrais chantonner."},
+              {type:"main", dist:"4 × 2 longueurs", nage:"crawl", desc:"4 séries de 4 longueurs crawl — 20\" de repos entre chaque", tip:"Sur chaque série, nage en crawl autant que tu peux. Sensation visée : tu peux dire une phrase courte mais pas tenir une conversation. Si tu es trop essoufflé, passe quelques brasses — mais repars en crawl dès que tu récupères."},
+              {type:"main", dist:"4 longueurs", nage:"mixte", desc:"8 longueurs continues — crawl et brasse au feeling", tip:"Nage sans toucher le mur pour te reposer. Quand le souffle part, passe en brasse. Quand tu récupères, repars en crawl. Pas de règle fixe — écoute ton corps."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme en brasse tranquille", tip:"Brasse douce, laisse la fréquence cardiaque redescendre. Sensation : tu pourrais chantonner."},
+            ],
+            tip:"Ta première séance structurée. L'alternance crawl/brasse est ta meilleure alliée — utilise la brasse sans culpabilité, c'est une vraie stratégie de gestion de l'effort, pas un aveu de faiblesse."
+          },
+          {
+            id:"s1w1b", name:"S2 — Technique de base", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 650,
+            sets: [
+              {type:"warm", dist:"3 longueurs", nage:"mixte", desc:"Échauffement au feeling — crawl ou brasse", tip:""},
+              {type:"drill", dist:"4 × 1 longueur", nage:"crawl", desc:"4 drills crawl fondamentaux — 15\" repos entre chaque", tip:"<b>2 longueurs : Catch-up</b> — Une main attend que l'autre revienne avant de tirer. Ça ralentit la nage mais améliore la glisse et l'équilibre.<br><b>2 longueurs : Bras droit seul</b> — Bras gauche le long du corps. Tourne bien le bassin à chaque coup de bras droit.<br><b>2 longueurs : Bras gauche seul</b> — Idem côté gauche.<br><b>2 longueurs : Fingertip drag</b> — À la récupération, laisse les doigts raser la surface de l'eau. Ça corrige la trajectoire du bras."},
+              {type:"main", dist:"4 longueurs", nage:"crawl", desc:"Crawl continu — applique ce que tu viens de travailler", tip:"Focus sur la traction : le bras tire sous l'épaule, pas en croix. Si tu t'essouffles, quelques brasses puis repars en crawl."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme en brasse", tip:""},
+            ],
+            tip:"Les drills semblent bizarres et inconfortables. C'est normal — ils reprogramment ton geste. 10 min de drills par semaine = énorme gain d'efficacité sur la durée."
+          },
+          {
+            id:"s1w1c", name:"S3 — Premier long continu", type:"s-long", typeLabel:"Week-end",
+            dist: 550,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement en brasse", tip:""},
+              {type:"long", dist:"9 longueurs", nage:"mixte", desc:"9 longueurs sans toucher le mur — crawl/brasse au feeling", tip:"La règle d'or : on ne s'arrête pas au mur. Si tu es essoufflé, passes en brasse — mais tu continues d'avancer. Crawl quand tu peux, brasse quand tu dois. Conseil clé : expire <b>fort et complètement</b> sous l'eau en crawl. Beaucoup de gens retiennent leur souffle sans s'en rendre compte — c'est la première cause d'essoufflement."},
+            ],
+            tip:"Note mentalement combien de longueurs tu arrives à enchaîner en crawl avant de devoir passer en brasse. Ce chiffre va augmenter chaque semaine."
+          },
+        ]
+      },
+      {
+        num: 2, title: "Semaine 2", focus: "Volume en progression", volume: 2300,
+        sessions: [
+          {
+            id:"s2w2a", name:"S1 — Séries longues", type:"s-endurance", typeLabel:"En semaine · Midi",
+            dist: 1000,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"3 × 4 longueurs", nage:"crawl", desc:"3 séries de 8 longueurs crawl — 30\" repos entre chaque", tip:"L'objectif est de tenir les 8 longueurs en crawl. Si tu dois brasser sur les 2 dernières longueurs, c'est ok — mais essaie de tenir. Le repos de 30\" est là pour que tu repartes en crawl sur la série suivante. Sensation visée : tu peux dire une phrase courte."},
+              {type:"main", dist:"4 longueurs", nage:"mixte", desc:"8 longueurs continues au feeling", tip:"Après les séries, 8 longueurs sans t'arrêter. Crawl quand tu peux, brasse quand tu dois."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"Si tu tiens les 3 séries de 8 longueurs majoritairement en crawl, tu es en avance sur le programme."
+          },
+          {
+            id:"s2w2b", name:"S2 — Drills avancés + nage", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 700,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"mixte", desc:"Échauffement", tip:""},
+              {type:"drill", dist:"6 × 1 longueur", nage:"crawl", desc:"6 drills — 15\" repos entre chaque", tip:"<b>2 × 2 longueurs : Rotation des hanches</b> — Exagère la rotation du corps à chaque bras. Pense à 'ouvrir la hanche' vers le plafond à chaque coup.<br><b>2 × 2 longueurs : Poing fermé</b> — Ferme les poings. Ça force à sentir la pression de l'avant-bras plutôt que de la main.<br><b>2 × 2 longueurs : Catch-up lent</b> — Compte mentalement 'un, deux' avant de tirer. Exagère la glisse."},
+              {type:"main", dist:"4 longueurs", nage:"crawl", desc:"Crawl continu — focus gainage", tip:"Imagine une ligne droite de la tête aux pieds. Ton corps ne doit pas serpenter latéralement. Quelques brasses si besoin."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"Le poing fermé est inconfortable mais très efficace. Quand tu rouvres les mains après, la sensation de prise sur l'eau est immédiate — tu réalises l'importance de l'avant-bras."
+          },
+          {
+            id:"s2w2c", name:"S3 — Long 14 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 700,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"14 longueurs", nage:"mixte", desc:"14 longueurs sans t'arrêter — crawl/brasse au feeling", tip:"10 longueurs de plus que la semaine dernière. Même principe : on ne s'arrête pas, on change de nage. Essaie d'observer si tu tiens le crawl plus longtemps qu'en S1W1. L'expiration sous l'eau est la clé — souffle fort, inspire vite sur le côté."},
+            ],
+            tip:"Si l'essoufflement est moindre qu'en semaine 1 à longueur équivalente, le programme fonctionne. Fais confiance au processus."
+          },
+        ]
+      },
+      {
+        num: 3, title: "Semaine 3", focus: "Pousser les limites du crawl", volume: 2600,
+        sessions: [
+          {
+            id:"s3w3a", name:"S1 — Effort / récup enchaînés", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1050,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"4 × (4L crawl + 2L brasse)", nage:"mixte", desc:"4 blocs : 4 longueurs crawl fort + 2 longueurs brasse récup — enchaîné sans s'arrêter", tip:"Sur les 4 longueurs crawl, pousse — tu dois sentir l'effort. Sensation : tu ne peux pas tenir une conversation. Sur les 2 longueurs brasse, récupère vraiment — sensation : tu pourrais chantonner. Pas d'arrêt entre les blocs."},
+              {type:"main", dist:"2 longueurs", nage:"crawl", desc:"4 longueurs crawl pour finir", tip:""},
+              {type:"cool", dist:"3 longueurs", nage:"brasse", desc:"Retour au calme long en brasse", tip:""},
+            ],
+            tip:"Ce type de séance — crawl fort puis brasse pour récupérer — correspond exactement à ce que tu feras en course si tu t'essouffles. Tu entraînes ta stratégie de course."
+          },
+          {
+            id:"s3w3b", name:"S2 — Pyramide de longueurs", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"mixte", desc:"Échauffement", tip:""},
+              {type:"interval", dist:"2–4–6–4–1 longueur", nage:"crawl", desc:"Pyramide crawl — 20\" repos entre chaque palier", tip:"La pyramide monte puis redescend : 2 longueurs, 4, 6 (le sommet), 4, 2. Sur les paliers qui montent, gère ton effort pour ne pas exploser au sommet des 6 longueurs. Sur la descente, tu récupères progressivement. Quelques brasses si besoin sur les paliers longs."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"La pyramide t'apprend à moduler ton effort selon la distance — une compétence clé pour gérer les 1 900m du half intelligemment."
+          },
+          {
+            id:"s3w3c", name:"S3 — Long 18 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 900,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"9 longueurs", nage:"mixte", desc:"18 longueurs sans t'arrêter — cap symbolique 1 km !", tip:"900m soit presque 1 km. Stratégie : crawl les 2 premières longueurs, puis gère au feeling. Si tu arrives à tenir le crawl sur la majorité des 18 longueurs, c'est une vraie progression. Pas de panique si tu brasses beaucoup — l'important c'est de ne pas t'arrêter au mur."},
+            ],
+            tip:"Franchir 1 km en continu (même avec de la brasse) est un vrai milestone quand on partait de 400m essoufflé il y a 3 semaines."
+          },
+        ]
+      },
+      {
+        num: 4, title: "Semaine 4", focus: "Récupération active", volume: 1800, isRecovery: true,
+        sessions: [
+          {
+            id:"s4w4a", name:"S1 — Légère au feeling", type:"s-endurance", typeLabel:"En semaine · Midi",
+            dist: 600,
+            sets: [
+              {type:"cool", dist:"6 longueurs", nage:"mixte", desc:"Nage libre au feeling — pas de structure", tip:"Crawl quand tu en as envie, brasse quand tu veux. Aucune contrainte. L'objectif est de garder les épaules mobiles et de récupérer activement de 3 semaines d'entraînement."},
+            ],
+            tip:"Les semaines de récup sont aussi importantes que les semaines chargées. Le corps consolide ses adaptations pendant le repos, pas pendant l'effort."
+          },
+          {
+            id:"s4w4b", name:"S2 — Technique pure", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 600,
+            sets: [
+              {type:"drill", dist:"12 × 1 longueur", nage:"crawl", desc:"Rotation de tous les drills appris — 15\" repos entre chaque", tip:"<b>2 × 2L : Catch-up</b><br><b>2 × 2L : Bras droit seul</b><br><b>2 × 2L : Bras gauche seul</b><br><b>2 × 2L : Poing fermé</b><br><b>2 × 2L : Fingertip drag</b><br><b>2 × 2L : Nage complète relâchée</b><br>Pas d'effort, juste de la qualité gestuelle."},
+            ],
+            tip:"Corps reposé = meilleure réceptivité technique. C'est le meilleur moment pour consolider les bons gestes."
+          },
+          {
+            id:"s4w4c", name:"S3 — Test de progression", type:"s-long", typeLabel:"Week-end",
+            dist: 600,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"10 longueurs", nage:"mixte", desc:"20 longueurs — compare avec tes premières séances", tip:"Nage comme tu le sens. Observe : est-ce que tu enchaînes plus de longueurs en crawl qu'en semaine 1 ? Est-ce que tu es moins essoufflé ? Ces indicateurs valent plus que n'importe quel chrono."},
+            ],
+            tip:"Après 4 semaines, le ratio crawl/brasse devrait clairement s'améliorer. C'est ton vrai baromètre de progression."
+          },
+        ]
+      },
+    ]
+  },
+  {
+    phase: 2, phaseName: "DÉVELOPPEMENT SPÉCIFIQUE", phaseWeeks: "Semaines 5–9",
+    weeks: [
+      {
+        num: 5, title: "Semaine 5", focus: "Augmenter les blocs crawl", volume: 2800,
+        sessions: [
+          {
+            id:"s1w5a", name:"S1 — Intervalles en crawl", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1200,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement progressif", tip:""},
+              {type:"interval", dist:"5 × 3 longueurs", nage:"crawl", desc:"5 séries de 6 longueurs crawl — 30\" repos brasse", tip:"L'objectif : tenir les 6 longueurs en crawl complet. Si tu dois brasser sur la dernière longueur, c'est ok. Le repos de 30\" = quelques brasses tranquilles avant de repartir. Sensation visée sur l'effort : tu peux dire un mot mais pas une phrase."},
+              {type:"main", dist:"3 longueurs", nage:"mixte", desc:"6 longueurs continues au feeling", tip:""},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"5 séries de 6 longueurs = 30 longueurs de crawl ciblé. Ton cardio va s'adapter rapidement à ces blocs."
+          },
+          {
+            id:"s1w5b", name:"S2 — Drills + nage enchaînés", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"mixte", desc:"Échauffement", tip:""},
+              {type:"drill", dist:"4 × 1 longueur drill", nage:"crawl", desc:"4 drills — puis 4 longueurs crawl après chaque — 15\" repos", tip:"Drill 2 longueurs → nage 4 longueurs crawl → repos 15\" → drill suivant. L'idée : sentir immédiatement l'effet du drill dans la nage qui suit."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"L'alternance drill/nage est la méthode la plus efficace pour ancrer les changements techniques durablement."
+          },
+          {
+            id:"s1w5c", name:"S3 — Long 6 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 1200,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"22 longueurs", nage:"mixte", desc:"22 longueurs sans toucher le mur — crawl/brasse au feeling", tip:"Découpe mentalement en blocs de 8–10 longueurs. Sur chaque bloc, tiens le crawl le plus longtemps possible. Quand tu passes en brasse, c'est pour récupérer — pas pour t'arrêter. Objectif : ne jamais toucher le mur pour souffler."},
+            ],
+            tip:"6 longueurs = 1 200m continu sans s'arrêter. C'est plus de la moitié de la distance course. Vrai cap."
+          },
+        ]
+      },
+      {
+        num: 6, title: "Semaine 6", focus: "Volume long en hausse", volume: 3200,
+        sessions: [
+          {
+            id:"s1w6a", name:"S1 — Séries longues crawl", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1400,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"4 × 4 longueurs", nage:"crawl", desc:"4 séries de 8 longueurs crawl — 40\" repos brasse", tip:"8 longueurs en crawl. Si tu dois brasser sur les 2 dernières, c'est acceptable — mais essaie de tenir. Le repos de 40\" en brasse tranquille. Essaie d'être régulier sur les 4 séries. Sensation : tu peux dire une phrase courte."},
+              {type:"main", dist:"4 longueurs", nage:"mixte", desc:"8 longueurs libres au feeling", tip:""},
+              {type:"cool", dist:"4 longueurs", nage:"brasse", desc:"Retour au calme long", tip:""},
+            ],
+            tip:"4 séries de 8 longueurs crawl = 800m à l'effort. Si tu les tiens, tu construis vraiment ta base pour le half."
+          },
+          {
+            id:"s1w6b", name:"S2 — Travail de cadence", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"drill", dist:"8 × 2 longueurs", nage:"crawl", desc:"Expérimentation de cadence de bras — 20\" repos", tip:"<b>4 × 4 longueurs : Cadence rapide</b> — Fais tourner les bras plus vite que d'habitude. Sens comment ça change ta respiration.<br><b>4 × 4 longueurs : Cadence naturelle</b> — Ton rythme habituel. Compare les sensations. Lequel est plus économique ?"},
+            ],
+            tip:"Trouver ta cadence naturelle optimale peut te faire économiser beaucoup d'énergie sur les 1 900m."
+          },
+          {
+            id:"s1w6c", name:"S3 — Long 28 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 1400,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"26 longueurs", nage:"mixte", desc:"26 longueurs sans t'arrêter — crawl dominant", tip:"À ce stade, essaie que le crawl soit ta nage principale et la brasse ton outil de récupération ponctuel. Stratégie : si tu passes en brasse, essaie de ne pas faire plus de 2 longueurs avant de reprendre le crawl."},
+            ],
+            tip:"28 longueurs = 1 400m continu. Tu es à 74% de la distance course. Le half devient très concret."
+          },
+        ]
+      },
+      {
+        num: 7, title: "Semaine 7", focus: "Repousser les limites", volume: 3500,
+        sessions: [
+          {
+            id:"s1w7a", name:"S1 — Blocs crawl intensifs", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1500,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"6 × 2 longueurs", nage:"crawl", desc:"6 séries de 4 longueurs crawl poussé — 30\" repos brasse", tip:"Pousse le crawl à fond sur ces 4 longueurs — plus vite que d'habitude. Sensation : tu ne peux pas parler. Le repos de 30\" en brasse pour récupérer. C'est la séance la plus intense du programme."},
+              {type:"interval", dist:"4 × 2 longueurs", nage:"crawl", desc:"4 séries de 4 longueurs crawl allure normale — 20\" repos", tip:"Moins intensif que les 6 premières séries. Ton rythme naturel de course. Si tu dois brasser sur la dernière longueur, c'est ok."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"10 séries de 4 longueurs crawl — c'est la séance la plus dure du programme. Si tu la fais, tu seras prêt pour les 1 900m."
+          },
+          {
+            id:"s1w7b", name:"S2 — Simulation eau vive", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"drill", dist:"4 × 4 longueurs", nage:"mixte", desc:"Simulation course — allure variable sans s'arrêter", tip:"Chaque 8 longueurs : 2L crawl tranquille → 2L crawl poussé → 2L brasse récup → 2L crawl pour finir fort. Pas de repos entre les blocs. Simule le départ chaotique, trouver son rythme, coup de fatigue, sortie de l'eau."},
+            ],
+            tip:"En eau libre, l'allure n'est jamais régulière. Cette séance entraîne ta capacité à changer de régime sans paniquer."
+          },
+          {
+            id:"s1w7c", name:"S3 — Long 32 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 1600,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"30 longueurs", nage:"mixte", desc:"30 longueurs sans t'arrêter — crawl/brasse au feeling", tip:"32 longueurs = 84% de la distance course. Essaie de limiter la brasse au maximum — chaque longueur de brasse en moins, c'est du temps gagné le jour J. Note mentalement combien de longueurs de brasse tu as faites."},
+            ],
+            tip:"Si tu termines avec moins de 8 longueurs de brasse sur les 64, tu es en très bonne voie pour le half."
+          },
+        ]
+      },
+      {
+        num: 8, title: "Semaine 8", focus: "Récupération et consolidation", volume: 2200, isRecovery: true,
+        sessions: [
+          {
+            id:"s1w8a", name:"S1 — Légère au feeling", type:"s-endurance", typeLabel:"En semaine · Midi",
+            dist: 700,
+            sets: [
+              {type:"cool", dist:"14 longueurs", nage:"mixte", desc:"Nage libre — aucun chrono, aucune contrainte", tip:"Crawl quand tu en as envie, brasse quand tu veux. Si tu n'as pas envie de nager fort, ne le fais pas. L'important est de rester dans l'eau et de bouger."},
+            ],
+            tip:"Après 3 semaines intenses, cette récup est obligatoire. Tu vas te sentir 'en forme' en fin de semaine — c'est le signe que ton corps a bien récupéré."
+          },
+          {
+            id:"s1w8b", name:"S2 — Drills récupération", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 600,
+            sets: [
+              {type:"drill", dist:"6 × 2 longueurs", nage:"crawl", desc:"6 drills variés — 15\" repos entre chaque", tip:"<b>4L : Rotation des hanches exagérée</b><br><b>4L : Fingertip drag</b><br><b>4L : Poing fermé</b><br><b>4L : Catch-up lent</b><br><b>4L : Nage tête haute</b> — simule le sighting (repérage des bouées en eau libre)<br><b>4L : Nage normale relâchée</b>"},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"Le drill 'tête haute' est essentiel pour l'eau libre : lever la tête tous les 6–8 coups pour repérer les bouées. Ça se travaille !"
+          },
+          {
+            id:"s1w8c", name:"S3 — Tempo 20 longueurs", type:"s-intervals", typeLabel:"Week-end",
+            dist: 900,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement", tip:""},
+              {type:"main", dist:"10 longueurs", nage:"crawl", desc:"20 longueurs crawl continu — ton rythme de course", tip:"20 longueurs = 500m en crawl à ton rythme naturel de course. Si tu dois brasser une ou deux longueurs, c'est ok mais essaie de tenir. C'est un test : si c'est fluide en semaine de récup, tu es bien calé."},
+              {type:"cool", dist:"4 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"Ce test en semaine de récup est ton meilleur indicateur de forme. Si c'est fluide, tu es en avance sur le programme."
+          },
+        ]
+      },
+      {
+        num: 9, title: "Semaine 9", focus: "Pré-spécifique — gros bloc", volume: 3800,
+        sessions: [
+          {
+            id:"s1w9a", name:"S1 — Longues séries crawl", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1600,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement progressif", tip:""},
+              {type:"interval", dist:"3 × 8 longueurs", nage:"crawl", desc:"3 séries de 8 longueurs crawl — 60\" repos brasse", tip:"8 longueurs = 400m en crawl. C'est long — gère ton souffle dès le départ. Si tu dois brasser sur les 4 dernières longueurs, c'est acceptable, mais essaie de tenir. Le repos de 60\" en brasse tranquille est ta vraie récupération."},
+              {type:"cool", dist:"4 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"3 séries de 8 longueurs crawl = 6 longueurs à allure course. C'est ton entraînement le plus spécifique pour le half."
+          },
+          {
+            id:"s1w9b", name:"S2 — Séance combinée", type:"s-endurance", typeLabel:"En semaine · Midi",
+            dist: 1000,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"2 × (8L crawl + 4L brasse)", nage:"mixte", desc:"Enchaîné : crawl poussé puis brasse récup", tip:"8 longueurs crawl à fond, puis 4 longueurs brasse pour récupérer, puis rebelote. Pas de repos — la brasse IS le repos. Simule exactement la gestion que tu devras faire en course."},
+              {type:"main", dist:"4 longueurs", nage:"crawl", desc:"Crawl continu", tip:""},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"La brasse comme outil de récupération active — pas comme une pause. C'est exactement ce que tu feras en course."
+          },
+          {
+            id:"s1w9c", name:"S3 — Long 34 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 1700,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement brasse", tip:""},
+              {type:"long", dist:"32 longueurs", nage:"mixte", desc:"32 longueurs sans t'arrêter — crawl dominant", tip:"32 longueurs soit presque 1 700m. À 200m de la distance course. Découpe en 2 blocs de 32 longueurs. Essaie que le crawl soit dominant sur chaque bloc, avec la brasse uniquement pour récupérer ponctuellement."},
+            ],
+            tip:"Si tu arrives là, tu es prêt pour la simulation course de la semaine 10."
+          },
+        ]
+      },
+    ]
+  },
+  {
+    phase: 3, phaseName: "AFFÛTAGE & RACE PREP", phaseWeeks: "Semaines 10–13",
+    weeks: [
+      {
+        num: 10, title: "Semaine 10", focus: "Pic de volume — simulation course", volume: 4000,
+        sessions: [
+          {
+            id:"s1w10a", name:"S1 — SIMULATION COURSE 38 longueurs 🎯", type:"s-long", typeLabel:"Week-end",
+            dist: 1900,
+            sets: [
+              {type:"long", dist:"38 longueurs", nage:"mixte", desc:"38 longueurs sans toucher le mur — crawl/brasse au feeling", tip:"C'est LE moment. 1 900m sans s'arrêter. Stratégie : les 2 premières longueurs plus tranquilles pour t'installer. Ensuite crawl tant que tu peux, brasse pour récupérer quand tu dois. L'objectif n'est pas le chrono — c'est de finir sans jamais toucher le mur pour se reposer. Note combien de longueurs de brasse tu as faites — tu voudras améliorer ça le jour J."},
+            ],
+            tip:"Si tu termines les 38 longueurs même avec beaucoup de brasse, tu PEUX finir le half. Si tu les tiens majoritairement en crawl, tu vas cartonner."
+          },
+          {
+            id:"s1w10b", name:"S2 — Qualité après simulation", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1000,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement léger", tip:""},
+              {type:"interval", dist:"4 × 2 longueurs", nage:"crawl", desc:"4 séries de 4 longueurs crawl poussé — 30\" repos brasse", tip:"Même un peu fatigué de la simulation, la qualité reste. Ces séries maintiennent ton niveau après le gros volume."},
+              {type:"main", dist:"4 longueurs", nage:"crawl", desc:"Crawl continu modéré", tip:""},
+              {type:"cool", dist:"4 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:""
+          },
+          {
+            id:"s1w10c", name:"S3 — Tempo 18 longueurs", type:"s-long", typeLabel:"En semaine · Midi",
+            dist: 1100,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement", tip:""},
+              {type:"main", dist:"9 longueurs", nage:"crawl", desc:"18 longueurs crawl à ton rythme naturel de course", tip:"18 longueurs = 900m en crawl. Tu peux brasser une ou deux longueurs si vraiment nécessaire, mais l'objectif est de tenir le crawl sur la majorité."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:""
+          },
+        ]
+      },
+      {
+        num: 11, title: "Semaine 11", focus: "Début d'affûtage", volume: 3200,
+        sessions: [
+          {
+            id:"s1w11a", name:"S1 — Maintien de l'intensité", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 1300,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"5 × 2 longueurs", nage:"crawl", desc:"5 séries de 4 longueurs crawl intensif — 30\" repos brasse", tip:"Moins de séries qu'avant mais la même intensité. L'affûtage commence : volume qui baisse, qualité qui reste."},
+              {type:"main", dist:"6 longueurs", nage:"crawl", desc:"Crawl continu modéré", tip:""},
+              {type:"cool", dist:"4 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:""
+          },
+          {
+            id:"s1w11b", name:"S2 — Technique eau libre", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"drill", dist:"8 × 1 longueur", nage:"crawl", desc:"Sighting et virage de bouée — 15\" repos", tip:"<b>2L × 4 : Sighting (levé de tête)</b> — Tous les 6 coups de bras, lève la tête juste pour voir devant (yeux à la surface, pas tête hors de l'eau). Tu perdras de la vitesse — c'est normal.<br><b>2L × 4 : Sprint de départ</b> — depuis le mur en poussant fort, simule le départ de masse."},
+              {type:"main", dist:"8 longueurs", nage:"crawl", desc:"Crawl avec sighting intégré tous les 6 coups", tip:"Intègre le sighting dans ta nage. Ça t'évitera de nager en zig-zag le jour J — sans ligne au fond de l'eau, 80% des nageurs partent en crabe."},
+            ],
+            tip:"Le sighting te fera nager 1 900m au lieu de 2 100m le jour J !"
+          },
+          {
+            id:"s1w11c", name:"S3 — Long 22 longueurs", type:"s-long", typeLabel:"Week-end",
+            dist: 1100,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement", tip:""},
+              {type:"long", dist:"20 longueurs", nage:"mixte", desc:"20 longueurs continus — nage économique", tip:"L'objectif maintenant n'est plus de battre des records de distance, c'est de nager de façon fluide et économique. Moins d'effort pour la même distance = tu arrives moins fatigué au vélo."},
+            ],
+            tip:""
+          },
+        ]
+      },
+      {
+        num: 12, title: "Semaine 12", focus: "Affûtage prononcé — taper", volume: 2000, isRecovery: true,
+        sessions: [
+          {
+            id:"s1w12a", name:"S1 — Vivacité", type:"s-intervals", typeLabel:"En semaine · Midi",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"Échauffement mixte", tip:""},
+              {type:"interval", dist:"6 × 1 longueur", nage:"crawl", desc:"6 séries de 2 longueurs crawl vif — 20\" repos brasse", tip:"2 longueurs en crawl dynamique et propre. L'objectif est de maintenir la vivacité musculaire pendant la période de récup. Sens-toi léger et rapide."},
+              {type:"main", dist:"4 longueurs", nage:"mixte", desc:"Nage détendue au feeling", tip:""},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme", tip:""},
+            ],
+            tip:"Pendant l'affûtage, les muscles se rechargent, les micro-lésions se réparent. Tu vas te sentir de plus en plus frais — c'est voulu."
+          },
+          {
+            id:"s1w12b", name:"S2 — Rappel technique final", type:"s-technique", typeLabel:"En semaine · Midi",
+            dist: 600,
+            sets: [
+              {type:"drill", dist:"4 × 2 longueurs", nage:"crawl", desc:"Tes meilleurs drills — détendu — 15\" repos", tip:"Choisis les 4 drills qui t'ont le plus aidé sur ces 12 semaines. 4 longueurs chacun, sans pression. Ancre les bonnes sensations."},
+              {type:"drill", dist:"4 longueurs", nage:"crawl", desc:"Crawl avec sighting intégré", tip:"8 longueurs en pensant à regarder devant toi régulièrement. Visualise le parcours de ta course."},
+            ],
+            tip:"Cette semaine prépare aussi la tête. Visualise le départ, les bouées, ta nage. Le mental compte autant que le physique."
+          },
+          {
+            id:"s1w12c", name:"S3 — Simulation légère", type:"s-long", typeLabel:"Week-end",
+            dist: 600,
+            sets: [
+              {type:"warm", dist:"2 longueurs", nage:"brasse", desc:"Échauffement", tip:""},
+              {type:"long", dist:"10 longueurs", nage:"mixte", desc:"20 longueurs — nage forte et confiante", tip:"500m à allure course. Cette séance doit te laisser une sensation de puissance. Si tu as bien récupéré, le crawl doit 'tourner' facilement. Sors de l'eau avec le sourire."},
+            ],
+            tip:"Le but de la semaine 12 : arriver en semaine 13 avec les bras frais, la tête confiante, le corps prêt à exploser."
+          },
+        ]
+      },
+      {
+        num: 13, title: "Semaine 13 — RACE WEEK 🏁", focus: "Activation & Jour J", volume: 600, isRace: true,
+        sessions: [
+          {
+            id:"s1w13a", name:"J-3 · Activation pré-course", type:"s-endurance", typeLabel:"En semaine · Midi",
+            dist: 400,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"brasse", desc:"Nage très légère en brasse", tip:""},
+              {type:"interval", dist:"4 × 1 longueur", nage:"crawl", desc:"4 longueurs avec accélérations progressives", tip:"50% → 65% → 80% → 90%. Juste pour 'ouvrir les bras' et te sentir bien dans l'eau. Rien de plus."},
+              {type:"cool", dist:"2 longueurs", nage:"brasse", desc:"Retour au calme — sors frais et confiant", tip:""},
+            ],
+            tip:"J-3 c'est la dernière vraie séance. Après : alimentation, hydratation, sommeil, préparation du matériel. Pas de natation à J-2."
+          },
+          {
+            id:"s1w13b", name:"Veille · Entrée dans l'eau (optionnel)", type:"s-technique", typeLabel:"Veille · Optionnel",
+            dist: 200,
+            sets: [
+              {type:"warm", dist:"4 longueurs", nage:"mixte", desc:"10 min dans l'eau — activation minimale", tip:"Si possible, entre dans l'eau du plan d'eau de course. Sens la température, la visibilité. 4 longueurs crawl léger suffisent. L'objectif est de ne pas avoir de choc thermique le lendemain matin."},
+            ],
+            tip:"Si tu ne peux pas accéder à l'eau de course, reste sur la berge et visualise mentalement le parcours. Repère les bouées, l'orientation du soleil."
+          },
+          {
+            id:"s1w13c", name:"🏁 RACE DAY — 1 900m", type:"s-race", typeLabel:"COURSE",
+            dist: 1900,
+            sets: [
+              {type:"warm", dist:"Départ", nage:"crawl", desc:"200 premiers mètres — PRUDENCE", tip:"Le départ de masse est chaotique. Coups, éclaboussures, gens sur toi — c'est NORMAL. Pars légèrement à l'écart si tu es stressé. Les 8 premières longueurs plus tranquilles que ton rythme normal."},
+              {type:"long", dist:"30 longueurs", nage:"mixte", desc:"Corps de la nage — crawl dominant, brasse si besoin", tip:"Une fois le chaos du départ passé, trouve ton rythme. Crawl tant que tu peux, brasse pour récupérer si tu dois. Sighting toutes les 6–8 brasses. Ne panique pas si tu brasses — c'est ta stratégie, pas un échec."},
+              {type:"interval", dist:"8 dernières longueurs", nage:"crawl", desc:"Accélération finale vers la sortie", tip:"Les 8 dernières longueurs. Donne tout ce qu'il te reste en crawl. La foule te voit — c'est motivant ! Redresse-toi progressivement en sortant pour ne pas être étourdi."},
+            ],
+            tip:"⚠️ Rappels : combinaison néoprène si eau < 24°C · Lunettes de secours en transition · SORTIE DE L'EAU : marche les premières secondes, les jambes sont instables après la nage."
+          },
+        ]
+      },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const STORAGE_KEY = 'hi_swim_tracker_v3';
+let completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+const SKIP_KEY = 'hi_swim_skipped_v1';
+let skipped = JSON.parse(localStorage.getItem(SKIP_KEY) || '{}');
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+  localStorage.setItem(SKIP_KEY, JSON.stringify(skipped));
+}
+
+function toggleSkip(id) {
+  const openWeeks = new Set(
+    [...document.querySelectorAll('.week-block.open')].map(el => el.id)
+  );
+  const openSessions = new Set(
+    [...document.querySelectorAll('.session-card.open')].map(el => el.id)
+  );
+  skipped[id] = !skipped[id];
+  if (skipped[id]) delete completed[id]; // pas cochée ET skippée en même temps
+  save();
+  updateStats();
+  buildPlan();
+  showToast(skipped[id] ? 'skip' : 'unskip');
+  openWeeks.forEach(wId => document.getElementById(wId)?.classList.add('open'));
+  openSessions.forEach(cId => document.getElementById(cId)?.classList.add('open'));
+}
+
+// ═══════════════════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════════════════
+function buildPlan() {
+  const container = document.getElementById('plan');
+  container.innerHTML = '';
+
+  plan.forEach(phase => {
+    // Phase separator
+    const sep = document.createElement('div');
+    sep.className = 'phase-sep';
+    sep.innerHTML = `
+      <div class="phase-pill p${phase.phase}">PHASE ${phase.phase}</div>
+      <div class="phase-name">${phase.phaseName}</div>
+      <div class="phase-line"></div>
+      <div class="phase-weeks-label">${phase.phaseWeeks}</div>
+    `;
+    container.appendChild(sep);
+
+    phase.weeks.forEach(week => {
+      const totalSessions = week.sessions.length;
+      const doneSessions = week.sessions.filter(s => completed[s.id]).length;
+      const weekDone = doneSessions === totalSessions;
+
+      const block = document.createElement('div');
+      block.className = `week-block${week.isRecovery ? ' is-recovery' : ''}${weekDone ? ' week-done' : ''}`;
+      block.id = `week-${week.num}`;
+
+      // Dots
+      const dotsHtml = week.sessions.map(s =>
+        `<div class="dot${completed[s.id] ? ' done' : ''}"></div>`
+      ).join('');
+
+      const badge = week.isRecovery
+        ? `<span class="recovery-label">RÉCUP</span>`
+        : week.isRace
+        ? `<span class="race-label">🏁 COURSE</span>`
+        : '';
+
+      block.innerHTML = `
+        <div class="week-header" onclick="toggleWeek(${week.num})">
+          <div class="week-num-badge">S${week.num}</div>
+          <div>
+            <div class="week-title">${week.title}</div>
+            <div class="week-focus">${week.focus}</div>
+          </div>
+          ${badge}
+          <div class="week-progress-mini">
+            <div class="dots">${dotsHtml}</div>
+            <span>${doneSessions}/${totalSessions}</span>
+          </div>
+          <div class="week-chevron">▼</div>
+        </div>
+        <div class="week-body" id="week-body-${week.num}">
+          ${week.sessions.map(s => buildSession(s)).join('')}
+        </div>
+      `;
+      container.appendChild(block);
+    });
+  });
+}
+
+function buildSession(s) {
+  const isDone = !!completed[s.id];
+  const isSkipped = !!skipped[s.id];
+  const setsHtml = s.sets.map(set => {
+    const nageLabel = set.nage ? `<br><span class="nage-tag ${set.nage}">${set.nage.toUpperCase()}</span>` : '';
+    return `
+    <div class="set-row ${set.type}">
+      <div class="set-dist">${set.dist}${nageLabel}</div>
+      <div class="set-body">
+        <div class="set-desc">${set.desc}</div>
+        ${set.tip ? `<div class="set-tip">${set.tip}</div>` : ''}
+      </div>
+    </div>
+  `}).join('');
+
+  return `
+    <div class="session-card ${s.type}${isDone ? ' completed' : ''}${isSkipped ? ' skipped' : ''}" id="card-${s.id}">
+      <div class="session-top" onclick="toggleSession('${s.id}')">
+        <div class="session-type-dot"></div>
+        <div class="session-top-text">
+          <div class="session-name">${s.name} <span class="session-expand-icon">▾</span></div>
+          <div class="session-subtitle">${s.typeLabel} · ${s.dist}m</div>
+        </div>
+        <div class="session-dist-badge">${s.dist}m</div>
+        ${isDone
+          ? `<button class="uncheck-btn" onclick="event.stopPropagation(); toggleDone('${s.id}', ${s.dist})" title="Annuler la séance">✕</button>`
+          : isSkipped
+          ? `<button class="unskip-btn" onclick="event.stopPropagation(); toggleSkip('${s.id}')" title="Annuler le skip">↩</button>`
+          : `<span style="display:flex;gap:5px">
+               <button class="check-btn" onclick="event.stopPropagation(); toggleDone('${s.id}', ${s.dist})" title="Marquer comme fait">✓</button>
+               <button class="skip-btn" onclick="event.stopPropagation(); toggleSkip('${s.id}')" title="Séance skippée">⏭</button>
+             </span>`
+        }
+      </div>
+      <div class="session-detail" id="detail-${s.id}">
+        ${setsHtml}
+        ${s.tip ? `<div class="session-tip-box"><strong>💡 Conseil :</strong> ${s.tip}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════
+function toggleWeek(num) {
+  const block = document.getElementById(`week-${num}`);
+  block.classList.toggle('open');
+}
+
+function toggleSession(id) {
+  const card = document.getElementById(`card-${id}`);
+  card.classList.toggle('open');
+}
+
+function toggleDone(id, dist) {
+  // Mémorise les semaines ouvertes et les séances ouvertes avant rebuild
+  const openWeeks = new Set(
+    [...document.querySelectorAll('.week-block.open')].map(el => el.id)
+  );
+  const openSessions = new Set(
+    [...document.querySelectorAll('.session-card.open')].map(el => el.id)
+  );
+  const wasSessionOpen = document.getElementById(`card-${id}`)?.classList.contains('open');
+
+  completed[id] = !completed[id];
+  save();
+  updateStats();
+  buildPlan();
+  showToast(completed[id] ? true : false);
+
+  // Restaure les semaines ouvertes
+  openWeeks.forEach(weekId => {
+    document.getElementById(weekId)?.classList.add('open');
+  });
+
+  // Restaure les séances ouvertes — sauf celle qu'on vient de cocher
+  openSessions.forEach(cardId => {
+    const sessionId = cardId.replace('card-', '');
+    if (sessionId === id && completed[id]) return; // cochée → reste fermée
+    document.getElementById(cardId)?.classList.add('open');
+  });
+
+  // Si on décoche une séance qui était ouverte → la rouvrir
+  if (!completed[id] && wasSessionOpen) {
+    document.getElementById(`card-${id}`)?.classList.add('open');
+  }
+}
+
+function showToast(state) {
+  const t = document.getElementById('toast');
+  if (state === true)        { t.textContent = '✓ Séance validée !';  t.style.background = 'var(--green)'; }
+  else if (state === false)  { t.textContent = '↩ Séance dévalidée'; t.style.background = 'var(--muted)'; }
+  else if (state === 'skip') { t.textContent = '⏭ Séance skippée';   t.style.background = 'var(--orange)'; }
+  else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function updateStats() {
+  let done = 0, total = 0, kmDone = 0;
+  const weeksActive = new Set();
+
+  let skippedCount = 0;
+  plan.forEach(ph => ph.weeks.forEach(w => {
+    w.sessions.forEach(s => {
+      total++;
+      if (completed[s.id]) {
+        done++;
+        kmDone += s.dist;
+        weeksActive.add(w.num);
+      }
+      if (skipped[s.id]) skippedCount++;
+    });
+  }));
+  const skippedEl = document.getElementById('statSkipped');
+  if (skippedEl) skippedEl.textContent = skippedCount;
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('statDone', done);
+  setEl('statTotal', total);
+  setEl('statWeek', weeksActive.size);
+  setEl('statKm', (kmDone / 1000).toFixed(1));
+
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('globalBar');
+  const pctEl = document.getElementById('globalPct');
+  if (bar) bar.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// PROGRESSION — scroll sur la première semaine incomplète
+// ═══════════════════════════════════════════════════
+
+function getActiveWeekNum() {
+  for (const phase of plan) {
+    for (const week of phase.weeks) {
+      const allDone = week.sessions.every(s => completed[s.id] || skipped[s.id]);
+      if (!allDone) return week.num;
+    }
+  }
+  return 13;
+}
+
+function scrollToActiveWeek() {
+  const weekNum = getActiveWeekNum();
+  const block = document.getElementById(`week-${weekNum}`);
+  if (!block) return;
+  block.classList.add('open');
+  setTimeout(() => {
+    const headerHeight = document.querySelector('.app-header').offsetHeight;
+    const top = block.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }, 100);
+}
+
+function addActiveWeekIndicator() {
+  const weekNum = getActiveWeekNum();
+  const header = document.querySelector(`#week-${weekNum} .week-header`);
+  if (!header) return;
+  const badge = document.createElement('span');
+  badge.style.cssText = `
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(56,189,248,0.4);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  `;
+  badge.textContent = '📍 EN COURS';
+  const chevron = header.querySelector('.week-chevron');
+  header.insertBefore(badge, chevron);
+  document.getElementById(`week-${weekNum}`).style.borderColor = 'rgba(56,189,248,0.5)';
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+buildPlan();
+updateStats();
+addActiveWeekIndicator();
+scrollToActiveWeek();
+</script>
+</body>
+</html>
