@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Half Ironman — Tracker Natation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090f;
+  --bg2: #0d1117;
+  --surface: #111827;
+  --card: #131d2e;
+  --card-hover: #172236;
+  --border: #1c2d44;
+  --accent: #38bdf8;
+  --accent-dim: rgba(56,189,248,0.12);
+  --green: #4ade80;
+  --green-dim: rgba(74,222,128,0.12);
+  --orange: #fb923c;
+  --orange-dim: rgba(251,146,60,0.12);
+  --red: #f87171;
+  --text: #e2eaf4;
+  --muted: #5a7a99;
+  --muted2: #3a5570;
+  --p1: #38bdf8;
+  --p2: #4ade80;
+  --p3: #fb923c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  background: linear-gradient(180deg, #0a1525 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 32px 24px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.logo-block h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.logo-block h1 span { color: var(--accent); }
+.logo-block p {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+.progress-global {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 180px;
+}
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.progress-track {
+  width: 180px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.progress-pct {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+/* ─── LAYOUT ─── */
+.container { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* ─── PHASE TITLE ─── */
+.phase-sep {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 40px 0 18px;
+}
+.phase-pill {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.phase-pill.p1 { color: var(--p1); border-color: var(--p1); background: rgba(56,189,248,0.08); }
+.phase-pill.p2 { color: var(--p2); border-color: var(--p2); background: rgba(74,222,128,0.08); }
+.phase-pill.p3 { color: var(--p3); border-color: var(--p3); background: rgba(251,146,60,0.08); }
+.phase-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.phase-line { flex: 1; height: 1px; background: var(--border); }
+.phase-weeks-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* ─── WEEK BLOCK ─── */
+.week-block {
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.week-block.is-recovery { border-color: rgba(74,222,128,0.25); }
+.week-block.week-done { border-color: rgba(56,189,248,0.4); }
+
+.week-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--card);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.week-header:hover { background: var(--card-hover); }
+
+.week-num-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  background: var(--border);
+  padding: 3px 9px;
+  border-radius: 4px;
+  color: var(--muted);
+}
+.week-title {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+.week-focus {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.week-progress-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.dots { display: flex; gap: 3px; }
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s;
+}
+.dot.done { background: var(--green); }
+.week-chevron {
+  font-size: 12px;
+  color: var(--muted2);
+  transition: transform 0.25s;
+}
+.week-block.open .week-chevron { transform: rotate(180deg); }
+.recovery-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid rgba(74,222,128,0.3);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.race-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--orange);
+  border: 1px solid rgba(251,146,60,0.4);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ─── SESSIONS ─── */
+.week-body {
+  display: none;
+  padding: 0 18px 18px;
+  background: var(--bg2);
+  flex-direction: column;
+  gap: 12px;
+}
+.week-block.open .week-body { display: flex; }
+
+.session-card {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.2s, opacity 0.2s;
+  margin-top: 12px;
+}
+.session-card.completed {
+  border-color: rgba(74,222,128,0.4);
+  opacity: 0.75;
+}
+.session-card.completed .session-top { background: rgba(74,222,128,0.06); }
+
+.session-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  cursor: pointer;
+}
+.session-type-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.s-endurance .session-type-dot { background: var(--accent); }
+.s-technique .session-type-dot { background: #a78bfa; }
+.s-long .session-type-dot { background: var(--green); }
+.s-intervals .session-type-dot { background: var(--orange); }
+.s-race .session-type-dot { background: var(--red); }
+
+.session-top-text { flex: 1; }
+.session-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.session-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1px;
+}
+.session-dist-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 3px 8px;
+  background: var(--accent-dim);
+  border-radius: 4px;
+}
+.check-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-size: 13px;
+  color: transparent;
+}
+.check-btn:hover { border-color: var(--green); color: var(--green); }
+.session-card.completed .check-btn {
+  background: var(--green);
+  border-color: var(--green);
+  color: #0a1a0f;
+}
+
+/* ─── SESSION DETAIL ─── */
+.session-detail {
+  padding: 14px 16px;
+  background: var(--bg);
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+}
+.session-card.open .session-detail { display: flex; }
+.session-card.open .session-expand-icon { transform: rotate(180deg); }
+.session-expand-icon {
+  font-size: 10px;
+  color: var(--muted2);
+  transition: transform 0.2s;
+  margin-left: 4px;
+}
+
+/* Warmup / main / cooldown blocks */
+.phase-group { display: flex; flex-direction: column; gap: 6px; }
+.phase-group-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 2px;
+}
+.set-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--card);
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+}
+.set-row.warm { border-color: #fbbf24; }
+.set-row.main { border-color: var(--accent); }
+.set-row.interval { border-color: var(--orange); }
+.set-row.drill { border-color: #a78bfa; }
+.set-row.cool { border-color: var(--muted2); }
+.set-row.long { border-color: var(--green); }
+
+.set-dist {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 50px;
+  white-space: nowrap;
+}
+.set-body { flex: 1; }
+.set-desc {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.set-tip {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.zone-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-weight: 600;
+}
+.z1 { background: rgba(59,130,246,0.2); color: #60a5fa; }
+.z2 { background: rgba(56,189,248,0.15); color: var(--accent); }
+.z3 { background: rgba(74,222,128,0.15); color: var(--green); }
+.z4 { background: rgba(251,146,60,0.2); color: var(--orange); }
+
+.session-tip-box {
+  background: rgba(56,189,248,0.06);
+  border: 1px solid rgba(56,189,248,0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.session-tip-box strong { color: var(--accent); }
+
+/* ─── ZONE LEGEND ─── */
+.zone-legend {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.zone-legend-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  width: 100%;
+}
+.zl-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.zl-item .zone-tag { font-size: 10px; padding: 2px 7px; }
+
+/* ─── STATS BAR ─── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+@media(max-width:600px){ .stats-bar { grid-template-columns: repeat(2,1fr); } }
+.stat-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.stat-box .val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat-box .lbl {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--green);
+  color: #051008;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 99px;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 999;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">✓ Séance validée !</div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <h1>HALF <span>IRONMAN</span></h1>
+      <p>// TRACKER NATATION · 13 SEMAINES</p>
+    </div>
+    <div class="progress-global">
+      <div class="progress-label">PROGRESSION GLOBALE</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="progress-track"><div class="progress-fill" id="globalBar" style="width:0%"></div></div>
+        <div class="progress-pct" id="globalPct">0%</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-box"><div class="val" id="statDone">0</div><div class="lbl">Séances faites</div></div>
+    <div class="stat-box"><div class="val" id="statTotal">39</div><div class="lbl">Séances totales</div></div>
+    <div class="stat-box"><div class="val" id="statWeek">0</div><div class="lbl">Semaines actives</div></div>
+    <div class="stat-box"><div class="val" id="statKm">0</div><div class="lbl">km validés</div></div>
+  </div>
+
+  <!-- ZONE LEGEND -->
+  <div class="zone-legend">
+    <div class="zone-legend-title">Zones d'allure</div>
+    <div class="zl-item"><span class="zone-tag z1">Z1</span> &gt;2'30/100m · Récupération</div>
+    <div class="zl-item"><span class="zone-tag z2">Z2</span> 2'10–2'25 · Aérobie confortable</div>
+    <div class="zl-item"><span class="zone-tag z3">Z3</span> 2'00–2'10 · Tempo / allure course</div>
+    <div class="zl-item"><span class="zone-tag z4">Z4</span> 1'50–2'00 · Seuil / effort dur</div>
+  </div>
+
+  <div id="plan"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA — Programme complet détaillé
+// ═══════════════════════════════════════════════════
+const plan = [
+  {
+    phase: 1, phaseName: "BASE AÉROBIE", phaseWeeks: "Semaines 1–4",
+    weeks: [
+      {
+        num: 1, title: "Semaine 1", focus: "Fondation & découverte", volume: 2000,
+        sessions: [
+          {
+            id:"s1w1a", name:"S1 — Endurance de base", type:"s-endurance", typeLabel:"Endurance",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement libre", tip:"Nage très tranquille, toutes les allures. Réveille les épaules, fais des rotations de bras avant de plonger.", zone:"z1"},
+              {type:"main", dist:"4×100m", desc:"Répétitions en Z2 — 20\" de repos entre chaque", tip:"Allure confortable où tu peux parler (presque). Focus : bras qui reviennent bien rasant l'eau à la récupération. Respire toutes les 3 foulées (bilatéral).", zone:"z2"},
+              {type:"main", dist:"200m", desc:"Nage continue Z2", tip:"Pas de pause. Si tu dois t'arrêter, réduis l'allure plutôt qu'une pause. L'objectif est la continuité.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"Crawl très lent ou dos crawlé. Laisse la fréquence cardiaque redescendre.", zone:"z1"},
+            ],
+            tip:"Ta première séance structurée. Ne t'inquiète pas du chrono, l'essoufflement après les 100m est normal. L'objectif est de finir sans être en détresse respiratoire."
+          },
+          {
+            id:"s1w1b", name:"S2 — Technique de base", type:"s-technique", typeLabel:"Technique",
+            dist: 650,
+            sets: [
+              {type:"warm", dist:"150m", desc:"Échauffement crawl libre", tip:"Doux et progressif. Sens l'eau sous tes mains.", zone:"z1"},
+              {type:"drill", dist:"4×50m", desc:"Drills fondamentaux — 15\" repos", tip:"<b>Drill 1 (50m) : Catch-up</b> — Une main touche l'autre avant de tirer. Ralentit la nage, améliore la glisse.<br><b>Drill 2 (50m) : Bras droit seul</b> — Bras gauche le long du corps, tourne le bassin à chaque bras.<br><b>Drill 3 (50m) : Bras gauche seul</b> — Idem côté gauche.<br><b>Drill 4 (50m) : Fingertip drag</b> — Doigts rasent la surface à la récupération.", zone:""},
+              {type:"main", dist:"200m", desc:"Nage complète Z2 — focus traction", tip:"Essaie d'appliquer ce que tu viens de travailler : bonne rotation du corps, bras qui restent alignés sous l'épaule pendant la traction.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Les drills paraissent inutiles au début mais ils reprogramment la mécanique. 10 min de drills par semaine = 10-15\" de gagné sur le 100m sur 3 mois."
+          },
+          {
+            id:"s1w1c", name:"S3 — Premier long continu", type:"s-long", typeLabel:"Long continu",
+            dist: 550,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement progressif", tip:"Commence vraiment doucement — 30% de ton effort max.", zone:"z1"},
+              {type:"long", dist:"450m", desc:"Nage continue Z2 sans s'arrêter", tip:"Si tu as envie de t'arrêter, RÉDUIS l'allure plutôt que de t'arrêter. Pense à expirer complètement sous l'eau — c'est souvent la clé de l'essoufflement. Respire toutes les 3 foulées. Ton corps apprend à gérer l'effort dans la durée.", zone:"z2"},
+            ],
+            tip:"Le long continu est ta séance clé chaque semaine. Note comment tu te sens à la fin : essoufflé ? Pas assez ? Ça te donne l'étalon pour ajuster les prochaines séances."
+          },
+        ]
+      },
+      {
+        num: 2, title: "Semaine 2", focus: "Volume en progression", volume: 2300,
+        sessions: [
+          {
+            id:"s2w2a", name:"S1 — Intervalles longs", type:"s-endurance", typeLabel:"Endurance",
+            dist: 1000,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement Z1", tip:"", zone:"z1"},
+              {type:"interval", dist:"3×200m", desc:"Répétitions longues Z2 — 30\" repos", tip:"200m c'est la longueur d'un bassin de 25m × 8. Gère ton allure sur les 200m : ne pars pas trop vite les 50 premiers mètres. Le repos de 30\" permet de récupérer sans perdre le bénéfice de l'effort.", zone:"z2"},
+              {type:"main", dist:"200m", desc:"Nage libre Z2 continue", tip:"Après tes répétitions, la nage continue te semblera dure — c'est voulu. Tu entraînes la résistance à la fatigue.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Première fois que tu dépasses 1 000m dans une séance. Bravo si tu le fais !"
+          },
+          {
+            id:"s2w2b", name:"S2 — Drill avancé + nage", type:"s-technique", typeLabel:"Technique",
+            dist: 700,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"drill", dist:"6×50m", desc:"Drills : rotation et gainage — 15\" repos", tip:"<b>50m × 2 : Rotation des hanches</b> — Exagère la rotation du corps à chaque bras. Pense à 'ouvrir la hanche' vers le plafond à chaque fois.<br><b>50m × 2 : Nage avec poing fermé</b> — Ferme les poings. Ça force à sentir la pression de l'avant-bras, pas que la main.<br><b>50m × 2 : Catch-up lent</b> — Exagère la glisse avant de tirer. Compte 2 secondes de glisse.", zone:""},
+              {type:"main", dist:"200m", desc:"Nage complète Z2 — focus gainage", tip:"Imagine une ligne droite de la tête aux orteils. Ton corps ne doit pas serpenter latéralement. Les jambes battent juste assez pour maintenir l'horizontalité.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Le poing fermé est un drill inconfortable qui révèle si tu utilises bien ton avant-bras. Quand tu rouvres les mains, la sensation de 'prise' sur l'eau est immédiate."
+          },
+          {
+            id:"s2w2c", name:"S3 — Long 800m", type:"s-long", typeLabel:"Long continu",
+            dist: 600,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"700m", desc:"Nage continue Z2 — objectif : finir sans être épuisé", tip:"C'est 300m de plus que la semaine dernière. Si tu sens que ça devient difficile vers le 500m, ralentis légèrement plutôt que de t'arrêter. Concentre-toi sur l'expiration sous l'eau : souffler fort sous l'eau, inspirer vite sur le côté.", zone:"z2"},
+            ],
+            tip:"Si tu termines le 700m en Z2 sans t'arrêter, ta base aérobie est déjà en train de se construire. L'essoufflement devrait être inférieur à la semaine 1."
+          },
+        ]
+      },
+      {
+        num: 3, title: "Semaine 3", focus: "Introduction à l'intensité", volume: 2600,
+        sessions: [
+          {
+            id:"s3w3a", name:"S1 — Fartlek natation", type:"s-intervals", typeLabel:"Intervalles",
+            dist: 1050,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement Z1–Z2", tip:"", zone:"z1"},
+              {type:"interval", dist:"4×(100m Z3 + 50m Z1)", desc:"Fartlek : accélération + récup active", tip:"Le fartlek c'est du jeu de vitesse sans chrono strict. Les 100m en Z3 : tu sens l'effort, tu pourrais tenir une courte phrase mais pas plus. Les 50m Z1 : nagez vraiment doucement, récupère activement. Pas d'arrêt.", zone:"z3"},
+              {type:"main", dist:"100m", desc:"Nage Z2 continue", tip:"", zone:"z2"},
+              {type:"cool", dist:"150m", desc:"Retour au calme long", tip:"Prends le temps de vraiment récupérer. Dos crawlé ou crawl ultra lent.", zone:"z1"},
+            ],
+            tip:"Première vraie séance avec de l'intensité. Le Z3 va te sembler dur les premiers 25m — ça se régule. L'important est de ne pas partir en sprint Z4 par excitation."
+          },
+          {
+            id:"s3w3b", name:"S2 — Pyramide", type:"s-technique", typeLabel:"Pyramide",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"interval", dist:"50–100–150–100–50m", desc:"Pyramide Z2 — 20\" repos entre chaque", tip:"La pyramide monte puis redescend : 50m, 100m, 150m (le sommet), 100m, 50m. Sur les efforts qui montent, tu dois gérer ton allure pour ne pas exploser au 150m. Sur la descente, tu récupères progressivement.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"La pyramide développe ta conscience du rythme. Tu apprends à moduler ton effort, une compétence clé pour la nage en triathlon où tu dois gérer 1900m intelligemment."
+          },
+          {
+            id:"s3w3c", name:"S3 — Long 1 000m", type:"s-long", typeLabel:"Long continu",
+            dist: 750,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"900m", desc:"Nage continue Z2 — cap symbolique 1 km", tip:"C'est ta première nage à 1 km (ou presque). La moitié de la distance course ! Gestion : les 300 premiers mètres seront les plus durs, ton corps s'adapte. De 300 à 700m tu trouves ton rythme. Les 200 derniers mètres, ne relâche pas.", zone:"z2"},
+            ],
+            tip:"Franchir 1 km est un vrai milestone pour quelqu'un qui partait de 400m il y a 3 semaines. Bien joué si tu y arrives !"
+          },
+        ]
+      },
+      {
+        num: 4, title: "Semaine 4", focus: "Récupération active", volume: 1800, isRecovery: true,
+        sessions: [
+          {
+            id:"s4w4a", name:"S1 — Légère au feeling", type:"s-endurance", typeLabel:"Récup",
+            dist: 600,
+            sets: [
+              {type:"cool", dist:"600m", desc:"Nage libre Z1–Z2 au feeling", tip:"Pas de structure ce soir. Nage comme tu en as envie. Quelques drills si tu veux, des longueurs tranquilles. L'objectif est de garder les épaules mobiles et de récupérer activement. Aucun chrono.", zone:"z1"},
+            ],
+            tip:"Les semaines de récup sont aussi importantes que les semaines chargées. Le corps consolide les adaptations pendant la récupération, pas pendant l'effort."
+          },
+          {
+            id:"s4w4b", name:"S2 — Technique pure", type:"s-technique", typeLabel:"Technique",
+            dist: 600,
+            sets: [
+              {type:"drill", dist:"12×50m", desc:"Rotation de tous les drills appris — 15\" repos", tip:"<b>50m × 2 : Catch-up</b><br><b>50m × 2 : Bras droit seul</b><br><b>50m × 2 : Bras gauche seul</b><br><b>50m × 2 : Poing fermé</b><br><b>50m × 2 : Fingertip drag</b><br><b>50m × 2 : Nage complète relâchée</b><br>Pas d'effort, juste de la qualité gestuelle.", zone:""},
+            ],
+            tip:"C'est le meilleur moment pour consolider la technique car ton corps est reposé et réceptif. Les bonnes sensations en semaine de récup s'ancrent durablement."
+          },
+          {
+            id:"s4w4c", name:"S3 — Test de progression", type:"s-long", typeLabel:"Test",
+            dist: 600,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"600m", desc:"Nage continue Z2 — évalue tes sensations vs semaine 1", tip:"Compare avec ta semaine 1 où tu nageais 600m en étant essoufflé à 2'23/100m. Est-ce que c'est plus facile ? Tu devrais sentir une différence réelle. Note mentalement ton allure et ton niveau de souffle.", zone:"z2"},
+            ],
+            tip:"Après 4 semaines, tu devrais pouvoir nager 600m continu avec moins d'essoufflement qu'en semaine 1. Si c'est le cas, le programme fonctionne."
+          },
+        ]
+      },
+    ]
+  },
+  {
+    phase: 2, phaseName: "DÉVELOPPEMENT SPÉCIFIQUE", phaseWeeks: "Semaines 5–9",
+    weeks: [
+      {
+        num: 5, title: "Semaine 5", focus: "Seuil — introduction", volume: 2800,
+        sessions: [
+          {
+            id:"s1w5a", name:"S1 — Intervalles Z3", type:"s-intervals", typeLabel:"Intervalles",
+            dist: 1200,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement progressif Z1 puis Z2", tip:"Commence crawl doux, puis accélère légèrement les 50 derniers mètres.", zone:"z1"},
+              {type:"interval", dist:"5×150m", desc:"Répétitions Z3 — 30\" repos", tip:"150m à allure Z3 (2'00–2'10/100m). C'est ton allure course objectif. Chaque répétition doit être régulière — ne pars pas trop vite sur le 1er. Le 30\" de repos est court volontairement pour simuler la fatigue accumulée.", zone:"z3"},
+              {type:"main", dist:"150m", desc:"Nage continue Z2", tip:"Transition de l'effort Z3 vers une allure plus calme. Comme en course après un secteur difficile.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Tu travailles maintenant à l'allure que tu devras tenir pendant 1900m le jour J. Les 5×150m en Z3 représentent 750m à allure course — c'est un vrai travail spécifique."
+          },
+          {
+            id:"s1w5b", name:"S2 — Mixte drill et nage", type:"s-technique", typeLabel:"Technique",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"drill", dist:"4×50m drill", desc:"Drills au choix", tip:"Choisis les 4 drills que tu trouves les plus utiles ou difficiles. Chaque drill doit être fait avec intention, pas juste pour faire des longueurs.", zone:""},
+              {type:"interval", dist:"4×100m", desc:"Nage Z2 focus technique — 20\" repos", tip:"Après chaque drill, la nage complète. Essaie de 'sentir' la différence que le drill a apporté. Par exemple après le poing fermé, tu devrais mieux sentir la pression sur l'avant-bras.", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"L'alternance drill/nage est la méthode la plus efficace pour ancrer les changements techniques. Tu ancres, tu nages, tu sens, tu ancres à nouveau."
+          },
+          {
+            id:"s1w5c", name:"S3 — Long 1 200m", type:"s-long", typeLabel:"Long continu",
+            dist: 1200,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement léger", tip:"", zone:"z1"},
+              {type:"long", dist:"1100m", desc:"Nage continue Z2 — rythme régulier", tip:"Découpe mentalement en blocs : 275m × 4 si tu es en bassin de 25m (11 longueurs). Pense à relâcher les épaules tous les 100m, à expirer vraiment sous l'eau, et à regarder le fond (pas devant toi, ça bloque le cou).", zone:"z2"},
+            ],
+            tip:"1 200m continu = plus de la moitié de la distance course. Tu construis la confiance en distance."
+          },
+        ]
+      },
+      {
+        num: 6, title: "Semaine 6", focus: "Volume long en hausse", volume: 3200,
+        sessions: [
+          {
+            id:"s1w6a", name:"S1 — Séries 200m", type:"s-intervals", typeLabel:"Intervalles",
+            dist: 1400,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement progressif", tip:"", zone:"z1"},
+              {type:"interval", dist:"4×200m", desc:"Répétitions Z3 — 40\" repos", tip:"200m c'est la distance à maîtriser. À 2'05/100m, un 200m dure 4'10. Gère-toi : 50m d'installation, 100m de maintien, 50m de tenue. Le 40\" de repos permet une bonne récupération — profites-en.", zone:"z3"},
+              {type:"main", dist:"200m", desc:"Nage libre Z2", tip:"", zone:"z2"},
+              {type:"cool", dist:"200m", desc:"Retour au calme long", tip:"", zone:"z1"},
+            ],
+            tip:"4×200m en Z3 = 800m à allure course. C'est significatif. Si tu gères bien les 4 répétitions avec une allure régulière, c'est une belle réussite."
+          },
+          {
+            id:"s1w6b", name:"S2 — Travail de cadence", type:"s-technique", typeLabel:"Technique",
+            dist: 800,
+            sets: [
+              {type:"drill", dist:"8×100m", desc:"Cadence de bras — alternance rythme — 20\" repos", tip:"<b>100m × 4 : Cadence rapide</b> — Fais 'tourner' les bras plus vite que d'habitude. Ça développe la fréquence de nage, utile en eau vive agitée.<br><b>100m × 4 : Cadence libre</b> — Ton rythme naturel. Sens la différence. Lequel te semble plus efficace ? Plus économique ?", zone:""},
+            ],
+            tip:"Chaque nageur a une cadence naturelle optimale. Certains nages long et lent, d'autres court et rapide. Expérimenter les deux t'aide à trouver le tien."
+          },
+          {
+            id:"s1w6c", name:"S3 — Long 1 400m", type:"s-long", typeLabel:"Long continu",
+            dist: 1400,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"1300m", desc:"Nage continue Z2 — grand cap mental", tip:"1 300m continu ! Tu franchis la barre symbolique des 1 km (largement). Stratégie mentale : découpe en 5 blocs de 260m. À chaque bloc, un mini-focus différent (rotation, respiration, relâchement des épaules, position de la tête, régularité des battements).", zone:"z2"},
+            ],
+            tip:"Bon, on est là maintenant. 1 400m continu en 6 semaines depuis 400m. Le half ironman devient concret."
+          },
+        ]
+      },
+      {
+        num: 7, title: "Semaine 7", focus: "Intensité maximale de la phase", volume: 3500,
+        sessions: [
+          {
+            id:"s1w7a", name:"S1 — Travail au seuil Z4", type:"s-intervals", typeLabel:"Seuil",
+            dist: 1500,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement progressif Z1 puis Z2", tip:"", zone:"z1"},
+              {type:"interval", dist:"6×100m Z4", desc:"Effort seuil court — 30\" repos", tip:"Z4 c'est dur : 1'50–2'00/100m. Tu peux tenir 30\" de conversation mais c'est inconfortable. 100m à ce rythme, c'est tenable. Pars sans te précipiter — la vraie allure Z4 est atteinte après 25m.", zone:"z4"},
+              {type:"interval", dist:"4×100m Z3", desc:"Transition Z3 — 20\" repos", tip:"Après le Z4, le Z3 te semblera presque facile. C'est voulu : tu entraînes la récupération à l'effort.", zone:"z3"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Le Z4 développe ton plafond aérobie — ton seuil lactique monte, ce qui rend le Z2–Z3 plus confortable. C'est la séance la plus dure du programme, fais-la bien."
+          },
+          {
+            id:"s1w7b", name:"S2 — Simulation eau vive", type:"s-technique", typeLabel:"Race Spé",
+            dist: 800,
+            sets: [
+              {type:"drill", dist:"4×200m", desc:"Simulation nage en course — allure variable", tip:"<b>Chaque 200m est découpé en 4×50m :</b><br>50m lent (Z1) — 50m moyen (Z2) — 50m rapide (Z3) — 50m explosif (Z4 court).<br>Pas de repos entre les 50m, pas de repos entre les 200m. Apprend à gérer les changements d'allure sans s'arrêter.", zone:""},
+            ],
+            tip:"En nage en eau libre et en triathlon, l'allure n'est jamais parfaitement régulière — bouées, vagues, autres nageurs. Cette séance entraîne la gestion de l'allure variable."
+          },
+          {
+            id:"s1w7c", name:"S3 — Long 1 600m", type:"s-long", typeLabel:"Long continu",
+            dist: 1200,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"1100m", desc:"Nage continue Z2 — 85% de la distance course", tip:"1 600m représente 84% des 1 900m du half. Tu es clairement dans la capacité de finir la nage. Gère-toi sur les 400 premiers mètres — l'erreur classique est de partir trop vite. Allure régulière, respiration bilatérale.", zone:"z2"},
+            ],
+            tip:"Si tu termines ce 1 600m en Z2, tu peux aller au départ de ta course avec confiance sur la nage."
+          },
+        ]
+      },
+      {
+        num: 8, title: "Semaine 8", focus: "Récupération et consolidation", volume: 2200, isRecovery: true,
+        sessions: [
+          {
+            id:"s1w8a", name:"S1 — Légère Z1–Z2", type:"s-endurance", typeLabel:"Récup",
+            dist: 700,
+            sets: [
+              {type:"cool", dist:"700m", desc:"Nage libre Z1–Z2, aucun chrono", tip:"3 semaines intenses méritent une vraie récup. Nage comme tu veux, structure libre. L'important : bouger, ne pas se raidir, garder les épaules mobiles. Si tu n'as pas envie de nager, fais juste 400m et rentre.", zone:"z1"},
+            ],
+            tip:"Ne sabote pas la récup par culpabilité. Les gains en endurance se font pendant le repos. Cette semaine est un investissement, pas une perte."
+          },
+          {
+            id:"s1w8b", name:"S2 — Drills récupération", type:"s-technique", typeLabel:"Technique",
+            dist: 600,
+            sets: [
+              {type:"drill", dist:"6×100m", desc:"Drills variés — 15\" repos", tip:"<b>100m : Body rotation exagérée</b> — 45° de chaque côté<br><b>100m : Fingertip drag</b> — doigts rasent la surface<br><b>100m : Nage avec poing fermé</b><br><b>100m : Catch-up lent</b> — 2s de glisse<br><b>100m : Nage tête haute</b> — Simule le levé de tête pour chercher les bouées (technique de visée)<br><b>100m : Nage normale relâchée</b>", zone:""},
+              {type:"cool", dist:"100m", desc:"Nage libre", tip:"", zone:"z1"},
+            ],
+            tip:"Le drill 'tête haute' est spécifique à l'eau libre : tu dois lever la tête tous les 6–8 coups de bras pour repérer les bouées. Ça se pratique !"
+          },
+          {
+            id:"s1w8c", name:"S3 — Tempo court", type:"s-intervals", typeLabel:"Tempo",
+            dist: 900,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"main", dist:"500m", desc:"Nage continue Z3 — test d'allure", tip:"500m à 2'00–2'10/100m soit ~10–10'30 total. C'est ta future allure course. Si tu tiens le Z3 confortablement sur 500m en semaine de récup, tu es sur la bonne trajectoire.", zone:"z3"},
+              {type:"cool", dist:"200m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Cette séance en semaine de récup sert de bilan : tu dois pouvoir tenir 500m en Z3 sans souffrir. Si c'est le cas, le moteur fonctionne."
+          },
+        ]
+      },
+      {
+        num: 9, title: "Semaine 9", focus: "Pré-spécifique — gros bloc", volume: 3800,
+        sessions: [
+          {
+            id:"s1w9a", name:"S1 — Séries longues Z3", type:"s-intervals", typeLabel:"Intervalles",
+            dist: 1600,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement progressif", tip:"", zone:"z1"},
+              {type:"interval", dist:"3×400m", desc:"Longues répétitions Z3 — 60\" repos", tip:"400m à allure Z3. C'est la séance clé : 3 fois 400m c'est 1 200m à allure course. Le repos de 60\" est généreux — il faut que chaque 400m soit de qualité. Chronomètre chaque répétition, elles doivent être cohérentes (±5\").", zone:"z3"},
+              {type:"cool", dist:"200m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Si tu tiens 3×400m en Z3, tu peux avoir confiance de tenir 1 900m en Z2–Z3 le jour J. C'est mathématiquement construit."
+          },
+          {
+            id:"s1w9b", name:"S2 — Séance combinée", type:"s-endurance", typeLabel:"Combiné",
+            dist: 1000,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement Z1–Z2", tip:"", zone:"z1"},
+              {type:"interval", dist:"2×(200m Z3 + 100m Z1)", desc:"Effort + récup active", tip:"200m à allure course, puis 100m vraiment lent. C'est la structure d'un triathlon : tu arrives essoufflé du départ, puis tu dois trouver ton rythme.", zone:"z3"},
+              {type:"main", dist:"200m", desc:"Nage continue Z2", tip:"", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:""
+          },
+          {
+            id:"s1w9c", name:"S3 — Long 1 700m", type:"s-long", typeLabel:"Long continu",
+            dist: 1700,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement léger", tip:"", zone:"z1"},
+              {type:"long", dist:"1600m", desc:"Nage continue Z2 — quasi distance course", tip:"1 700m c'est à 200m de la distance course. Tu es là. Stratégie de découpe : pense aux bouées du parcours réel. Sur un half, la nage fait souvent 2 boucles ou un aller-retour. Mentalement, fais pareil : deux blocs de 850m.", zone:"z2"},
+            ],
+            tip:"La dernière grande sortie avant le pic de volume de la semaine 10. Après ça, tu auras nagé quasi la distance course en continu."
+          },
+        ]
+      },
+    ]
+  },
+  {
+    phase: 3, phaseName: "AFFÛTAGE & RACE PREP", phaseWeeks: "Semaines 10–13",
+    weeks: [
+      {
+        num: 10, title: "Semaine 10", focus: "Pic de volume — simulation course", volume: 4000,
+        sessions: [
+          {
+            id:"s1w10a", name:"S1 — SIMULATION COURSE 1 900m 🎯", type:"s-long", typeLabel:"Simulation",
+            dist: 1900,
+            sets: [
+              {type:"long", dist:"1 900m", desc:"Distance complète du half — allure Z2–Z3", tip:"C'est LE moment. 1 900m, la vraie distance. Stratégie : les 200 premiers mètres sont les plus importants — pars 10% plus lentement que ton allure cible pour laisser la fréquence cardiaque se stabiliser. De 200m à 1 700m : ton rythme de course Z2–Z3. Les 200 derniers mètres : tu peux accélérer si tu as encore du jus. Aucun arrêt autorisé, quelle que soit l'allure.", zone:"z2"},
+            ],
+            tip:"Si tu arrives à nager 1 900m continus, tu peux aller au départ de ton half SEREIN. L'objectif est de finir, pas de faire un record. Note ton temps total — tu l'amélioreras sur la course !"
+          },
+          {
+            id:"s1w10b", name:"S2 — Qualité après simulation", type:"s-intervals", typeLabel:"Qualité",
+            dist: 1000,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement Z1", tip:"", zone:"z1"},
+              {type:"interval", dist:"4×100m", desc:"Intervalles courts Z4 — 30\" repos", tip:"Après la simulation longue de lundi (ou la veille), cette séance maintient l'intensité. Les 100m en Z4 doivent être vifs mais contrôlés.", zone:"z4"},
+              {type:"main", dist:"200m", desc:"Nage Z3 continue", tip:"", zone:"z3"},
+              {type:"cool", dist:"200m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:""
+          },
+          {
+            id:"s1w10c", name:"S3 — Tempo 900m", type:"s-long", typeLabel:"Tempo",
+            dist: 1100,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"main", dist:"900m", desc:"Nage continue Z3 — allure course", tip:"900m à allure course (Z3). C'est la moitié de la distance en continu à la vraie vitesse. À ce stade de l'entraînement, ça doit être tenable sans trop souffrir.", zone:"z3"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:""
+          },
+        ]
+      },
+      {
+        num: 11, title: "Semaine 11", focus: "Début d'affûtage — qualité maintenue", volume: 3200,
+        sessions: [
+          {
+            id:"s1w11a", name:"S1 — Maintien de l'intensité", type:"s-intervals", typeLabel:"Intensité",
+            dist: 1300,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement Z1–Z2", tip:"", zone:"z1"},
+              {type:"interval", dist:"5×100m", desc:"Intervalles Z4 — 30\" repos", tip:"Moins de répétitions qu'avant mais la même qualité. Le volume diminue, l'intensité reste. C'est le principe de l'affûtage : tu maintiens les stimulations neuromusculaires.", zone:"z4"},
+              {type:"main", dist:"300m", desc:"Nage Z3 continue", tip:"", zone:"z3"},
+              {type:"cool", dist:"200m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:""
+          },
+          {
+            id:"s1w11b", name:"S2 — Technique race spécifique", type:"s-technique", typeLabel:"Race Tech",
+            dist: 800,
+            sets: [
+              {type:"drill", dist:"400m", desc:"Technique eau libre — visée et virage de bouée", tip:"<b>Levé de tête (Sighting)</b> : Tous les 6 coups de bras, lève la tête pour regarder devant (pas haut, juste la bouche hors de l'eau, yeux à la surface). Entraîne-toi sur 4×50m.<br><b>Virage de bouée</b> : Simule le virage autour d'une bouée — nage en arc de cercle, coups de bras courts. 4×50m.<br><b>Départ de masse</b> : 4×25m en sprint depuis le mur (simule le départ)", zone:""},
+              {type:"main", dist:"400m", desc:"Nage Z2 continue avec sighting tous les 6 coups", tip:"Intègre le sighting dans ta nage normale. Tu perdras 2–3% de vitesse — c'est le coût à accepter pour aller droit en eau libre.", zone:"z2"},
+            ],
+            tip:"En eau libre sans ligne de fond, 80% des nageurs partent en crabe. Le sighting régulier évite de nager 2 100m au lieu de 1 900m !"
+          },
+          {
+            id:"s1w11c", name:"S3 — Long allégé 1 100m", type:"s-long", typeLabel:"Long continu",
+            dist: 1100,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"1000m", desc:"Nage continue Z2–Z3 — focus économie de nage", tip:"1 000m à allure régulière. L'objectif n'est plus de dépasser des records de distance, mais de nager de façon économique et fluide. Moins d'effort pour la même allure = tu arrives moins fatigué au vélo.", zone:"z2"},
+            ],
+            tip:""
+          },
+        ]
+      },
+      {
+        num: 12, title: "Semaine 12", focus: "Affûtage prononcé — taper", volume: 2000, isRecovery: true,
+        sessions: [
+          {
+            id:"s1w12a", name:"S1 — Vivacité neuromusculaire", type:"s-intervals", typeLabel:"Vivacité",
+            dist: 800,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Échauffement Z1–Z2", tip:"", zone:"z1"},
+              {type:"interval", dist:"6×50m", desc:"Accélérations courtes Z4 — 20\" repos", tip:"6 fois 50m vite. L'objectif est de maintenir la vivacité neuromusculaire — le corps n'oublie pas l'intensité. Chaque 50m doit être dynamique et propre techniquement.", zone:"z4"},
+              {type:"main", dist:"200m", desc:"Nage Z2 détendue", tip:"", zone:"z2"},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"", zone:"z1"},
+            ],
+            tip:"Pendant l'affûtage, les muscles se rechargent en glycogène, les micro-lésions se réparent, le système nerveux se repose. Tu vas te sentir 'frais' — c'est normal et voulu."
+          },
+          {
+            id:"s1w12b", name:"S2 — Rappel technique final", type:"s-technique", typeLabel:"Technique",
+            dist: 600,
+            sets: [
+              {type:"drill", dist:"400m", desc:"Tes meilleurs drills — détendu", tip:"Choisis les 4 drills qui t'ont le plus apporté sur ces 12 semaines. 100m chacun, sans pression, juste pour te rappeler les bonnes sensations.", zone:""},
+              {type:"drill", dist:"200m", desc:"Sighting + nage ouverte", tip:"200m avec levé de tête régulier. Mentalement, visualise le parcours de ta course. Bouées, couleur, trajectoire.", zone:""},
+            ],
+            tip:"Cette semaine prépare aussi mentalement. Visualise la nage du jour J : le départ, trouver ton rythme, gérer les 1 900m."
+          },
+          {
+            id:"s1w12c", name:"S3 — Simulation légère", type:"s-long", typeLabel:"Confiance",
+            dist: 600,
+            sets: [
+              {type:"warm", dist:"100m", desc:"Échauffement", tip:"", zone:"z1"},
+              {type:"long", dist:"500m", desc:"Nage continue à allure course Z3 — te sentir fort", tip:"500m à allure course. Cette séance doit te laisser une sensation de puissance et de facilité. Si tu as bien récupéré, ça va 'tourner' facilement. Fin de séance : tu dois sourire.", zone:"z3"},
+            ],
+            tip:"Le but de la semaine 12 est d'arriver en semaine 13 avec les jambes fraîches, la tête confiante, et le corps prêt à exploser."
+          },
+        ]
+      },
+      {
+        num: 13, title: "Semaine 13 — RACE WEEK 🏁", focus: "Activation & Jour J", volume: 600, isRace: true,
+        sessions: [
+          {
+            id:"s1w13a", name:"J-3 · Activation pré-course", type:"s-endurance", typeLabel:"Activation",
+            dist: 400,
+            sets: [
+              {type:"warm", dist:"200m", desc:"Nage très légère Z1", tip:"", zone:"z1"},
+              {type:"interval", dist:"4×25m", desc:"Accélérations progressives", tip:"4 fois 25m en montant progressivement : 50% → 65% → 80% → 90% de l'effort max. Juste pour 'ouvrir les jambes' et se sentir bien dans l'eau.", zone:""},
+              {type:"cool", dist:"100m", desc:"Retour au calme", tip:"Sors de l'eau frais et confiant. Rien de plus.", zone:"z1"},
+            ],
+            tip:"J-3 c'est la dernière vraie séance. Après ça : alimentation, hydratation, sommeil, préparation du matériel. Pas de natation à J-2 sauf si tu as accès à l'eau de course."
+          },
+          {
+            id:"s1w13b", name:"Veille · Entrée dans l'eau (optionnel)", type:"s-technique", typeLabel:"Optionnel",
+            dist: 200,
+            sets: [
+              {type:"warm", dist:"200m", desc:"10 min dans l'eau — activation minimale", tip:"Si possible, entre dans l'eau du plan d'eau de course. Sens la température, la visibilité, les conditions. 4×25m suffit. L'objectif est de ne pas avoir de choc thermique le lendemain matin.", zone:"z1"},
+            ],
+            tip:"Si tu ne peux pas accéder à l'eau de course, reste sur la plage/berge et visualise mentalement le parcours. Repère les bouées, le soleil (dans les yeux ou pas ?), les courants."
+          },
+          {
+            id:"s1w13c", name:"🏁 RACE DAY — 1 900m", type:"s-race", typeLabel:"COURSE",
+            dist: 1900,
+            sets: [
+              {type:"warm", dist:"Départ", desc:"200 premiers mètres — PRUDENCE", tip:"Le départ de masse est chaotique. Des coups, des éclaboussures, des gens dessus de toi. C'est NORMAL. Pars légèrement à l'écart si tu es stressé. Allure 10–15% plus lente que ta cible pendant les 200 premiers mètres.", zone:"z1"},
+              {type:"long", dist:"1 500m", desc:"Corps de la nage — allure Z2–Z3 régulière", tip:"Une fois le chaos du départ passé, trouve ton rythme. Sighting régulier. Respire toutes les 3 foulées. Ne regarde pas ton chrono — nage à la sensation. Si tu es dans le rythme, tu n'as pas à te battre.", zone:"z2"},
+              {type:"interval", dist:"200m finaux", desc:"Accélération finale si possible", tip:"Les 200 derniers mètres jusqu'à la sortie de l'eau. Tu peux accélérer si tu as encore du jus — la foule te verra, c'est motivant. Pense à te redresser progressivement pour ne pas être étourdi en sortant.", zone:"z3"},
+            ],
+            tip:"⚠️ Rappels course : combinaison néoprène si eau < 24°C · Lunettes de secours dans la transition · Bonnet de course fourni ou le tien dessous le bonnet fourni · SORTIE DE L'EAU : marche les premières secondes, les jambes sont instables."
+          },
+        ]
+      },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const STORAGE_KEY = 'hi_swim_tracker_v2';
+let completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(completed)); }
+
+// ═══════════════════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════════════════
+function buildPlan() {
+  const container = document.getElementById('plan');
+  container.innerHTML = '';
+
+  plan.forEach(phase => {
+    // Phase separator
+    const sep = document.createElement('div');
+    sep.className = 'phase-sep';
+    sep.innerHTML = `
+      <div class="phase-pill p${phase.phase}">PHASE ${phase.phase}</div>
+      <div class="phase-name">${phase.phaseName}</div>
+      <div class="phase-line"></div>
+      <div class="phase-weeks-label">${phase.phaseWeeks}</div>
+    `;
+    container.appendChild(sep);
+
+    phase.weeks.forEach(week => {
+      const totalSessions = week.sessions.length;
+      const doneSessions = week.sessions.filter(s => completed[s.id]).length;
+      const weekDone = doneSessions === totalSessions;
+
+      const block = document.createElement('div');
+      block.className = `week-block${week.isRecovery ? ' is-recovery' : ''}${weekDone ? ' week-done' : ''}`;
+      block.id = `week-${week.num}`;
+
+      // Dots
+      const dotsHtml = week.sessions.map(s =>
+        `<div class="dot${completed[s.id] ? ' done' : ''}"></div>`
+      ).join('');
+
+      const badge = week.isRecovery
+        ? `<span class="recovery-label">RÉCUP</span>`
+        : week.isRace
+        ? `<span class="race-label">🏁 COURSE</span>`
+        : '';
+
+      block.innerHTML = `
+        <div class="week-header" onclick="toggleWeek(${week.num})">
+          <div class="week-num-badge">S${week.num}</div>
+          <div>
+            <div class="week-title">${week.title}</div>
+            <div class="week-focus">${week.focus}</div>
+          </div>
+          ${badge}
+          <div class="week-progress-mini">
+            <div class="dots">${dotsHtml}</div>
+            <span>${doneSessions}/${totalSessions}</span>
+          </div>
+          <div class="week-chevron">▼</div>
+        </div>
+        <div class="week-body" id="week-body-${week.num}">
+          ${week.sessions.map(s => buildSession(s)).join('')}
+        </div>
+      `;
+      container.appendChild(block);
+    });
+  });
+}
+
+function buildSession(s) {
+  const isDone = !!completed[s.id];
+  const setsHtml = s.sets.map(set => `
+    <div class="set-row ${set.type}">
+      <div class="set-dist">${set.dist}${set.zone ? `<br><span class="zone-tag ${set.zone}">${set.zone.toUpperCase()}</span>` : ''}</div>
+      <div class="set-body">
+        <div class="set-desc">${set.desc}</div>
+        ${set.tip ? `<div class="set-tip">${set.tip}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="session-card ${s.type}${isDone ? ' completed' : ''}" id="card-${s.id}">
+      <div class="session-top" onclick="toggleSession('${s.id}')">
+        <div class="session-type-dot"></div>
+        <div class="session-top-text">
+          <div class="session-name">${s.name} <span class="session-expand-icon">▾</span></div>
+          <div class="session-subtitle">${s.typeLabel} · ${s.dist}m</div>
+        </div>
+        <div class="session-dist-badge">${s.dist}m</div>
+        <button class="check-btn" onclick="event.stopPropagation(); toggleDone('${s.id}', ${s.dist})" title="Marquer comme fait">✓</button>
+      </div>
+      <div class="session-detail" id="detail-${s.id}">
+        ${setsHtml}
+        ${s.tip ? `<div class="session-tip-box"><strong>💡 Conseil :</strong> ${s.tip}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════
+function toggleWeek(num) {
+  const block = document.getElementById(`week-${num}`);
+  block.classList.toggle('open');
+}
+
+function toggleSession(id) {
+  const card = document.getElementById(`card-${id}`);
+  card.classList.toggle('open');
+}
+
+function toggleDone(id, dist) {
+  completed[id] = !completed[id];
+  save();
+  updateStats();
+  buildPlan(); // rebuild to reflect changes
+  showToast(completed[id]);
+}
+
+function showToast(isDone) {
+  const t = document.getElementById('toast');
+  t.textContent = isDone ? '✓ Séance validée !' : '↩ Séance dévalidée';
+  t.style.background = isDone ? 'var(--green)' : 'var(--orange)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function updateStats() {
+  let done = 0, total = 0, kmDone = 0;
+  const weeksActive = new Set();
+
+  plan.forEach(ph => ph.weeks.forEach(w => {
+    w.sessions.forEach(s => {
+      total++;
+      if (completed[s.id]) {
+        done++;
+        kmDone += s.dist;
+        weeksActive.add(w.num);
+      }
+    });
+  }));
+
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statWeek').textContent = weeksActive.size;
+  document.getElementById('statKm').textContent = (kmDone / 1000).toFixed(1);
+
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('globalBar').style.width = pct + '%';
+  document.getElementById('globalPct').textContent = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+buildPlan();
+updateStats();
+</script>
+</body>
+</html>
