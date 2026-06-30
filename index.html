@@ -1017,87 +1017,6 @@ body {
   </div>
 
 
-  <!-- OBJECTIFS COURSE -->
-  <div id="objectives-section" style="margin-bottom:24px">
-    <div style="
-      background: linear-gradient(135deg, #0d1a2e, #0a1525);
-      border: 1px solid #1c2d44;
-      border-radius: 12px;
-      overflow: hidden;
-    ">
-      <!-- Header -->
-      <div style="
-        display:flex; align-items:center; justify-content:space-between;
-        padding: 14px 18px;
-        border-bottom: 1px solid #1c2d44;
-        cursor: pointer;
-      " role="button" tabindex="0" aria-expanded="false" onclick="toggleObjectives()" onkeydown="handleObjectivesKey(event)">
-        <div style="display:flex; align-items:center; gap:10px">
-          <span style="font-size:16px">🏁</span>
-          <div>
-            <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px">IRONMAN 70.3 NICE</div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a7a99; letter-spacing:1px; margin-top:1px">Date reportée — en attente de confirmation Ironman</div>
-          </div>
-        </div>
-        <span id="obj-chevron" style="font-size:12px; color:#3a5570; transition:transform 0.2s">▼</span>
-      </div>
-
-      <!-- Body -->
-      <div id="obj-body" style="padding:16px 18px; display:none">
-
-        <!-- Segments -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:10px; margin-bottom:16px">
-
-          <div style="background:rgba(56,189,248,0.07); border:1px solid rgba(56,189,248,0.2); border-radius:8px; padding:12px">
-            <div style="font-size:18px; margin-bottom:4px">🏊</div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#5a7a99; letter-spacing:1px; margin-bottom:4px; margin-top:4px">NATATION · 1,9 km</div>
-            <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:#38bdf8; line-height:1">45–55 min</div>
-            <div style="font-size:11px; color:#5a7a99; margin-top:4px">Départ calme · sighting régulier<br>Objectif : sortir frais, pas vite</div>
-          </div>
-
-          <div style="background:rgba(250,204,21,0.07); border:1px solid rgba(250,204,21,0.2); border-radius:8px; padding:12px">
-            <div style="font-size:18px; margin-bottom:4px">🚴</div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#5a7a99; letter-spacing:1px; margin-bottom:4px; margin-top:4px">VÉLO · 90 km / 1 200m D+</div>
-            <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:#facc15; line-height:1">3h20–3h40</div>
-            <div style="font-size:11px; color:#5a7a99; margin-top:4px">Col de Vence km 26<br>9,7 km à 6,6% · plafond 160–165W</div>
-          </div>
-
-          <div style="background:rgba(163,230,53,0.07); border:1px solid rgba(163,230,53,0.2); border-radius:8px; padding:12px">
-            <div style="font-size:18px; margin-bottom:4px">🏃</div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#5a7a99; letter-spacing:1px; margin-bottom:4px; margin-top:4px">RUN · 21,1 km · plat</div>
-            <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:#a3e635; line-height:1">2h05–2h20</div>
-            <div style="font-size:11px; color:#5a7a99; margin-top:4px">Promenade des Anglais<br>Départ contrôlé · ravito tous les 1,7 km</div>
-          </div>
-
-          <div style="background:rgba(248,113,113,0.07); border:1px solid rgba(248,113,113,0.2); border-radius:8px; padding:12px">
-            <div style="font-size:18px; margin-bottom:4px">🏁</div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; color:#5a7a99; letter-spacing:1px; margin-bottom:4px; margin-top:4px">TOTAL VISÉ</div>
-            <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:#f87171; line-height:1">6h25–7h05</div>
-            <div style="font-size:11px; color:#5a7a99; margin-top:4px">Transitions ~10 min<br>Objectif : finir solide</div>
-          </div>
-
-        </div>
-
-        <!-- Stratégie clé -->
-        <div style="
-          background: rgba(250,204,21,0.05);
-          border: 1px solid rgba(250,204,21,0.15);
-          border-radius:8px;
-          padding:12px 14px;
-          font-size:12px;
-          color:#5a7a99;
-          line-height:1.7;
-        ">
-          <span style="color:#facc15; font-weight:600">⚠️ Stratégie prudente Col de Vence :</span>
-          Rester à <span style="color:#facc15">135–150W</span> avant le col (km 0–26).
-          Dans la montée : plafonner à <span style="color:#facc15">160–165W max</span> — le but est de protéger le semi.
-          Après le col (km 44) : descente et faux-plat descendant jusqu'à Nice → profiter pour manger et récupérer.
-          Sur le run : partir à <span style="color:#a3e635">6'15–6'30/km</span> les 3 premiers km, puis stabiliser autour de <span style="color:#a3e635">6'00–6'20/km</span> si les jambes répondent.
-        </div>
-
-      </div>
-    </div>
-  </div>
 
   <!-- LÉGENDE NAGE -->
   <div class="zone-legend">
@@ -3847,20 +3766,6 @@ function addActiveWeekIndicator() {
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
-function toggleObjectives() {
-  const body = document.getElementById('obj-body');
-  const chevron = document.getElementById('obj-chevron');
-  const isOpen = body.style.display !== 'none';
-  body.style.display = isOpen ? 'none' : 'block';
-  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
-  document.querySelector('#objectives-section [role="button"]')?.setAttribute('aria-expanded', !isOpen);
-}
-
-function handleObjectivesKey(event) {
-  if (event.key !== 'Enter' && event.key !== ' ') return;
-  event.preventDefault();
-  toggleObjectives();
-}
 
 // Default to week view on load
 currentSport = 'week';
