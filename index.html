@@ -1067,6 +1067,9 @@ body {
       <button class="primary" id="programEndSaveBtn" onclick="saveProgramEndFromInput()">Valider</button>
       <button id="programEndEditBtn" onclick="enableProgramEndEdit()" style="display:none">✏️ modifier la date de fin</button>
       <button onclick="copyAllSessionNotes()">📋 Copier toutes mes notes</button>
+      <button onclick="exportData()">📤 Exporter</button>
+      <button onclick="triggerImport()">📥 Importer</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
     </div>
   </div>
 
@@ -3488,6 +3491,54 @@ function copyAllSessionNotes() {
     .catch(() => showToast('notes-error'));
 }
 
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    completed: JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'),
+    skipped:   JSON.parse(localStorage.getItem(SKIP_KEY)    || '{}'),
+    notes:     JSON.parse(localStorage.getItem(NOTES_KEY)   || '{}'),
+    programEnd: localStorage.getItem(PROGRAM_END_KEY) || null,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `hiplan-backup-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function triggerImport() {
+  document.getElementById('importFileInput').value = '';
+  document.getElementById('importFileInput').click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.completed || !data.skipped) throw new Error('Format invalide');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data.completed));
+      localStorage.setItem(SKIP_KEY,    JSON.stringify(data.skipped));
+      localStorage.setItem(NOTES_KEY,   JSON.stringify(data.notes || {}));
+      if (data.programEnd) localStorage.setItem(PROGRAM_END_KEY, data.programEnd);
+      completed    = loadStoredState(STORAGE_KEY);
+      skipped      = loadStoredState(SKIP_KEY);
+      sessionNotes = loadStoredState(NOTES_KEY);
+      refreshCalendarViews();
+      showToast('import-ok');
+    } catch {
+      showToast('import-error');
+    }
+  };
+  reader.readAsText(file);
+}
+
 function toggleWeek(num) {
   const block = document.getElementById(`week-${num}`);
   block.classList.toggle('open');
@@ -3519,7 +3570,9 @@ function showToast(state) {
   else if (state === 'note-saved') { t.textContent = '✓ Note enregistrée'; t.style.background = 'var(--green)'; }
   else if (state === 'notes-copied') { t.textContent = '📋 Notes copiées'; t.style.background = 'var(--green)'; }
   else if (state === 'notes-empty') { t.textContent = 'Aucune note à copier'; t.style.background = 'var(--muted)'; }
-  else if (state === 'notes-error') { t.textContent = 'Copie impossible'; t.style.background = 'var(--orange)'; }
+  else if (state === 'notes-error')  { t.textContent = 'Copie impossible';           t.style.background = 'var(--orange)'; }
+  else if (state === 'import-ok')    { t.textContent = '✓ Données restaurées';        t.style.background = 'var(--green)'; }
+  else if (state === 'import-error') { t.textContent = '✗ Fichier invalide';          t.style.background = 'var(--red)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
