@@ -562,6 +562,48 @@ body {
   vertical-align: middle;
 }
 
+/* ─── LOAD CHART ─── */
+.load-chart-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px 10px;
+  margin-bottom: 16px;
+}
+.load-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.load-chart-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.load-chart-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.load-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.load-chart-legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
 /* ─── ZONE LEGEND ─── */
 .zone-legend {
   background: var(--card);
@@ -1040,6 +1082,20 @@ body {
       <button onclick="triggerImport()">📥 Importer</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
     </div>
+  </div>
+
+  <!-- LOAD CHART -->
+  <div class="load-chart-panel">
+    <div class="load-chart-header">
+      <span class="load-chart-title">Charge Run — 15 semaines</span>
+      <div class="load-chart-legend">
+        <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#38bdf8"></div>Base</div>
+        <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#facc15"></div>Construction</div>
+        <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#fb923c"></div>Spécifique</div>
+        <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#4ade80"></div>Affûtage</div>
+      </div>
+    </div>
+    <svg id="load-chart-svg" width="100%" height="130" style="display:block; overflow:visible"></svg>
   </div>
 
   <div id="plan"></div>
@@ -3105,6 +3161,68 @@ function refreshCalendarViews() {
   currentWeekView = getWeekActiveNum();
   buildWeekView(currentWeekView);
   updateStats();
+  buildLoadChart();
+}
+
+function buildLoadChart() {
+  const svg = document.getElementById('load-chart-svg');
+  if (!svg) return;
+
+  const PHASE_COLORS = { 1: '#38bdf8', 2: '#facc15', 3: '#fb923c', 4: '#4ade80' };
+  const activeWeek = getWeekActiveNum();
+
+  const weeks = semiRunPlan.map(w => {
+    const km = w.sessions.reduce((a, s) => a + (s.dist || 0), 0);
+    const phase = getWeekPhase(w.weekNum).phase;
+    const allDone = w.sessions.every(s => completed[s.id] || skipped[s.id]);
+    return { num: w.weekNum, km, phase, allDone, active: w.weekNum === activeWeek };
+  });
+
+  const maxKm   = Math.max(...weeks.map(w => w.km));
+  const W       = svg.getBoundingClientRect().width || svg.parentElement.clientWidth || 600;
+  const H       = 130;
+  const padL    = 4, padR = 4, padT = 18, padB = 22;
+  const chartW  = W - padL - padR;
+  const chartH  = H - padT - padB;
+  const n       = weeks.length;
+  const barW    = Math.max(6, Math.floor(chartW / n) - 3);
+  const step    = (chartW - barW) / (n - 1);
+
+  let out = '';
+
+  weeks.forEach((w, i) => {
+    const x      = padL + i * step;
+    const barH   = Math.max(2, Math.round((w.km / maxKm) * chartH));
+    const y      = padT + chartH - barH;
+    const color  = PHASE_COLORS[w.phase];
+    const alpha  = w.allDone ? '0.35' : '1';
+
+    // Bar
+    out += `<rect x="${x.toFixed(1)}" y="${y}" width="${barW}" height="${barH}"
+      fill="${color}" opacity="${alpha}" rx="2" style="cursor:pointer"
+      onclick="buildWeekView(${w.num})"><title>S${w.num} — ${w.km} km run</title></rect>`;
+
+    // Active week: dot above bar
+    if (w.active) {
+      const cx = (x + barW / 2).toFixed(1);
+      out += `<circle cx="${cx}" cy="${y - 6}" r="3" fill="${color}"/>`;
+    }
+
+    // km label above bar
+    const labelY = Math.max(padT - 2, y - 3);
+    out += `<text x="${(x + barW / 2).toFixed(1)}" y="${labelY}"
+      text-anchor="middle" font-family="JetBrains Mono,monospace"
+      font-size="7" fill="${color}" opacity="${alpha}">${w.km}</text>`;
+
+    // Week label below
+    const wColor = w.active ? color : '#3a5570';
+    const wWeight = w.active ? '600' : '400';
+    out += `<text x="${(x + barW / 2).toFixed(1)}" y="${H - 5}"
+      text-anchor="middle" font-family="JetBrains Mono,monospace"
+      font-size="8" font-weight="${wWeight}" fill="${wColor}">S${w.num}</text>`;
+  });
+
+  svg.innerHTML = out;
 }
 
 function saveProgramEndFromInput() {
@@ -3772,6 +3890,7 @@ currentSport = 'week';
 renderProgramEndControl();
 buildWeekView(null);
 updateStats();
+buildLoadChart();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/swim-tracker/sw.js', { scope: '/swim-tracker/' });
