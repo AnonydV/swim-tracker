@@ -1,5 +1,6 @@
 (() => {
-  const PROGRAM_START_KEY = 'hi_tri_program_start';
+  const PROGRAM_END_KEY = 'hi_tri_program_end';
+  const LEGACY_PROGRAM_START_KEY = 'hi_tri_program_start';
   const TOTAL_WEEKS = 13;
   const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -23,8 +24,19 @@
     return `${year}-${month}-${day}`;
   }
 
+  function getProgramEndDate() {
+    const storedEnd = parseIsoLocalDate(localStorage.getItem(PROGRAM_END_KEY));
+    if (storedEnd) return storedEnd;
+    const legacyStart = parseIsoLocalDate(localStorage.getItem(LEGACY_PROGRAM_START_KEY));
+    if (!legacyStart) return null;
+    const migratedEnd = addDays(legacyStart, (TOTAL_WEEKS * 7) - 1);
+    localStorage.setItem(PROGRAM_END_KEY, toIsoLocalDate(migratedEnd));
+    return migratedEnd;
+  }
+
   function getProgramStartDate() {
-    return parseIsoLocalDate(localStorage.getItem(PROGRAM_START_KEY));
+    const programEnd = getProgramEndDate();
+    return programEnd ? addDays(programEnd, -((TOTAL_WEEKS * 7) - 1)) : null;
   }
 
   function formatDateShort(date) {
@@ -41,15 +53,15 @@
   function getWeekDateRangeDates(weekNum) {
     const programStart = getProgramStartDate();
     if (!programStart) return null;
-    // Convention calendrier : la semaine 1 commence exactement à la date choisie.
-    // Chaque semaine est ensuite un bloc fixe de 7 jours, sans recalage automatique au lundi.
+    // Convention calendrier : la date choisie est le dernier jour de la semaine 13.
+    // La semaine 1 commence donc 90 jours avant cette date, puis chaque semaine dure 7 jours.
     const start = addDays(programStart, (weekNum - 1) * 7);
     return { start, end: addDays(start, 6) };
   }
 
   function getWeekDateRange(weekNum) {
     const range = getWeekDateRangeDates(weekNum);
-    return range ? formatWeekDateRange(range.start, range.end) : 'début à définir';
+    return range ? formatWeekDateRange(range.start, range.end) : 'fin à définir';
   }
 
   function startOfToday() {
@@ -59,11 +71,11 @@
 
   function getCalendarActiveWeekNum() {
     const programStart = getProgramStartDate();
-    if (!programStart) return 1;
+    const programEnd = getProgramEndDate();
+    if (!programStart || !programEnd) return 1;
     const today = startOfToday();
-    const planEnd = addDays(programStart, (TOTAL_WEEKS * 7) - 1);
     if (today <= programStart) return 1;
-    if (today >= planEnd) return TOTAL_WEEKS;
+    if (today >= programEnd) return TOTAL_WEEKS;
     return Math.min(TOTAL_WEEKS, Math.floor((today - programStart) / (7 * MS_PER_DAY)) + 1);
   }
 
@@ -82,7 +94,7 @@
     document.head.appendChild(style);
   }
 
-  function injectProgramStartPanel() {
+  function injectProgramDatePanel() {
     if (document.getElementById('program-date-panel')) return;
     const sportTab = document.querySelector('.sport-tab');
     if (!sportTab) return;
@@ -92,37 +104,39 @@
     panel.innerHTML = `
       <div class="program-date-copy">
         <div class="program-date-label">Calendrier du programme</div>
-        <div class="program-date-status" id="program-date-status">Définis une date de début pour caler les 13 semaines.</div>
+        <div class="program-date-status" id="program-date-status">Définis une date de fin pour caler les 13 semaines.</div>
       </div>
       <div class="program-date-actions">
-        <input type="date" id="programStartInput" aria-label="Date de début du programme">
-        <button class="primary" id="programStartSaveBtn" onclick="saveProgramStartFromInput()">Valider</button>
-        <button id="programStartEditBtn" onclick="enableProgramStartEdit()" style="display:none">✏️ modifier la date de début</button>
+        <input type="date" id="programEndInput" aria-label="Date de fin du programme">
+        <button class="primary" id="programEndSaveBtn" onclick="saveProgramEndFromInput()">Valider</button>
+        <button id="programEndEditBtn" onclick="enableProgramEndEdit()" style="display:none">✏️ modifier la date de fin</button>
       </div>`;
     sportTab.parentNode.insertBefore(panel, sportTab);
   }
 
-  function renderProgramStartControl(editing = false) {
-    const input = document.getElementById('programStartInput');
-    const saveBtn = document.getElementById('programStartSaveBtn');
-    const editBtn = document.getElementById('programStartEditBtn');
+  function renderProgramEndControl(editing = false) {
+    const input = document.getElementById('programEndInput');
+    const saveBtn = document.getElementById('programEndSaveBtn');
+    const editBtn = document.getElementById('programEndEditBtn');
     const status = document.getElementById('program-date-status');
     if (!input || !saveBtn || !editBtn || !status) return;
-    const storedIso = localStorage.getItem(PROGRAM_START_KEY);
+    const storedIso = localStorage.getItem(PROGRAM_END_KEY);
+    const legacyIso = localStorage.getItem(LEGACY_PROGRAM_START_KEY);
+    const programEnd = getProgramEndDate();
     const programStart = getProgramStartDate();
-    const shouldEdit = editing || !programStart;
-    input.value = programStart ? toIsoLocalDate(programStart) : '';
+    const shouldEdit = editing || !programEnd;
+    input.value = programEnd ? toIsoLocalDate(programEnd) : '';
     input.style.display = shouldEdit ? '' : 'none';
     saveBtn.style.display = shouldEdit ? '' : 'none';
     editBtn.style.display = shouldEdit ? 'none' : '';
-    if (!programStart) {
-      if (storedIso) localStorage.removeItem(PROGRAM_START_KEY);
-      status.textContent = 'Définis une date de début pour caler les 13 semaines.';
+    if (!programEnd || !programStart) {
+      if (storedIso) localStorage.removeItem(PROGRAM_END_KEY);
+      if (legacyIso) localStorage.removeItem(LEGACY_PROGRAM_START_KEY);
+      status.textContent = 'Définis une date de fin pour caler les 13 semaines.';
       return;
     }
-    const planEnd = addDays(programStart, (TOTAL_WEEKS * 7) - 1);
     const activeWeek = getCalendarActiveWeekNum();
-    status.innerHTML = `Début <span>${formatDateShort(programStart)}</span> · semaine calendaire <span>S${activeWeek}</span> · fin prévue ${formatDateShort(planEnd)}`;
+    status.innerHTML = `Fin cible <span>${formatDateShort(programEnd)}</span> · début calculé ${formatDateShort(programStart)} · semaine calendaire <span>S${activeWeek}</span>`;
   }
 
   function postProcessWeekBlocks() {
@@ -142,7 +156,7 @@
   }
 
   function refreshCalendarViews() {
-    renderProgramStartControl();
+    renderProgramEndControl();
     if (isWeekViewActive()) {
       window.buildWeekView?.(getCalendarActiveWeekNum());
     } else {
@@ -155,17 +169,17 @@
   window.getWeekDateRange = getWeekDateRange;
   window.getWeekActiveNum = getCalendarActiveWeekNum;
   window.getActiveWeekNum = getCalendarActiveWeekNum;
-  window.saveProgramStartFromInput = () => {
-    const input = document.getElementById('programStartInput');
+  window.saveProgramEndFromInput = () => {
+    const input = document.getElementById('programEndInput');
     const date = parseIsoLocalDate(input?.value);
     if (!date) return window.showToast ? window.showToast('date-error') : alert('Choisis une date valide');
-    localStorage.setItem(PROGRAM_START_KEY, toIsoLocalDate(date));
+    localStorage.setItem(PROGRAM_END_KEY, toIsoLocalDate(date));
     refreshCalendarViews();
     if (window.showToast) window.showToast('date-saved');
   };
-  window.enableProgramStartEdit = () => {
-    renderProgramStartControl(true);
-    document.getElementById('programStartInput')?.focus();
+  window.enableProgramEndEdit = () => {
+    renderProgramEndControl(true);
+    document.getElementById('programEndInput')?.focus();
   };
 
   const originalShowToast = window.showToast;
@@ -174,7 +188,7 @@
       if (state !== 'date-saved' && state !== 'date-error') return originalShowToast(state);
       const t = document.getElementById('toast');
       if (!t) return;
-      t.textContent = state === 'date-saved' ? '✓ Date de début enregistrée' : 'Choisis une date valide';
+      t.textContent = state === 'date-saved' ? '✓ Date de fin enregistrée' : 'Choisis une date valide';
       t.style.background = state === 'date-saved' ? 'var(--green)' : 'var(--orange)';
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 2200);
@@ -222,8 +236,8 @@
   }
 
   injectStyles();
-  injectProgramStartPanel();
+  injectProgramDatePanel();
   neutralizeRaceHeader();
-  renderProgramStartControl();
+  renderProgramEndControl();
   refreshCalendarViews();
 })();
