@@ -67,6 +67,10 @@
     return Math.min(TOTAL_WEEKS, Math.floor((today - programStart) / (7 * MS_PER_DAY)) + 1);
   }
 
+  function isWeekViewActive() {
+    return document.getElementById('btn-week')?.classList.contains('active');
+  }
+
   function injectStyles() {
     if (document.getElementById('calendar-runtime-styles')) return;
     const style = document.createElement('style');
@@ -139,9 +143,8 @@
 
   function refreshCalendarViews() {
     renderProgramStartControl();
-    if (window.currentSport === 'week') {
-      window.currentWeekView = getCalendarActiveWeekNum();
-      window.buildWeekView?.(window.currentWeekView);
+    if (isWeekViewActive()) {
+      window.buildWeekView?.(getCalendarActiveWeekNum());
     } else {
       window.buildPlan?.();
       window.updateStats?.();
