@@ -470,6 +470,48 @@ body {
 }
 .session-tip-box strong { color: var(--accent); }
 
+.session-note-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.session-note-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 7px;
+}
+.session-note-input {
+  width: 100%;
+  min-height: 68px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 9px;
+}
+.session-note-input::placeholder { color: var(--muted2); }
+.session-note-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
+.note-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
 /* ─── ZONE LEGEND ─── */
 .zone-legend {
   background: var(--card);
@@ -1024,6 +1066,7 @@ body {
       <input type="date" id="programEndInput" aria-label="Date de fin du programme">
       <button class="primary" id="programEndSaveBtn" onclick="saveProgramEndFromInput()">Valider</button>
       <button id="programEndEditBtn" onclick="enableProgramEndEdit()" style="display:none">✏️ modifier la date de fin</button>
+      <button onclick="copyAllSessionNotes()">📋 Copier toutes mes notes</button>
     </div>
   </div>
 
@@ -2493,6 +2536,7 @@ const strengthPlan = [
 // ═══════════════════════════════════════════════════
 const STORAGE_KEY = 'hi_swim_tracker_v3';
 const SKIP_KEY = 'hi_swim_skipped_v1';
+const NOTES_KEY = 'hi_tri_session_notes_v1';
 const PROGRAM_END_KEY = 'hi_tri_program_end';
 const LEGACY_PROGRAM_START_KEY = 'hi_tri_program_start';
 
@@ -2508,10 +2552,12 @@ function loadStoredState(key) {
 
 let completed = loadStoredState(STORAGE_KEY);
 let skipped = loadStoredState(SKIP_KEY);
+let sessionNotes = loadStoredState(NOTES_KEY);
 
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
   localStorage.setItem(SKIP_KEY, JSON.stringify(skipped));
+  localStorage.setItem(NOTES_KEY, JSON.stringify(sessionNotes));
 }
 
 function toggleSkip(id) {
@@ -2700,6 +2746,19 @@ function getSessionDisplayName(session) {
   return session.name.replace(/^[A-Z]\d+\s+—\s+/, '');
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getSessionNote(id) {
+  return typeof sessionNotes[id] === 'string' ? sessionNotes[id] : '';
+}
+
 function buildSessionSetsHtml(session, disciplineKey) {
   const config = DISCIPLINE_CONFIG[disciplineKey] || DISCIPLINE_CONFIG.swim;
   return session.sets.map(set => {
@@ -2719,11 +2778,29 @@ function buildSessionSetsHtml(session, disciplineKey) {
   }).join('');
 }
 
+function buildSessionNoteHtml(sessionId) {
+  const note = getSessionNote(sessionId);
+  return `
+    <div class="session-note-box">
+      <label class="session-note-label" for="session-note-${sessionId}">Note personnelle</label>
+      <textarea
+        class="session-note-input"
+        id="session-note-${sessionId}"
+        placeholder="Note : charges utilisées, sensations..."
+        onclick="event.stopPropagation()"
+        onkeydown="event.stopPropagation()"
+        onblur="saveSessionNote('${sessionId}', this.value)"
+      >${escapeHtml(note)}</textarea>
+    </div>
+  `;
+}
+
 function buildSessionDetailHtml(session, disciplineKey) {
   return `
     <div class="session-detail" id="week-detail-${session.id}">
       ${buildSessionSetsHtml(session, disciplineKey)}
       ${session.tip ? `<div class="session-tip-box"><strong>💡 Conseil :</strong> ${session.tip}</div>` : ''}
+      ${buildSessionNoteHtml(session.id)}
     </div>
   `;
 }
@@ -2734,6 +2811,8 @@ function buildSessionCard(session, disciplineKey) {
   const isDone = !!completed[session.id];
   const isSkipped = !!skipped[session.id];
   const isOptional = session.typeLabel && session.typeLabel.includes('Optionnel');
+  const hasNote = getSessionNote(session.id).trim().length > 0;
+  const noteIndicator = hasNote ? `<span class="note-indicator" title="Note enregistrée">📝</span>` : '';
   let actionBtns = '';
   if (isDone) {
     actionBtns = `<button class="wsc-btn uncheck" onclick="event.stopPropagation(); wvToggleDone('${session.id}')">✕ Annuler</button>`;
@@ -2749,7 +2828,7 @@ function buildSessionCard(session, disciplineKey) {
   return `
     <div class="week-session-card wc-${config.color}${isDone ? ' wc-done' : ''}${isSkipped ? ' wc-skipped' : ''}${isOptional ? ' wc-optional' : ''}" id="week-card-${session.id}">
       <div class="wsc-top" role="button" tabindex="0" aria-expanded="false" onclick="toggleWeekSessionDetail('${session.id}')" onkeydown="handleWeekSessionKey(event, '${session.id}')">
-        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)} <span class="session-expand-icon">▾</span></div>
+        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${noteIndicator} <span class="session-expand-icon">▾</span></div>
         <div class="wsc-badge ${config.color}">${getDistLabel(session, disciplineKey)}</div>
       </div>
       <div class="wsc-meta">${session.typeLabel || ''}</div>
@@ -2894,6 +2973,85 @@ function handleWeekSessionKey(event, id) {
 // ═══════════════════════════════════════════════════
 // INTERACTIONS
 // ═══════════════════════════════════════════════════
+function updateSessionNoteIndicator(id) {
+  const card = document.getElementById(`week-card-${id}`);
+  const name = card?.querySelector('.wsc-name');
+  const expandIcon = name?.querySelector('.session-expand-icon');
+  const existing = name?.querySelector('.note-indicator');
+  const hasNote = getSessionNote(id).trim().length > 0;
+  if (!name || !expandIcon) return;
+  if (hasNote && !existing) {
+    expandIcon.insertAdjacentHTML('beforebegin', '<span class="note-indicator" title="Note enregistrée">📝</span> ');
+  }
+  if (!hasNote && existing) {
+    existing.remove();
+  }
+}
+
+// Les notes sont stockées hors du plan statique pour préserver les IDs et les données d'origine.
+function saveSessionNote(id, value) {
+  const nextNote = String(value || '').trim();
+  const previousNote = getSessionNote(id).trim();
+  if (nextNote === previousNote) return;
+  if (nextNote) {
+    sessionNotes[id] = nextNote;
+  } else {
+    delete sessionNotes[id];
+  }
+  save();
+  updateSessionNoteIndicator(id);
+  showToast('note-saved');
+}
+
+function getAllProgramSessions() {
+  const sessions = [];
+  for (let weekNum = 1; weekNum <= TOTAL_WEEKS; weekNum++) {
+    const weekSessions = getWeekSessions(weekNum);
+    Object.entries(weekSessions).forEach(([disciplineKey, items]) => {
+      items.forEach(session => {
+        sessions.push({ ...session, weekNum, disciplineKey });
+      });
+    });
+  }
+  return sessions;
+}
+
+function writeTextToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-999px';
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand('copy');
+  textarea.remove();
+  return copied ? Promise.resolve() : Promise.reject(new Error('Clipboard unavailable'));
+}
+
+function copyAllSessionNotes() {
+  const lines = getAllProgramSessions()
+    .map(session => {
+      const note = getSessionNote(session.id).trim();
+      if (!note) return null;
+      const discipline = DISCIPLINE_CONFIG[session.disciplineKey]?.label || 'Séance';
+      return `Semaine ${getWeekLabel(session.weekNum)} · ${discipline} · ${getSessionDisplayName(session)}\n${note}`;
+    })
+    .filter(Boolean);
+
+  if (!lines.length) {
+    showToast('notes-empty');
+    return;
+  }
+
+  writeTextToClipboard(lines.join('\n\n'))
+    .then(() => showToast('notes-copied'))
+    .catch(() => showToast('notes-error'));
+}
+
 function toggleWeek(num) {
   const block = document.getElementById(`week-${num}`);
   block.classList.toggle('open');
@@ -2922,6 +3080,10 @@ function showToast(state) {
   else if (state === 'skip') { t.textContent = '⏭ Séance skippée';   t.style.background = 'var(--orange)'; }
   else if (state === 'date-saved') { t.textContent = '✓ Date de fin enregistrée'; t.style.background = 'var(--green)'; }
   else if (state === 'date-error') { t.textContent = 'Choisis une date valide'; t.style.background = 'var(--orange)'; }
+  else if (state === 'note-saved') { t.textContent = '✓ Note enregistrée'; t.style.background = 'var(--green)'; }
+  else if (state === 'notes-copied') { t.textContent = '📋 Notes copiées'; t.style.background = 'var(--green)'; }
+  else if (state === 'notes-empty') { t.textContent = 'Aucune note à copier'; t.style.background = 'var(--muted)'; }
+  else if (state === 'notes-error') { t.textContent = 'Copie impossible'; t.style.background = 'var(--orange)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
