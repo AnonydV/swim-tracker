@@ -518,6 +518,49 @@ body {
   font-size: 12px;
   vertical-align: middle;
 }
+.session-result-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+.session-result-input {
+  width: 100%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+.session-result-input::placeholder { color: var(--muted2); }
+.session-result-input:focus {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-color: var(--green);
+}
+.session-result-estimate {
+  display: none;
+  margin-top: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  background: var(--green-dim);
+  border-radius: 4px;
+  padding: 5px 9px;
+}
+.session-result-estimate.visible { display: block; }
+.result-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  vertical-align: middle;
+}
 
 /* ─── ZONE LEGEND ─── */
 .zone-legend {
@@ -2980,6 +3023,7 @@ const semiRunPlan = [
 const STORAGE_KEY = 'hi_swim_tracker_v3';
 const SKIP_KEY = 'hi_swim_skipped_v1';
 const NOTES_KEY = 'hi_tri_session_notes_v1';
+const RESULTS_KEY = 'hi_tri_session_results_v1';
 const PROGRAM_END_KEY = 'hi_tri_program_end';
 const LEGACY_PROGRAM_START_KEY = 'hi_tri_program_start';
 
@@ -2993,14 +3037,16 @@ function loadStoredState(key) {
   }
 }
 
-let completed = loadStoredState(STORAGE_KEY);
-let skipped = loadStoredState(SKIP_KEY);
+let completed    = loadStoredState(STORAGE_KEY);
+let skipped      = loadStoredState(SKIP_KEY);
 let sessionNotes = loadStoredState(NOTES_KEY);
+let sessionResults = loadStoredState(RESULTS_KEY);
 
 function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-  localStorage.setItem(SKIP_KEY, JSON.stringify(skipped));
-  localStorage.setItem(NOTES_KEY, JSON.stringify(sessionNotes));
+  localStorage.setItem(STORAGE_KEY,  JSON.stringify(completed));
+  localStorage.setItem(SKIP_KEY,     JSON.stringify(skipped));
+  localStorage.setItem(NOTES_KEY,    JSON.stringify(sessionNotes));
+  localStorage.setItem(RESULTS_KEY,  JSON.stringify(sessionResults));
 }
 
 function toggleSkip(id) {
@@ -3246,6 +3292,7 @@ function buildSessionDetailHtml(session, disciplineKey) {
     <div class="session-detail" id="week-detail-${session.id}">
       ${buildSessionSetsHtml(session, disciplineKey)}
       ${session.tip ? `<div class="session-tip-box"><strong>💡 Conseil :</strong> ${session.tip}</div>` : ''}
+      ${buildSessionResultHtml(session)}
       ${buildSessionNoteHtml(session.id)}
     </div>
   `;
@@ -3259,6 +3306,8 @@ function buildSessionCard(session, disciplineKey) {
   const isOptional = session.typeLabel && session.typeLabel.includes('Optionnel');
   const hasNote = getSessionNote(session.id).trim().length > 0;
   const noteIndicator = hasNote ? `<span class="note-indicator" title="Note enregistrée">📝</span>` : '';
+  const result = getSessionResult(session.id).trim();
+  const resultIndicator = result ? `<span class="result-indicator" title="Résultat">⏱ ${escapeHtml(result)}</span>` : '';
   let actionBtns = '';
   if (isDone) {
     actionBtns = `<button class="wsc-btn uncheck" onclick="event.stopPropagation(); wvToggleDone('${session.id}')">✕ Annuler</button>`;
@@ -3274,7 +3323,7 @@ function buildSessionCard(session, disciplineKey) {
   return `
     <div class="week-session-card wc-${config.color}${isDone ? ' wc-done' : ''}${isSkipped ? ' wc-skipped' : ''}${isOptional ? ' wc-optional' : ''}" id="week-card-${session.id}">
       <div class="wsc-top" role="button" tabindex="0" aria-expanded="false" onclick="toggleWeekSessionDetail('${session.id}')" onkeydown="handleWeekSessionKey(event, '${session.id}')">
-        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${noteIndicator} <span class="session-expand-icon">▾</span></div>
+        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${noteIndicator}${resultIndicator} <span class="session-expand-icon">▾</span></div>
         <div class="wsc-badge ${config.color}">${getDistLabel(session, disciplineKey)}</div>
       </div>
       <div class="wsc-meta">${session.typeLabel || ''}</div>
@@ -3449,6 +3498,97 @@ function saveSessionNote(id, value) {
   showToast('note-saved');
 }
 
+function getSessionResult(id) {
+  return typeof sessionResults[id] === 'string' ? sessionResults[id] : '';
+}
+
+function parseTimeToSeconds(str) {
+  const s = str.trim().replace(/h/gi, ':').replace(/['"]/g, ':').replace(/\s/g, '');
+  const parts = s.split(':').map(Number);
+  if (parts.some(isNaN) || parts.length < 2 || parts.length > 3) return null;
+  return parts.length === 3
+    ? parts[0] * 3600 + parts[1] * 60 + parts[2]
+    : parts[0] * 60 + parts[1];
+}
+
+function formatSecondsToTime(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.round(s % 60);
+  return h > 0
+    ? `${h}h${String(m).padStart(2,'0')}'${String(sec).padStart(2,'0')}`
+    : `${m}'${String(sec).padStart(2,'0')}`;
+}
+
+function calcEstimateHtml(value) {
+  const secs = parseTimeToSeconds(value);
+  if (!secs) return '';
+  const semiSecs = Math.round(secs * 2.1);
+  const paceSecs = Math.round(semiSecs / 21.097);
+  return `→ Semi estimé : ~${formatSecondsToTime(semiSecs)} · allure ${formatSecondsToTime(paceSecs)}/km`;
+}
+
+function buildSessionResultHtml(session) {
+  if (session.type !== 'r-quality' && session.type !== 'r-race') return '';
+  const result   = getSessionResult(session.id);
+  const isTest10k = session.id === 'smw9a';
+  const placeholder = isTest10k
+    ? 'Ex : 43:22 — estimation semi calculée automatiquement'
+    : session.type === 'r-race'
+      ? 'Temps final — ex : 1:29:45'
+      : "Ex : 6×400m à 3'52 — dernier à 3'55";
+  const estimate = isTest10k && result ? calcEstimateHtml(result) : '';
+  return `
+    <div class="session-result-box">
+      <label class="session-note-label" for="session-result-${session.id}">⏱ Résultat</label>
+      <input type="text" class="session-result-input"
+        id="session-result-${session.id}"
+        placeholder="${placeholder}"
+        value="${escapeHtml(result)}"
+        onclick="event.stopPropagation()"
+        onkeydown="event.stopPropagation()"
+        onblur="saveSessionResult('${session.id}', this.value)"
+        ${isTest10k ? `oninput="updateSemiEstimate('${session.id}', this.value)"` : ''}>
+      ${isTest10k ? `<div class="session-result-estimate${estimate ? ' visible' : ''}" id="result-estimate-${session.id}">${estimate}</div>` : ''}
+    </div>
+  `;
+}
+
+function saveSessionResult(id, value) {
+  const next = String(value || '').trim();
+  const prev = getSessionResult(id);
+  if (next === prev) return;
+  if (next) { sessionResults[id] = next; } else { delete sessionResults[id]; }
+  save();
+  updateResultIndicator(id);
+  showToast('result-saved');
+}
+
+function updateSemiEstimate(id, value) {
+  const el = document.getElementById(`result-estimate-${id}`);
+  if (!el) return;
+  const html = calcEstimateHtml(value);
+  el.textContent = html.replace(/^→\s*/, '→ ');
+  el.innerHTML = html;
+  el.classList.toggle('visible', !!html);
+}
+
+function updateResultIndicator(id) {
+  const card = document.getElementById(`week-card-${id}`);
+  const name = card?.querySelector('.wsc-name');
+  const expandIcon = name?.querySelector('.session-expand-icon');
+  const existing = name?.querySelector('.result-indicator');
+  const result = getSessionResult(id).trim();
+  if (!name || !expandIcon) return;
+  if (result && !existing) {
+    expandIcon.insertAdjacentHTML('beforebegin', `<span class="result-indicator" title="Résultat">⏱ ${escapeHtml(result)}</span> `);
+  } else if (result && existing) {
+    existing.textContent = `⏱ ${result}`;
+  } else if (!result && existing) {
+    existing.remove();
+  }
+}
+
 function getAllProgramSessions() {
   const sessions = [];
   for (let weekNum = 1; weekNum <= TOTAL_WEEKS; weekNum++) {
@@ -3502,9 +3642,10 @@ function exportData() {
   const data = {
     version: 1,
     exportedAt: new Date().toISOString(),
-    completed: JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'),
-    skipped:   JSON.parse(localStorage.getItem(SKIP_KEY)    || '{}'),
-    notes:     JSON.parse(localStorage.getItem(NOTES_KEY)   || '{}'),
+    completed:  JSON.parse(localStorage.getItem(STORAGE_KEY)  || '{}'),
+    skipped:    JSON.parse(localStorage.getItem(SKIP_KEY)     || '{}'),
+    notes:      JSON.parse(localStorage.getItem(NOTES_KEY)    || '{}'),
+    results:    JSON.parse(localStorage.getItem(RESULTS_KEY)  || '{}'),
     programEnd: localStorage.getItem(PROGRAM_END_KEY) || null,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -3530,13 +3671,15 @@ function importData(event) {
     try {
       const data = JSON.parse(e.target.result);
       if (!data.completed || !data.skipped) throw new Error('Format invalide');
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data.completed));
-      localStorage.setItem(SKIP_KEY,    JSON.stringify(data.skipped));
-      localStorage.setItem(NOTES_KEY,   JSON.stringify(data.notes || {}));
+      localStorage.setItem(STORAGE_KEY,  JSON.stringify(data.completed));
+      localStorage.setItem(SKIP_KEY,     JSON.stringify(data.skipped));
+      localStorage.setItem(NOTES_KEY,    JSON.stringify(data.notes    || {}));
+      localStorage.setItem(RESULTS_KEY,  JSON.stringify(data.results  || {}));
       if (data.programEnd) localStorage.setItem(PROGRAM_END_KEY, data.programEnd);
-      completed    = loadStoredState(STORAGE_KEY);
-      skipped      = loadStoredState(SKIP_KEY);
-      sessionNotes = loadStoredState(NOTES_KEY);
+      completed      = loadStoredState(STORAGE_KEY);
+      skipped        = loadStoredState(SKIP_KEY);
+      sessionNotes   = loadStoredState(NOTES_KEY);
+      sessionResults = loadStoredState(RESULTS_KEY);
       refreshCalendarViews();
       showToast('import-ok');
     } catch {
@@ -3578,8 +3721,9 @@ function showToast(state) {
   else if (state === 'notes-copied') { t.textContent = '📋 Notes copiées'; t.style.background = 'var(--green)'; }
   else if (state === 'notes-empty') { t.textContent = 'Aucune note à copier'; t.style.background = 'var(--muted)'; }
   else if (state === 'notes-error')  { t.textContent = 'Copie impossible';           t.style.background = 'var(--orange)'; }
-  else if (state === 'import-ok')    { t.textContent = '✓ Données restaurées';        t.style.background = 'var(--green)'; }
-  else if (state === 'import-error') { t.textContent = '✗ Fichier invalide';          t.style.background = 'var(--red)'; }
+  else if (state === 'import-ok')     { t.textContent = '✓ Données restaurées';        t.style.background = 'var(--green)'; }
+  else if (state === 'import-error')  { t.textContent = '✗ Fichier invalide';          t.style.background = 'var(--red)'; }
+  else if (state === 'result-saved')  { t.textContent = '⏱ Résultat enregistré';      t.style.background = 'var(--green)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
