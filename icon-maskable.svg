@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Safe zone: keep design within central 80% (approx 410x410 centered) -->
+  <rect width="512" height="512" fill="#07090f"/>
+  <!-- Swim wave -->
+  <path d="M76 196 Q140 152 204 196 Q268 240 332 196 Q396 152 436 196" stroke="#38bdf8" stroke-width="26" fill="none" stroke-linecap="round"/>
+  <!-- Bike wheels -->
+  <circle cx="168" cy="332" r="56" stroke="#facc15" stroke-width="22" fill="none"/>
+  <circle cx="344" cy="332" r="56" stroke="#facc15" stroke-width="22" fill="none"/>
+  <!-- Bike frame -->
+  <path d="M168 332 L256 272 L344 332 M256 272 L256 332" stroke="#facc15" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
