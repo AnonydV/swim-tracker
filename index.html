@@ -13,8 +13,8 @@
 <body>
 <div class="loading"><strong>HIPLAN</strong><br>Chargement du tracker...</div>
 <script>
-const PREVIOUS_LOADER_BLOB_URL = 'https://api.github.com/repos/AnonydV/swim-tracker/git/blobs/664bd3d8ec48572ce6bfc8f704fbcdf8a576aa6e';
-const RUNTIME_SCRIPT = '<script src="calendar-runtime.js?v=b9244bbfe5ffb4cfabddf190d87295498fd82f04"><\\/script>';
+const SOURCE_BLOB_URL = 'https://api.github.com/repos/AnonydV/swim-tracker/git/blobs/dd0c20031f79c33b6e2756ca6f6691041f35bc1c';
+const RUNTIME_SRC = 'calendar-runtime.js?v=b9244bbfe5ffb4cfabddf190d87295498fd82f04';
 
 function decodeBase64Utf8(base64) {
   const binary = atob(base64.replace(/\n/g, ''));
@@ -22,16 +22,59 @@ function decodeBase64Utf8(base64) {
   return new TextDecoder('utf-8').decode(bytes);
 }
 
-fetch(PREVIOUS_LOADER_BLOB_URL)
+function patchAfter(source, marker, addition) {
+  return source.includes(marker) ? source.replace(marker, marker + addition) : source;
+}
+
+function deployPatches(html) {
+  html = html.replace('<title>Half Ironman — Tracker Natation</title>', '<title>Half Ironman — Tracker Triathlon</title>');
+  html = html.replace('// TRACKER NATATION · 13 SEMAINES', '// TRACKER TRIATHLON · 13 SEMAINES');
+  html = html.replace('IRONMAN 70.3 NICE — 28 JUIN 2025', 'IRONMAN 70.3 NICE — 28 JUIN 2026');
+  html = html.replaceAll('font-size:18px margin-bottom:4px', 'font-size:18px; margin-bottom:4px');
+
+  html = patchAfter(html, `.week-title {\n  font-weight: 600;\n  font-size: 15px;\n  flex: 1;\n}\n`, `.week-title-block { flex: 1; min-width: 0; }\n.week-date {\n  font-size: 11px;\n  color: var(--muted2);\n  font-family: 'JetBrains Mono', monospace;\n  margin-top: 2px;\n}\n`);
+  html = html.replace('@media(max-width:600px){ .stats-bar { grid-template-columns: repeat(3,1fr); } }', `@media(max-width:600px){ .stats-bar { grid-template-columns: repeat(3,1fr); } }\n@media(max-width:480px){\n  .stats-bar { grid-template-columns: repeat(2,1fr); }\n  .stat-box { padding: 12px 10px; }\n  .stat-box .val { font-size: 24px; }\n  .stat-box .lbl { font-size: 10px; }\n}`);
+  html = html.replace(`.sport-tab {\n  display: flex;\n  gap: 8px;`, `.sport-tab {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;`);
+  html = patchAfter(html, `.sport-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }\n`, `.sport-btn:focus-visible,\n.week-nav-btn:focus-visible,\n.check-btn:focus-visible,\n.uncheck-btn:focus-visible,\n.skip-btn:focus-visible,\n.unskip-btn:focus-visible,\n.wsc-btn:focus-visible {\n  outline: 2px solid var(--accent);\n  outline-offset: 2px;\n}\n`);
+
+  html = html.replace(`" onclick="toggleObjectives()">`, `" role="button" tabindex="0" aria-expanded="false" onclick="toggleObjectives()" onkeydown="handleObjectivesKey(event)">`);
+  html = html.replace(`const STORAGE_KEY = 'hi_swim_tracker_v3';\nlet completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');\nconst SKIP_KEY = 'hi_swim_skipped_v1';\nlet skipped = JSON.parse(localStorage.getItem(SKIP_KEY) || '{}');`, `const STORAGE_KEY = 'hi_swim_tracker_v3';\nconst SKIP_KEY = 'hi_swim_skipped_v1';\n\nfunction loadStoredState(key) {\n  try {\n    const value = JSON.parse(localStorage.getItem(key) || '{}');\n    return value && typeof value === 'object' && !Array.isArray(value) ? value : {};\n  } catch {\n    localStorage.removeItem(key);\n    return {};\n  }\n}\n\nlet completed = loadStoredState(STORAGE_KEY);\nlet skipped = loadStoredState(SKIP_KEY);`);
+
+  html = patchAfter(html, `let currentSport = 'swim';\nlet currentWeekView = null; // null = auto (active week)\n`, `const RACE_DATE = new Date(2026, 5, 28);\nconst RACE_WEEK_START = new Date(2026, 5, 22);\nconst TOTAL_WEEKS = 13;\n\nfunction addDays(date, days) {\n  const result = new Date(date);\n  result.setDate(result.getDate() + days);\n  return result;\n}\n\nfunction formatDateShort(date) {\n  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }).replace('.', '');\n}\n\nfunction getWeekDateRange(weekNum) {\n  const start = addDays(RACE_WEEK_START, (weekNum - TOTAL_WEEKS) * 7);\n  const end = weekNum === TOTAL_WEEKS ? RACE_DATE : addDays(start, 6);\n  return `${formatDateShort(start)} – ${formatDateShort(end)}`;\n}\n`);
+  html = html.replace(`const isActive = weekNum === getWeekActiveNum();`, `const isActive = weekNum === getWeekActiveNum();\n  const weekDateRange = getWeekDateRange(weekNum);`);
+  html = html.replace(`<span>${isActive ? '📍 SEMAINE EN COURS' : ''}</span>`, `<span>${weekDateRange}${isActive ? ' · 📍 SEMAINE EN COURS' : ''}</span>`);
+  html = html.replace(`const weekDone = doneSessions === totalSessions;`, `const weekDone = doneSessions === totalSessions;\n  const weekDateRange = getWeekDateRange(week.num);`);
+  html = html.replace(`<div class="week-header" onclick="toggleWeek(${week.num})">`, `<div class="week-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleWeek(${week.num})" onkeydown="handleWeekKey(event, ${week.num})">`);
+  html = html.replace(`<div>\n        <div class="week-title">${week.title}</div>\n        <div class="week-focus">${week.focus}</div>\n      </div>`, `<div class="week-title-block">\n        <div class="week-title">${week.title}</div>\n        <div class="week-focus">${week.focus}</div>\n        <div class="week-date">${weekDateRange}</div>\n      </div>`);
+  html = html.replaceAll(`<div class="session-top" onclick="toggleSession('${s.id}')">`, `<div class="session-top" role="button" tabindex="0" aria-expanded="false" onclick="toggleSession('${s.id}')" onkeydown="handleSessionKey(event, '${s.id}')">`);
+
+  html = html.replace(`function toggleWeek(num) {\n  const block = document.getElementById(\`week-${num}\`);\n  block.classList.toggle('open');\n}\n\nfunction toggleSession(id) {\n  const card = document.getElementById(\`card-${id}\`);\n  card.classList.toggle('open');\n}`, `function toggleWeek(num) {\n  const block = document.getElementById(\`week-${num}\`);\n  block.classList.toggle('open');\n  block.querySelector('.week-header')?.setAttribute('aria-expanded', block.classList.contains('open'));\n}\n\nfunction toggleSession(id) {\n  const card = document.getElementById(\`card-${id}\`);\n  card.classList.toggle('open');\n  card.querySelector('.session-top')?.setAttribute('aria-expanded', card.classList.contains('open'));\n}\n\nfunction openWeekElement(block) {\n  block?.classList.add('open');\n  block?.querySelector('.week-header')?.setAttribute('aria-expanded', 'true');\n}\n\nfunction openSessionElement(card) {\n  card?.classList.add('open');\n  card?.querySelector('.session-top')?.setAttribute('aria-expanded', 'true');\n}\n\nfunction handleWeekKey(event, num) {\n  if (event.key !== 'Enter' && event.key !== ' ') return;\n  event.preventDefault();\n  toggleWeek(num);\n}\n\nfunction handleSessionKey(event, id) {\n  if (event.key !== 'Enter' && event.key !== ' ') return;\n  event.preventDefault();\n  toggleSession(id);\n}`);
+  html = html.replace(`buildPlan();\n  showToast(skipped[id] ? 'skip' : 'unskip');`, `buildPlan();\n  addActiveWeekIndicator();\n  showToast(skipped[id] ? 'skip' : 'unskip');`);
+  html = html.replace(`buildPlan();\n  showToast(completed[id] ? true : false);`, `buildPlan();\n  addActiveWeekIndicator();\n  showToast(completed[id] ? true : false);`);
+  html = html.replaceAll(`document.getElementById(wId)?.classList.add('open')`, `openWeekElement(document.getElementById(wId))`);
+  html = html.replaceAll(`document.getElementById(weekId)?.classList.add('open')`, `openWeekElement(document.getElementById(weekId))`);
+  html = html.replaceAll(`document.getElementById(cId)?.classList.add('open')`, `openSessionElement(document.getElementById(cId))`);
+  html = html.replaceAll(`document.getElementById(cardId)?.classList.add('open')`, `openSessionElement(document.getElementById(cardId))`);
+  html = html.replaceAll(`document.getElementById(\`card-${id}\`)?.classList.add('open')`, `openSessionElement(document.getElementById(\`card-${id}\`))`);
+  html = html.replaceAll(`if (weekBlock) weekBlock.classList.add('open');`, `openWeekElement(weekBlock);`);
+  html = html.replaceAll(`card.classList.add('open');`, `openSessionElement(card);`);
+  html = html.replaceAll(`block.classList.add('open');`, `openWeekElement(block);`);
+  html = html.replace(`function toggleObjectives() {\n  const body = document.getElementById('obj-body');\n  const chevron = document.getElementById('obj-chevron');\n  const isOpen = body.style.display !== 'none';\n  body.style.display = isOpen ? 'none' : 'block';\n  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';\n}`, `function toggleObjectives() {\n  const body = document.getElementById('obj-body');\n  const chevron = document.getElementById('obj-chevron');\n  const isOpen = body.style.display !== 'none';\n  body.style.display = isOpen ? 'none' : 'block';\n  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';\n  document.querySelector('#objectives-section [role="button"]')?.setAttribute('aria-expanded', !isOpen);\n}\n\nfunction handleObjectivesKey(event) {\n  if (event.key !== 'Enter' && event.key !== ' ') return;\n  event.preventDefault();\n  toggleObjectives();\n}`);
+
+  html = html.replace('</body>', `<script src="${RUNTIME_SRC}"></` + `script></body>`);
+  return html;
+}
+
+fetch(SOURCE_BLOB_URL)
   .then(response => {
-    if (!response.ok) throw new Error('Impossible de charger le loader précédent');
+    if (!response.ok) throw new Error('Impossible de charger la page source');
     return response.json();
   })
   .then(blob => decodeBase64Utf8(blob.content))
-  .then(loaderHtml => loaderHtml.replace('document.write(html);', "document.write(html.replace('</body>', '" + RUNTIME_SCRIPT + "</body>'));"))
-  .then(loaderHtml => {
+  .then(deployPatches)
+  .then(html => {
     document.open();
-    document.write(loaderHtml);
+    document.write(html);
     document.close();
   })
   .catch(error => {
