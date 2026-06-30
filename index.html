@@ -2536,543 +2536,434 @@ const strengthPlan = [
 // ═══════════════════════════════════════════════════
 const semiRunPlan = [
   // ── PHASE 1 : BASE (S1–S5) ─────────────────────────────────────────
+  // S1–2 : 2 séances/sem · S3–5 : 3 séances/sem
   { weekNum: 1, sessions: [
-    { id:"smw1a", name:"R1 — Seuil intro", type:"r-quality", typeLabel:"En semaine · Midi",
+    { id:"smw1a", name:"R1 — Seuil intro 2×8 min", type:"r-quality", typeLabel:"En semaine · Midi",
       dist: 10, unit:"km",
       sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"3×8 min", desc:"3 fois 8 min à allure seuil — 4'35–4'45/km — 3' récup trot entre chaque", tip:"Première séance seuil du bloc. Gère l'allure pour que les 3 répétitions soient régulières — ne pars pas trop fort sur la première."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing 5'30–6'00/km", tip:"Montée progressive. Finir par 4×20s de foulées rapides."},
+        {type:"interval", dist:"2×8 min",  desc:"Allure seuil — 4'35–4'45/km (récup 3 min trot)", tip:"Seuil lacté confortable. Sensation : tu peux encore parler, mais tu ne veux pas."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme 5'30+/km", tip:"Décélère vraiment."},
       ],
-      tip:"3×8 min = 24 min de travail réel à seuil. À cette allure tu peux dire 3–4 mots, pas une phrase complète."
+      tip:"Première séance de qualité — prudence. Mieux vaut finir en dessous que claquer dès S1."
     },
-    { id:"smw1b", name:"R2 — VMA 400m", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 9, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"6×400m", desc:"6 fois 400m à 3'55–4'05/km — 1'30\" récup trot", tip:"À 3'55–4'05/km ça fait ~1'34–1'40 par répétition. Départ contrôlé — la vitesse viendra naturellement au fil des séances."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Volume VMA d'entrée de bloc. 6 répétitions régulières valent mieux que 8 irrégulières."
-    },
-    { id:"smw1c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 6, unit:"km",
-      sets: [
-        {type:"main", dist:"5–6 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"Tu dois pouvoir tenir une conversation complète pendant toute la séance."},
-      ],
-      tip:"Récupération active entre R1 et R2. Aucun chrono, aucune intensité."
-    },
-    { id:"smw1d", name:"R4 — Sortie longue", type:"r-long", typeLabel:"Week-end",
+    { id:"smw1b", name:"R2 — Footing longue", type:"r-easy", typeLabel:"Week-end",
       dist: 12, unit:"km",
       sets: [
-        {type:"long", dist:"12 km", desc:"Sortie longue continue — allure 5'00–5'15/km", tip:"Endurance active : tu peux parler par phrases courtes. Note tes sensations à mi-parcours — c'est ton point de départ."},
+        {type:"long", dist:"12 km", desc:"Footing 5'30–6'00/km — allure conversation", tip:"Si tu peux parler en phrases complètes, l'allure est bonne. C'est le socle aérobie de tout le plan."},
       ],
-      tip:"Phase Base : longue sans structure — on accumule du temps sur les jambes à allure soutenue mais confortable."
+      tip:"Allure strictement aérobie. Aucune négociation sur la vitesse ce week-end."
     },
   ]},
-
   { weekNum: 2, sessions: [
-    { id:"smw2a", name:"R1 — Seuil", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 11, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"3×10 min", desc:"3 fois 10 min à 4'35–4'45/km — 3' récup trot", tip:"On passe de 8 à 10 min par répétition — le travail est plus long mais pas plus intense. La fatigue arrive vraiment vers la minute 7."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"30 min de seuil réel. L'objectif est la régularité : les 3 répétitions à la même allure."
-    },
-    { id:"smw2b", name:"R2 — VMA 400m", type:"r-quality", typeLabel:"En semaine · Soir",
+    { id:"smw2a", name:"R3 — Seuil 3×8 min", type:"r-quality", typeLabel:"En semaine · Midi",
       dist: 10, unit:"km",
       sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"8×400m", desc:"8 fois 400m à 3'55–4'05/km — 1'30\" récup trot", tip:"2 répétitions de plus qu'en S1. Si les 6 premières sont régulières, les 2 dernières le seront aussi."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing 5'30–6'00/km", tip:"Montée en température 15 min minimum."},
+        {type:"interval", dist:"3×8 min",  desc:"Allure seuil — 4'35–4'45/km (récup 3 min trot)", tip:"Progression de l'effort : premier répétition conservateur, deuxième au rythme cible, troisième jusqu'à la limite confortable."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
       ],
-      tip:"8×400m est le format standard des fractionnés courts. Régularité > vitesse brute."
+      tip:"Une répétition de plus vs S1. Reste gérable — l'accumulation fait le travail, pas l'intensité."
     },
-    { id:"smw2c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"6–7 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:""},
-      ],
-      tip:"Séance tampon. Pas de contrainte — juste maintenir le mouvement entre les deux qualités."
-    },
-    { id:"smw2d", name:"R4 — Sortie longue", type:"r-long", typeLabel:"Week-end",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"long", dist:"14 km", desc:"Sortie longue continue — allure 5'00–5'15/km", tip:"2 km de plus que S1. Tu construis progressivement le volume sans forcer l'allure."},
-      ],
-      tip:"Volume en progression. Le corps s'adapte quand l'allure reste stable."
-    },
-  ]},
-
-  { weekNum: 3, sessions: [
-    { id:"smw3a", name:"R1 — Seuil 4 séries", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 11, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"4×8 min", desc:"4 fois 8 min à 4'35–4'45/km — 2'30\" récup trot", tip:"Première fois avec 4 répétitions. Récup 30\" plus courte — gère bien ton allure sur la 1re répétition pour tenir les 4."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"32 min de seuil réel en 4 blocs. Pic de volume seuil de la phase Base."
-    },
-    { id:"smw3b", name:"R2 — VMA 600m", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"6×600m", desc:"6 fois 600m à 3'55–4'05/km — 2' récup trot", tip:"On passe aux 600m — plus d'inertie, meilleur stimulus VMA. ~2'20–2'30 par répétition. Régulier de la 1re à la 6e."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"600m > 400m pour la VMA : les premiers 200m prennent de la vitesse, les 400m restants sont le vrai travail."
-    },
-    { id:"smw3c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"6–7 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"S3 est la semaine la plus chargée de la phase Base — ce footing aide à absorber la charge."},
-      ],
-      tip:"Récupération active. Jamais deux séances intenses consécutives."
-    },
-    { id:"smw3d", name:"R4 — Sortie longue", type:"r-long", typeLabel:"Week-end",
+    { id:"smw2b", name:"R4 — Footing longue", type:"r-easy", typeLabel:"Week-end",
       dist: 16, unit:"km",
       sets: [
-        {type:"long", dist:"16 km", desc:"Sortie longue continue — allure 5'00–5'15/km", tip:"Note combien de km tu tiens en endurance active avant de devoir ralentir — c'est ton indicateur de progression sur le bloc."},
+        {type:"long", dist:"16 km", desc:"Footing 5'30–6'00/km", tip:"+4 km vs S1. L'allure reste la même — c'est le volume qui monte, pas l'intensité."},
       ],
-      tip:"Pic de la phase Base. 16km à allure endurance active — tu dois finir fatigué mais capable de faire 3km de plus."
+      tip:"Long run fondamental — c'est ici que se construit l'endurance de base du demi."
     },
   ]},
-
-  // ── SEMAINE 4 : RÉCUPÉRATION ─────────────────────────────────────────
-  { weekNum: 4, sessions: [
-    { id:"smw4a", name:"R1 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"6–7 km", desc:"Footing léger — allure 6'00+/km", tip:"Semaine de récup : aucune qualité, aucun chrono. Si tu ressens encore de la fatigue, raccourcis à 5km."},
-      ],
-      tip:"La récup est un élément d'entraînement, pas une pause. Ton corps absorbe ici la charge des 3 semaines."
-    },
-    { id:"smw4b", name:"R2 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing facile — allure 5'45–6'05/km", tip:"Volume légèrement plus élevé qu'en début de semaine car les jambes sont normalement plus fraîches."},
-      ],
-      tip:"Deuxième footing de récup. Toujours conversationnel."
-    },
-    { id:"smw4c", name:"R3 — Sortie légère", type:"r-long", typeLabel:"Week-end",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"long", dist:"10 km", desc:"Sortie confortable — allure 5'20–5'35/km", tip:"On ne descend pas sous 10km même en récup pour maintenir l'adaptation musculaire."},
-      ],
-      tip:"Dernier footing de récup avant de repartir en S5."
-    },
-  ]},
-
-  { weekNum: 5, sessions: [
-    { id:"smw5a", name:"R1 — Seuil", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"4×10 min", desc:"4 fois 10 min à 4'35–4'45/km — 2'30\" récup trot", tip:"Reprise après récup — si les 4 répétitions sont plus régulières qu'en S3, la récup a bien fonctionné."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"40 min de seuil réel en reprise. Pic de qualité seuil de la phase Base."
-    },
-    { id:"smw5b", name:"R2 — VMA 400m", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"8×400m", desc:"8 fois 400m à 3'55–4'05/km — 1'30\" récup trot", tip:"Retour au 8×400m post-récup. Objectif : être plus régulier sur les 8 répétitions qu'en S2 — si c'est le cas, tu as progressé."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Le retour en S5 doit confirmer les progrès de la phase Base."
-    },
-    { id:"smw5c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"Volume légèrement augmenté — les jambes fraîches de la récup S4 peuvent le supporter."},
-      ],
-      tip:"Le footing facile en S5 est plus long qu'en Base pour soutenir le volume global croissant."
-    },
-    { id:"smw5d", name:"R4 — Sortie longue", type:"r-long", typeLabel:"Week-end",
-      dist: 18, unit:"km",
-      sets: [
-        {type:"long", dist:"18 km", desc:"Sortie longue continue — allure 5'00–5'15/km", tip:"Pic de volume de la phase Base. Tu dois finir fatigué mais pas épuisé — si tu as l'impression de pouvoir refaire 3km, l'allure est bonne."},
-      ],
-      tip:"18km = dernière longue de la phase Base. La semaine prochaine, l'intensité monte."
-    },
-  ]},
-
-  // ── PHASE 2 : CONSTRUCTION (S6–S11) ─────────────────────────────────
-
-  { weekNum: 6, sessions: [
-    { id:"smw6a", name:"R1 — Seuil Construction", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"4×8 min", desc:"4 fois 8 min à 4'25–4'35/km — 2'30\" récup trot", tip:"Allure seuil relevée de 10–15 sec/km vs la phase Base. La sensation change nettement — gère bien la 1re répétition."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Bienvenue en Construction. 4'25–4'35/km est significativement plus exigeant — prévois de te sentir plus à la limite sur les dernières répétitions."
-    },
-    { id:"smw6b", name:"R2 — VMA Construction", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"8×400m", desc:"8 fois 400m à 3'48–3'58/km — 1'30\" récup trot", tip:"VMA relevée de ~7 sec/km. À 3'48–3'58/km ça fait ~1'31–1'35 par répétition — tu es à la limite de ce que tu peux tenir sur 400m."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"La zone VMA doit être inconfortable mais tenable. Si tu dois décrocher sur les 2 dernières, l'allure est trop rapide."
-    },
-    { id:"smw6c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"Avec l'intensité augmentée des séances qualité, ce footing est encore plus important pour la récupération."},
-      ],
-      tip:"Le footing facile ne se négocie pas en Construction."
-    },
-    { id:"smw6d", name:"R4 — Longue avec blocs", type:"r-long", typeLabel:"Week-end",
-      dist: 20, unit:"km",
-      sets: [
-        {type:"long", dist:"8 km", desc:"8 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"interval", dist:"3×8 min", desc:"3 fois 8 min à 4'35–4'45/km — 3' trot récup entre chaque", tip:"Blocs intégrés en état de fatigue — courir vite sur des jambes déjà chargées est plus formateur que du fractionné à froid."},
-        {type:"cool", dist:"6 km", desc:"Retour au calme — allure 5'15–5'30/km", tip:""},
-      ],
-      tip:"Première longue avec blocs. La structure évolue : on ne fait plus que de l'endurance continue."
-    },
-  ]},
-
-  { weekNum: 7, sessions: [
-    { id:"smw7a", name:"R1 — Seuil long", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"4×10 min", desc:"4 fois 10 min à 4'25–4'35/km — 2'30\" récup trot", tip:"40 min de seuil à allure Construction — pic de volume seuil du programme. Gère impeccablement la 1re répétition pour tenir les 4."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"C'est la séance seuil la plus exigeante du programme par le cumul volume×intensité. Si tu tiens les 4×10min régulièrement, tu es sur la bonne trajectoire."
-    },
-    { id:"smw7b", name:"R2 — VMA 600m", type:"r-quality", typeLabel:"En semaine · Soir",
+  { weekNum: 3, sessions: [
+    { id:"smw3a", name:"R5 — Seuil 3×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
       dist: 11, unit:"km",
       sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"6×600m", desc:"6 fois 600m à 3'48–3'58/km — 2' récup trot", tip:"600m à allure Construction : ~2'10–2'20 par répétition. La longueur des répétitions force une meilleure gestion de l'allure que le 400m."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"3×10 min", desc:"Allure seuil — 4'30–4'40/km (récup 3 min trot)", tip:"Les répétitions s'allongent. Commence conservateur sur le 1er."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
       ],
-      tip:"6×600m est exigeant mais plus spécifique que 10×400m pour la course longue."
+      tip:"Première semaine à 3 séances. Répartir sur Mar/Jeu/Sam ou Mar/Ven/Dim."
     },
-    { id:"smw7c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"S7 est la semaine la plus chargée à ce stade — ne saute pas ce footing."},
-      ],
-      tip:"La semaine la plus lourde de Construction. Ce footing conditionne la qualité de ta longue."
-    },
-    { id:"smw7d", name:"R4 — Longue avec blocs", type:"r-long", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long", dist:"8 km", desc:"8 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"interval", dist:"3×10 min", desc:"3 fois 10 min à 4'35–4'45/km — 3' trot récup", tip:"Blocs plus longs qu'en S6. La fatigue accumulée au km 8 rend ces 10 min particulièrement formateurs."},
-        {type:"cool", dist:"8 km", desc:"8 km retour au calme — allure 5'15–5'30/km", tip:""},
-      ],
-      tip:"22km avec 3×10min de blocs. Tu t'approches de la distance race avec une vraie structure qualitative."
-    },
-  ]},
-
-  // ── SEMAINE 8 : RÉCUPÉRATION ─────────────────────────────────────────
-  { weekNum: 8, sessions: [
-    { id:"smw8a", name:"R1 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing léger — allure 6'00+/km", tip:"Les S6–7 ont été intenses. Cette coupure est planifiée et indispensable — ne la triche pas."},
-      ],
-      tip:"Semaine de récup S8. Le corps consolide ici les adaptations des 2 semaines de Construction."
-    },
-    { id:"smw8b", name:"R2 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing facile — allure 5'45–6'05/km", tip:"Si les jambes sont encore lourdes, raccourcis à 6km. Le test de S9 est plus important que ce volume."},
-      ],
-      tip:"Deuxième footing de récup. Priorité à la fraîcheur pour le test S9."
-    },
-    { id:"smw8c", name:"R3 — Sortie légère", type:"r-long", typeLabel:"Week-end",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"long", dist:"12 km", desc:"Sortie confortable — allure 5'20–5'35/km", tip:"Sortie de récup avant le test S9. Tu dois terminer avec de l'énergie en réserve."},
-      ],
-      tip:"Dernière sortie avant le test. Ni trop courte, ni trop longue."
-    },
-  ]},
-
-  // ── SEMAINE 9 : TEST ─────────────────────────────────────────────────
-  { weekNum: 9, sessions: [
-    { id:"smw9a", name:"R1 — Test 10 km", type:"r-race", typeLabel:"Week-end · Compétition ou solo",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Échauffement complet — 2km footing + étirements dynamiques + 4×100m strides progressifs", tip:"15–20 min d'échauffement minimum. Le test doit démarrer avec les jambes vraiment activées."},
-        {type:"main", dist:"10 km", desc:"Test chrono — effort maximal — allure cible ~42'40 si niveau 1h30", tip:"Départ contrôlé les 2 premiers km. Si tu fais < 42'00, tu peux viser plus ambitieux. Si > 44'30, ajuste les allures de -5 à -8 sec/km pour la suite du plan."},
-        {type:"cool", dist:"1 km", desc:"Trot de récup post-test", tip:""},
-      ],
-      tip:"Cette séance vaut 10× les estimations théoriques. Utilise le résultat pour recalibrer toutes les allures du tableau si besoin."
-    },
-    { id:"smw9b", name:"R2 — Récup post-test", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing très léger — allure 6'00+/km", tip:"Minimum 2 jours de repos ou footing léger entre le test et la prochaine séance qualité."},
-      ],
-      tip:"Récupération active post-test. Les jambes ont travaillé dur — laisse-les absorber l'effort."
-    },
-    { id:"smw9c", name:"R3 — Reconstruction", type:"r-long", typeLabel:"Week-end",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"long", dist:"14 km", desc:"Sortie modérée — allure 5'10–5'25/km", tip:"Reprise du volume après le test. Pas de blocs cette semaine — juste reprendre le mouvement."},
-      ],
-      tip:"Semaine test = volume modéré. La qualité compte d'abord, le volume reprend en S10."
-    },
-  ]},
-
-  { weekNum: 10, sessions: [
-    { id:"smw10a", name:"R1 — Seuil 5 séries", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"5×8 min", desc:"5 fois 8 min à 4'25–4'35/km — 2'30\" récup trot", tip:"5 répétitions pour la première fois. Gère les 1re et 2e de façon conservatrice — les 3 dernières doivent tenir la même allure. Recalibre sur le résultat du test S9 si besoin."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"40 min de seuil réel en 5 blocs — pic de volume seuil de la phase Construction."
-    },
-    { id:"smw10b", name:"R2 — VMA 1000m", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"5×1000m", desc:"5 fois 1 km à 3'48–3'58/km — 2'30\" récup trot", tip:"Le 1000m est la distance reine du demi-fondeur. Les 2 premières répétitions doivent se faire en légère retenue pour tenir les 3 dernières."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"5×1000m à allure VMA est une des séances les plus efficaces pour progresser sur semi-marathon."
-    },
-    { id:"smw10c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"Semaine à fort volume — ce footing est indispensable pour absorber la charge."},
-      ],
-      tip:"Ne pas sous-estimer le rôle de récupération de ce footing en semaine de pic."
-    },
-    { id:"smw10d", name:"R4 — Longue avec blocs", type:"r-long", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long", dist:"8 km", desc:"8 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"interval", dist:"2×12 min", desc:"2 fois 12 min à 4'25–4'35/km — 4' trot récup", tip:"Blocs plus longs (12 min vs 8–10 min). L'effort cumulé par bloc est plus exigeant — gère bien l'entrée dans la 2e répétition."},
-        {type:"cool", dist:"8 km", desc:"8 km retour au calme — allure 5'15–5'30/km", tip:""},
-      ],
-      tip:"22km avec 2×12min de blocs. Le volume total repart à la hausse après S9."
-    },
-  ]},
-
-  { weekNum: 11, sessions: [
-    { id:"smw11a", name:"R1 — Seuil 5×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"5×10 min", desc:"5 fois 10 min à 4'25–4'35/km — 2'30\" récup trot", tip:"50 min de seuil réel — c'est la séance seuil la plus longue du programme. Si tu tiens les 5 répétitions à la même allure, ton seuil est solide."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Si tu tiens les 5×10min régulièrement, tu as la capacité physiologique pour le 1h30."
-    },
-    { id:"smw11b", name:"R2 — VMA 400m intensif", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"10×400m", desc:"10 fois 400m à 3'48–3'58/km — 1'15\" récup trot", tip:"Récup réduite à 1'15\" — plus exigeant mentalement que 8×400 à 1'30\". La régularité sur les 10 répétitions compte plus que la vitesse brute."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"10×400m avec récup courte = format de cross. Exigeant mais très efficace pour l'endurance de vitesse."
-    },
-    { id:"smw11c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"S11 est le sommet du volume. Ce footing est non-négociable."},
-      ],
-      tip:"Semaine de pic de volume. Le footing facile compte autant que les séances qualité."
-    },
-    { id:"smw11d", name:"R4 — Longue allure cible", type:"r-long", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long", dist:"6 km", desc:"6 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"main", dist:"8 km", desc:"8 km continus à 4'16/km — allure cible semi-marathon", tip:"Première fois que tu cours l'allure cible sur une vraie distance. Si tu tiens les 8km à ±5 sec/km sur des jambes déjà chargées, le 1h30 est dans tes cordes."},
-        {type:"cool", dist:"8 km", desc:"8 km retour au calme — allure 5'20–5'35/km", tip:""},
-      ],
-      tip:"Séance charnière du programme. 8km à 4'16/km en milieu de longue simule les conditions de la 2e moitié de course."
-    },
-  ]},
-
-  // ── PHASE 3 : SPÉCIFIQUE (S12–S14) ──────────────────────────────────
-
-  // ── SEMAINE 12 : RÉCUPÉRATION avant spécifique ───────────────────────
-  { weekNum: 12, sessions: [
-    { id:"smw12a", name:"R1 — Footing léger", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing léger — allure 6'00+/km", tip:"Après deux semaines de pic, le corps a besoin de se régénérer complètement avant la phase spécifique."},
-      ],
-      tip:"Récup S12 : aucune qualité. Laisser les jambes se vider avant la phase finale."
-    },
-    { id:"smw12b", name:"R2 — Footing léger", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing facile — allure 5'45–6'05/km", tip:"Tu dois finir cette sortie avec envie d'en faire plus — c'est le signal que la récup fonctionne."},
-      ],
-      tip:"La phase spécifique commence la semaine prochaine — aborde-la frais."
-    },
-    { id:"smw12c", name:"R3 — Sortie légère", type:"r-long", typeLabel:"Week-end",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"long", dist:"14 km", desc:"Sortie confortable — allure 5'20–5'35/km", tip:"14km en récup active. Si les jambes sont encore lourdes, raccourcis à 12km sans hésiter."},
-      ],
-      tip:"Dernière sortie de récup. Si les jambes sont fraîches, tu es prêt pour la phase spécifique."
-    },
-  ]},
-
-  { weekNum: 13, sessions: [
-    { id:"smw13a", name:"R1 — Seuil spécifique", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"4×10 min", desc:"4 fois 10 min à 4'18–4'25/km — 2'30\" récup trot", tip:"Allure seuil à 2 sec/km de l'allure course. Ces séances habituent le système musculaire à courir juste sous l'allure cible."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Phase Spécifique : l'allure seuil descend à 4'18–4'25/km — la frontière avec l'allure race devient intentionnellement floue."
-    },
-    { id:"smw13b", name:"R2 — Fractionné mixte", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"6×600m VMA puis 4×400m allure course", desc:"6 fois 600m à 3'45–3'55/km — 2' récup — puis 4 fois 400m à 4'16/km — 1'30\" récup", tip:"La 1re partie (VMA) te pousse au-delà de l'allure course. La 2e partie (400m à 4'16) ancre la sensation de l'allure cible sur jambes fatiguées."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Séance mixte unique du programme. Les 4×400m à 4'16/km après les 600m VMA programment la coordination neuromusculaire de l'allure course."
-    },
-    { id:"smw13c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"7–8 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"S13 est la semaine la plus intense du programme — ce footing est indispensable."},
-      ],
-      tip:"La phase spécifique est exigeante. Ce footing conditionne la qualité de ta longue du week-end."
-    },
-    { id:"smw13d", name:"R4 — Longue simulation 10 km", type:"r-long", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long", dist:"6 km", desc:"6 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"main", dist:"10 km", desc:"10 km continus à 4'16/km — allure cible semi", tip:"10km à 4'16/km en milieu de longue = 42'40 d'effort à allure race sur jambes fatiguées. Si tu tiens ça à ±5 sec/km, le 1h30 est une certitude."},
-        {type:"cool", dist:"6 km", desc:"6 km retour au calme — allure 5'20–5'35/km", tip:""},
-      ],
-      tip:"Séance clé du programme. 10km continus à allure cible après 6km d'installation — c'est la simulation de la 2e moitié d'un semi couru proprement."
-    },
-  ]},
-
-  { weekNum: 14, sessions: [
-    { id:"smw14a", name:"R1 — Seuil court vif", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"5×8 min", desc:"5 fois 8 min à 4'18–4'25/km — 2'30\" récup trot", tip:"Format court pour garder la vivacité sans trop charger avant la longue du week-end. 5×8 min = 40 min de travail au même volume que 4×10 min."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"La séance du dimanche est la priorité cette semaine — cette séance lui prépare le terrain."
-    },
-    { id:"smw14b", name:"R2 — Allure course 400m", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"12×400m", desc:"12 fois 400m exactement à 4'16/km — 1'30\" récup trot", tip:"Chaque 400m = ~1'42–1'44. Ce n'est pas une séance de vitesse — c'est l'ancrage de l'allure cible. La régularité est tout."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"12×400m à 4'16/km mémorise la sensation dans les jambes. Le jour J, le rythme sera familier."
-    },
-    { id:"smw14c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
+    { id:"smw3b", name:"R6 — Footing récup", type:"r-easy", typeLabel:"En semaine",
       dist: 7, unit:"km",
       sets: [
-        {type:"main", dist:"6–7 km", desc:"Footing conversationnel — allure 5'45–6'05/km", tip:"Les deux séances du début de semaine ont chargé les jambes. Ce footing décharge avant la longue du week-end."},
+        {type:"main", dist:"7 km", desc:"Footing très facile 5'45–6'15/km", tip:"Séance de récupération active. Si tu sens la fatigue, réduis à 5 km — aucun problème."},
       ],
-      tip:"Volume volontairement réduit cette semaine — la longue du dimanche est la priorité."
+      tip:"Séance de liaison. Elle ne fait pas la performance — elle permet les deux autres."
     },
-    { id:"smw14d", name:"R4 — Longue simulation 12 km", type:"r-long", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long", dist:"5 km", desc:"5 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"main", dist:"12 km", desc:"12 km continus à 4'16/km — allure cible semi", tip:"12km à 4'16/km = 51 min à allure course. C'est ta simulation de course la plus proche du jour J. Si tu tiens l'allure sur les 12km, tout s'enchaîne logiquement."},
-        {type:"cool", dist:"5 km", desc:"5 km retour au calme — allure 5'25–5'40/km", tip:""},
-      ],
-      tip:"Séance de confirmation finale. 12km à 4'16/km en milieu de sortie — si tu la gères, tu es prêt."
-    },
-  ]},
-
-  // ── PHASE 4 : AFFÛTAGE (S15–S16) ────────────────────────────────────
-
-  { weekNum: 15, sessions: [
-    { id:"smw15a", name:"R1 — Seuil affûtage", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 4×100m accélérations", tip:""},
-        {type:"interval", dist:"3×10 min", desc:"3 fois 10 min à 4'20–4'30/km — 3' récup trot", tip:"Volume réduit (3 vs 4–5 répétitions), intensité maintenue. Tu vas commencer à te sentir de plus en plus frais — c'est le signal que l'affûtage fonctionne."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"L'affûtage commence : moins de volume, même intensité. Résiste à la tentation d'en faire plus."
-    },
-    { id:"smw15b", name:"R2 — VMA vivacité", type:"r-quality", typeLabel:"En semaine · Soir",
-      dist: 9, unit:"km",
-      sets: [
-        {type:"warm", dist:"2 km", desc:"Footing progressif + 6×100m accélérations", tip:""},
-        {type:"interval", dist:"8×400m", desc:"8 fois 400m à 3'45–3'55/km — 1'30\" récup trot", tip:"Séance courte et vive. L'objectif n'est pas de se fatiguer — c'est de garder les fibres rapides activées pendant l'affûtage."},
-        {type:"cool", dist:"2 km", desc:"Retour au calme", tip:""},
-      ],
-      tip:"Cette séance doit se terminer avec l'impression d'avoir pu faire plus — c'est le bon signal."
-    },
-    { id:"smw15c", name:"R3 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 5, unit:"km",
-      sets: [
-        {type:"main", dist:"4–5 km", desc:"Footing très léger — allure 6'00+/km", tip:"Volume volontairement réduit. Ce footing est une maintenance, pas un entraînement."},
-      ],
-      tip:"Affûtage : volume global réduit. Ce footing très court complète la semaine sans ajouter de fatigue."
-    },
-    { id:"smw15d", name:"R4 — Longue légère + touche allure", type:"r-long", typeLabel:"Week-end",
+    { id:"smw3c", name:"R7 — Longue 14 km", type:"r-easy", typeLabel:"Week-end",
       dist: 14, unit:"km",
       sets: [
-        {type:"long", dist:"5 km", desc:"5 km installation — allure 5'05–5'20/km", tip:""},
-        {type:"main", dist:"20 min", desc:"20 min continus à 4'16/km — allure cible (≈4.8 km)", tip:"Touche d'allure course pour rester affûté. Si les jambes répondent bien à 4'16/km, l'affûtage est parfait."},
-        {type:"cool", dist:"4 km", desc:"4 km retour au calme — allure 5'20–5'35/km", tip:""},
+        {type:"long", dist:"14 km", desc:"Footing 5'30–6'00/km", tip:"Troisième semaine — le volume commence à compter. Mange et bois avant."},
       ],
-      tip:"Longue réduite en volume mais maintenant le contact avec l'allure course. Tu rentres avec les jambes."
+      tip:"Fais-le facile. La qualité vient des deux autres séances, pas de celle-ci."
+    },
+  ]},
+  { weekNum: 4, sessions: [
+    { id:"smw4a", name:"R8 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 6'00+/km", tip:"Semaine de récupération — allure basse, durée courte. Le corps assimile S1–3."},
+      ],
+      tip:"SEMAINE RÉCUP — baisse l'intensité et le volume volontairement."
+    },
+    { id:"smw4b", name:"R9 — Footing", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main", dist:"8 km", desc:"Footing modéré 5'45–6'00/km", tip:"Si les jambes sont légères, tu peux ajouter 4×20s de foulées en fin de sortie."},
+      ],
+      tip:"Reprise progressive après la légèreté du lundi."
+    },
+    { id:"smw4c", name:"R10 — Longue légère", type:"r-easy", typeLabel:"Week-end",
+      dist: 9, unit:"km",
+      sets: [
+        {type:"long", dist:"9 km", desc:"Footing aisé 5'30–5'50/km", tip:"Long run court — le but est de maintenir la routine sans fatiguer. Profites-en pour noter les sensations."},
+      ],
+      tip:"Récupération active. Moins c'est plus cette semaine."
+    },
+  ]},
+  { weekNum: 5, sessions: [
+    { id:"smw5a", name:"R11 — Seuil 4×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 13, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"4×10 min", desc:"Allure seuil — 4'28–4'38/km (récup 2'30 trot)", tip:"4 répétitions — volume seuil le plus élevé jusqu'ici. Récup raccourcie à 2'30. Reste discipliné sur l'allure."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"Séance charnière avant l'introduction de VMA en S6. Solidifie le seuil."
+    },
+    { id:"smw5b", name:"R12 — Footing + strides", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main",     dist:"6 km",    desc:"Footing 5'30–6'00/km", tip:""},
+        {type:"interval", dist:"4×80 m",  desc:"Foulées — allure 3'50–4'00/km · récup 90s marche", tip:"Intro aux foulées rapides — préparation neuromusculaire avant la VMA S6. Pas d'effort maximal — 85% de l'effort perçu."},
+        {type:"cool",     dist:"1 km",    desc:"Retour au calme", tip:""},
+      ],
+      tip:"Les foulées préparent les fibres rapides avant S6. C'est l'intro à la VMA, pas de la VMA."
+    },
+    { id:"smw5c", name:"R13 — Longue 17 km", type:"r-easy", typeLabel:"Week-end",
+      dist: 17, unit:"km",
+      sets: [
+        {type:"long", dist:"17 km", desc:"Footing 5'30–6'00/km", tip:"La plus longue sortie du bloc 1. Plan de ravitaillement : emporte de l'eau, mange 2h avant."},
+      ],
+      tip:"Après ça, tu sais courir 17 km. La base est posée pour attaquer la construction S6."
     },
   ]},
 
-  // ── SEMAINE 16 : RACE WEEK ───────────────────────────────────────────
-  { weekNum: 16, sessions: [
-    { id:"smw16a", name:"R1 — Activation J-4", type:"r-easy", typeLabel:"En semaine — J-4",
-      dist: 5, unit:"km",
+  // ── PHASE 2 : CONSTRUCTION (S6–S10) ─────────────────────────────────
+  // S6–7, S9–10 : 4 séances/sem · S8 : récup 3 séances
+  { weekNum: 6, sessions: [
+    { id:"smw6a", name:"R14 — Seuil 4×8 min allure cible", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 12, unit:"km",
       sets: [
-        {type:"warm", dist:"2 km", desc:"Footing léger d'activation", tip:""},
-        {type:"interval", dist:"4×100m", desc:"4 strides progressifs à allure race — récup complète entre chaque", tip:"Vifs mais sans forcer. Le but est de réveiller les fibres rapides, pas de les fatiguer."},
-        {type:"cool", dist:"1 km", desc:"Trot très facile", tip:""},
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"4×8 min",  desc:"Allure seuil spécifique — 4'25–4'35/km (récup 2'30 trot)", tip:"On est maintenant à l'allure cible du semi. 4'16/km visé en course, seuil un peu au-dessus = 4'25–4'35/km."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
       ],
-      tip:"J-4 : tu dois sortir de cette séance en te sentant bien et légèrement frustré de ne pas courir plus. C'est exactement le bon signal."
+      tip:"Première séance à l'allure spécifique semi. Le corps apprend à reconnaître 4'25–4'35."
     },
-    { id:"smw16b", name:"R2 — Footing J-2", type:"r-easy", typeLabel:"En semaine — J-2",
+    { id:"smw6b", name:"R15 — VMA 6×400 m", type:"r-quality", typeLabel:"En semaine",
+      dist: 9, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2 km",    desc:"Échauffement 5'30–6'00/km", tip:""},
+        {type:"interval", dist:"6×400 m", desc:"VMA — allure 3'48–3'58/km (récup 90s marche/trot)", tip:"PREMIÈRE VMA du plan. 400 m = 95 sec environ à cette allure. L'objectif est de tenir l'allure sur les 6 répétitions, pas d'aller plus vite."},
+        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
+      ],
+      tip:"VMA introduite progressivement. Si l'allure est trop dure, c'est 4'00–4'10/km — pas de problème."
+    },
+    { id:"smw6c", name:"R16 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:"Récupération active entre deux séances de qualité. Si les jambes sont lourdes, 5 km suffisent."},
+      ],
+      tip:"Séance tampon — maintient la routine sans ajouter de stress."
+    },
+    { id:"smw6d", name:"R17 — Longue 18 km + blocs", type:"r-easy", typeLabel:"Week-end",
+      dist: 18, unit:"km",
+      sets: [
+        {type:"long",     dist:"8 km",    desc:"Footing aisé 5'30–6'00/km", tip:"Première heure détendue."},
+        {type:"interval", dist:"2×8 min", desc:"Blocs allure cible — 4'16/km (récup 5 min trot entre)", tip:"BLOCS ALLURE CIBLE sur longue — nouveau stimulus. 4'16/km sur legs déjà fatigués. Réaliste de race day."},
+        {type:"cool",     dist:"2 km",    desc:"Retour au calme facile", tip:""},
+      ],
+      tip:"Long run avec qualité intégrée. La fatigue en fin de longue ressemble à la fatigue en fin de course."
+    },
+  ]},
+  { weekNum: 7, sessions: [
+    { id:"smw7a", name:"R18 — Seuil 4×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 12, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"4×10 min", desc:"Allure seuil — 4'25–4'35/km (récup 2'30 trot)", tip:"Répétitions plus longues vs S6. Même allure, plus de durée = progression qualitative."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"Montée en durée des répétitions seuil. Le corps s'adapte au maintien de l'allure plus longtemps."
+    },
+    { id:"smw7b", name:"R19 — VMA 8×400 m", type:"r-quality", typeLabel:"En semaine",
+      dist: 10, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2 km",    desc:"Échauffement", tip:""},
+        {type:"interval", dist:"8×400 m", desc:"VMA — allure 3'48–3'58/km (récup 90s)", tip:"2 répétitions de plus vs S6. L'allure ne change pas — c'est le volume VMA qui progresse."},
+        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
+      ],
+      tip:"Si les dernières répétitions dégradent l'allure de >5 sec/km, arrête à 6 ou 7 — mieux vaut ça que terminer cassé."
+    },
+    { id:"smw7c", name:"R20 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:""},
+      ],
+      tip:"Récupération active entre les deux blocs de qualité."
+    },
+    { id:"smw7d", name:"R21 — Longue 19 km + blocs", type:"r-easy", typeLabel:"Week-end",
+      dist: 19, unit:"km",
+      sets: [
+        {type:"long",     dist:"9 km",    desc:"Footing aisé 5'30–6'00/km", tip:""},
+        {type:"interval", dist:"3×8 min", desc:"Blocs allure cible — 4'16/km (récup 4 min entre)", tip:"Un bloc de plus vs S6. Les 3 blocs = 24 min à allure course. Récupération raccourcie."},
+        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
+      ],
+      tip:"Long run le plus ambitieux jusqu'ici. Si tu tiens les 3 blocs, le 1h30 est à portée."
+    },
+  ]},
+  { weekNum: 8, sessions: [
+    { id:"smw8a", name:"R22 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main", dist:"8 km", desc:"Footing léger 6'00+/km", tip:"SEMAINE RÉCUP — volume réduit, zéro qualité. Le corps consolide S6–7."},
+      ],
+      tip:"Semaine de récupération après deux semaines denses à 4 séances."
+    },
+    { id:"smw8b", name:"R23 — Footing", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main", dist:"8 km", desc:"Footing modéré 5'45–6'00/km", tip:"Légèrement plus vif que lundi si les jambes le permettent."},
+      ],
+      tip:"Maintien de la routine sans forcer."
+    },
+    { id:"smw8c", name:"R24 — Longue légère", type:"r-easy", typeLabel:"Week-end",
+      dist: 12, unit:"km",
+      sets: [
+        {type:"long", dist:"12 km", desc:"Footing aisé 5'30–5'50/km", tip:"Longue réduite — récupération après S6–7. Aucun bloc de qualité."},
+      ],
+      tip:"Bonne semaine de récup = S9 et S10 exécutés à 100%."
+    },
+  ]},
+  { weekNum: 9, sessions: [
+    { id:"smw9a", name:"R25 — TEST 10 km", type:"r-race", typeLabel:"TEST RACE",
+      dist: 10, unit:"km",
+      sets: [
+        {type:"warm",  dist:"2 km",  desc:"Échauffement footing + foulées", tip:"5–10 min facile puis 3×30s progressives pour activer les fibres rapides."},
+        {type:"main",  dist:"10 km", desc:"TEST 10 km — allure maximale sur la distance", tip:"Objectif : réaliser un 10 km race-like. Utiliser le résultat pour valider l'allure semi. Formule : temps 10km × 2.1 = objectif semi. Si tu fais 43'00, semi objectif = ~1h30."},
+        {type:"cool",  dist:"1 km",  desc:"Retour au calme très léger", tip:""},
+      ],
+      tip:"Baromètre du plan. Pas de pression — c'est une donnée, pas un jugement. Résultat <43'30 → 1h30 est jouable."
+    },
+    { id:"smw9b", name:"R26 — Récup test", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main", dist:"8 km", desc:"Footing très léger 6'00+/km", tip:"Après un test, le corps a besoin de 48h avant de reprendre un travail qualitatif."},
+      ],
+      tip:"Récup obligatoire après le test. Aucune intensité."
+    },
+    { id:"smw9c", name:"R27 — Reconstruction", type:"r-easy", typeLabel:"Week-end",
+      dist: 14, unit:"km",
+      sets: [
+        {type:"long", dist:"14 km", desc:"Footing modéré 5'30–5'45/km", tip:"Reprise du volume avec des jambes récupérées du test. Allure un peu plus vive que d'habitude si la forme est là."},
+      ],
+      tip:"Ferme la semaine test. On repart fort sur S10 — semaine pic."
+    },
+  ]},
+  { weekNum: 10, sessions: [
+    { id:"smw10a", name:"R28 — Seuil 5×8 min", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 13, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"5×8 min",  desc:"Allure seuil — 4'22–4'32/km (récup 2 min trot)", tip:"5 répétitions — volume seuil le plus élevé du plan. Récup raccourcie à 2 min. Exigeant mais faisable après la récup de S8–9."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"SEMAINE PIC — charge maximale du plan. Sois frais mentalement pour celle-ci."
+    },
+    { id:"smw10b", name:"R29 — VMA 5×1000 m", type:"r-quality", typeLabel:"En semaine",
+      dist: 13, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",    desc:"Échauffement", tip:""},
+        {type:"interval", dist:"5×1000 m",  desc:"VMA — allure 3'48–3'58/km (récup 2 min trot)", tip:"Passage aux 1000 m — répétitions plus longues que les 400 m. Qualité de course. Si le 1000 m devient trop dur, reste sur 5×600 m."},
+        {type:"cool",     dist:"2 km",      desc:"Retour au calme", tip:""},
+      ],
+      tip:"La séance VMA la plus exigeante du plan. C'est ici que se construit le plafond de vitesse."
+    },
+    { id:"smw10c", name:"R30 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:"Tampon entre les deux séances de qualité. Priorité à la récupération."},
+      ],
+      tip:"Séance tampon indispensable en semaine pic."
+    },
+    { id:"smw10d", name:"R31 — Longue 22 km + blocs", type:"r-easy", typeLabel:"Week-end",
+      dist: 22, unit:"km",
+      sets: [
+        {type:"long",     dist:"10 km",    desc:"Footing aisé 5'30–6'00/km", tip:"Commence vraiment facile — tu es fatigué de la semaine."},
+        {type:"interval", dist:"2×12 min", desc:"Blocs allure cible — 4'16/km (récup 5 min entre)", tip:"2×12 min = 24 min à allure race, sur jambes fatiguées. Si tu tiens ça, tu tiens le 1h30."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"Long run pic. Après ça, on entre en phase spécifique. Tu as fait le plus dur."
+    },
+  ]},
+
+  // ── PHASE 3 : SPÉCIFIQUE (S11–S13) ──────────────────────────────────
+  // S11 : récup 3 séances · S12–13 : 4 séances/sem
+  { weekNum: 11, sessions: [
+    { id:"smw11a", name:"R32 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main", dist:"8 km", desc:"Footing léger 6'00+/km", tip:"Récup transition après la semaine pic. Corps en assimilation."},
+      ],
+      tip:"SEMAINE RÉCUP TRANSITION — S10 était la semaine la plus dure. Laisse le corps digérer."
+    },
+    { id:"smw11b", name:"R33 — Footing", type:"r-easy", typeLabel:"En semaine",
+      dist: 8, unit:"km",
+      sets: [
+        {type:"main", dist:"8 km", desc:"Footing modéré 5'45–6'00/km", tip:""},
+      ],
+      tip:"Reprise progressive."
+    },
+    { id:"smw11c", name:"R34 — Longue légère", type:"r-easy", typeLabel:"Week-end",
+      dist: 14, unit:"km",
+      sets: [
+        {type:"long", dist:"14 km", desc:"Footing aisé 5'30–5'50/km", tip:"Maintien du volume sans forcer. Préparation mentale : dans 4 semaines c'est la course."},
+      ],
+      tip:"Transition vers la phase spécifique. La forme revient, l'affûtage arrive."
+    },
+  ]},
+  { weekNum: 12, sessions: [
+    { id:"smw12a", name:"R35 — Seuil spécifique 4×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 13, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"4×10 min", desc:"Allure seuil — 4'18–4'25/km (récup 2 min trot)", tip:"Allure encore plus proche de la course. 4'18–4'25 = entre seuil et allure race. Récup courte."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"Phase spécifique — toutes les séances de qualité s'approchent de l'allure course."
+    },
+    { id:"smw12b", name:"R36 — Mixte VMA+Spécifique", type:"r-quality", typeLabel:"En semaine",
+      dist: 13, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2 km",    desc:"Échauffement", tip:""},
+        {type:"interval", dist:"6×600 m", desc:"VMA — allure 3'48–3'58/km (récup 90s)", tip:"D'abord le travail VMA — jambes fraîches."},
+        {type:"interval", dist:"4×400 m", desc:"Spécifique — allure 4'16/km (récup 60s)", tip:"Enchaîner directement sur de l'allure course. Simulation de la sensation de maintenir 4'16 sur jambes déjà sollicitées."},
+        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
+      ],
+      tip:"Séance combinée — l'une des plus spécifiques du plan. Qualité + spécificité sur jambes chargées."
+    },
+    { id:"smw12c", name:"R37 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:""},
+      ],
+      tip:"Tampon entre les séances de qualité."
+    },
+    { id:"smw12d", name:"R38 — Longue 22 km allure progressive", type:"r-easy", typeLabel:"Week-end",
+      dist: 22, unit:"km",
+      sets: [
+        {type:"long",     dist:"10 km", desc:"Footing progressif 5'30→5'00/km", tip:"Accélération progressive sur les 10 premiers km — pas une brique."},
+        {type:"interval", dist:"10 km", desc:"Allure course — 4'16/km", tip:"10 km à allure course sur longue — le segment le plus exigeant du plan. Ça fait mal. C'est prévu."},
+        {type:"cool",     dist:"2 km",  desc:"Retour au calme", tip:""},
+      ],
+      tip:"Long run le plus spécifique. Si tu tiens 10 km à 4'16 sur jambes fatiguées, le semi est dans tes cordes."
+    },
+  ]},
+  { weekNum: 13, sessions: [
+    { id:"smw13a", name:"R39 — Seuil 5×8 min allure cible", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 13, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"5×8 min",  desc:"Allure seuil — 4'18–4'25/km (récup 2 min trot)", tip:"5 répétitions à allure cible. Récup 2 min. Exigeant — dernière grosse séance seuil du plan."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"Avant-dernière semaine chargée. Après S13, l'affûtage commence."
+    },
+    { id:"smw13b", name:"R40 — 12×400 m allure race", type:"r-quality", typeLabel:"En semaine",
+      dist: 12, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2 km",     desc:"Échauffement", tip:""},
+        {type:"interval", dist:"12×400 m", desc:"Allure 4'16/km (récup 60s trot)", tip:"12 répétitions courtes à allure race exacte — 400 m à 4'16/km = 101 secondes chacune. Récup courte. Maintien de la qualité sur le volume."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"Séance de volume à allure race. Si les derniers 400 m dégradent, c'est OK — tu n'es pas loin de la course."
+    },
+    { id:"smw13c", name:"R41 — Footing récup", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:""},
+      ],
+      tip:"Tampon."
+    },
+    { id:"smw13d", name:"R42 — Longue 22 km + segment race", type:"r-easy", typeLabel:"Week-end",
+      dist: 22, unit:"km",
+      sets: [
+        {type:"long",     dist:"8 km",  desc:"Footing aisé 5'30–6'00/km", tip:""},
+        {type:"interval", dist:"12 km", desc:"Segment allure course — 4'16/km", tip:"12 km à allure race sur longue — la préparation mentale ultime. Si tu tiens ça en S13, tu tiens le semi."},
+        {type:"cool",     dist:"2 km",  desc:"Retour au calme", tip:""},
+      ],
+      tip:"Dernière longue avec qualité. Après ça, les longues de S14–15 sont légères par comparaison."
+    },
+  ]},
+
+  // ── PHASE 4 : AFFÛTAGE (S14–S15) ────────────────────────────────────
+  // S14–15 : 3 séances/sem · Volume -30% · Intensité maintenue
+  { weekNum: 14, sessions: [
+    { id:"smw14a", name:"R43 — Seuil allégé 3×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
+      dist: 11, unit:"km",
+      sets: [
+        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
+        {type:"interval", dist:"3×10 min", desc:"Allure seuil — 4'20–4'30/km (récup 3 min trot)", tip:"Volume réduit vs S13. L'allure reste proche de la course — on maintient la stimulation neuromusculaire sans accumuler de fatigue."},
+        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
+      ],
+      tip:"AFFÛTAGE — moins de volume, qualité maintenue. Le corps commence à se recharger."
+    },
+    { id:"smw14b", name:"R44 — Footing facile", type:"r-easy", typeLabel:"En semaine",
+      dist: 7, unit:"km",
+      sets: [
+        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:"Aucune intensité. Juste garder les jambes actives."},
+      ],
+      tip:"Simple maintien de la routine. Ni trop ni trop peu."
+    },
+    { id:"smw14c", name:"R45 — Longue légère + segment cible", type:"r-easy", typeLabel:"Week-end",
+      dist: 16, unit:"km",
+      sets: [
+        {type:"long",     dist:"10 km",  desc:"Footing aisé 5'30–6'00/km", tip:""},
+        {type:"interval", dist:"20 min", desc:"Segment allure cible — 4'16/km", tip:"Dernier rappel de l'allure course — 20 min à 4'16/km sur jambes fraîches. Doit se sentir difficile mais maîtrisé."},
+        {type:"cool",     dist:"2 km",   desc:"Retour au calme", tip:""},
+      ],
+      tip:"Dernière sortie avec intention. Après ça, tout ce qui reste c'est de gérer la récup."
+    },
+  ]},
+  { weekNum: 15, sessions: [
+    { id:"smw15a", name:"R46 — Activation J-4", type:"r-easy", typeLabel:"RACE WEEK · J-4",
+      dist: 4, unit:"km",
+      sets: [
+        {type:"warm",     dist:"3 km",    desc:"Footing 5'30–5'45/km", tip:"Activation légère — débloquer les jambes sans fatiguer."},
+        {type:"interval", dist:"4×80 m",  desc:"Foulées rapides — allure 3'50–4'00/km · récup 90s", tip:"Réveiller les fibres rapides avant la course. Pas d'effort soutenu."},
+        {type:"cool",     dist:"1 km",    desc:"Retour au calme", tip:""},
+      ],
+      tip:"RACE WEEK — J-4. L'entraînement est fini. Ce qui se fait maintenant peut nuire, pas aider."
+    },
+    { id:"smw15b", name:"R47 — Footing J-2", type:"r-easy", typeLabel:"RACE WEEK · J-2",
       dist: 3, unit:"km",
       sets: [
-        {type:"main", dist:"15–20 min", desc:"Footing très léger — allure 6'00+/km", tip:"Juste maintenir la circulation. 15–20 min suffisent. Après ça : repos complet jusqu'au jour J."},
+        {type:"main", dist:"3 km", desc:"Footing très léger — 15–20 min, allure 6'00+/km", tip:"Juste maintenir la circulation. 15–20 min suffisent. Après ça : repos complet jusqu'au jour J."},
       ],
       tip:"Dernière sortie avant la course. L'essentiel est fait — 15 semaines de travail sont dans les jambes."
     },
-    { id:"smw16c", name:"🏁 RACE DAY — Semi-marathon 1h30", type:"r-race", typeLabel:"COURSE",
+    { id:"smw15c", name:"🏁 RACE DAY — Semi-marathon 1h30", type:"r-race", typeLabel:"COURSE",
       dist: 21, unit:"km",
       sets: [
-        {type:"warm", dist:"5 km", desc:"Les 5 premiers km — départ contrôlé 4'20–4'25/km", tip:"L'euphorie du départ est l'ennemi principal. Reste sur 4'20–4'25/km les 5 premiers km — tu peux accélérer plus tard, tu ne peux pas réparer une sortie trop rapide."},
-        {type:"main", dist:"13 km", desc:"Corps de la course — allure 4'16/km", tip:"Installe 4'16/km et régule avec le GPS. La sensation doit être 'difficile mais gérable'. Si ça devient 'difficile et qui se dégrade', recule de 3–4 sec/km."},
+        {type:"warm",     dist:"5 km",          desc:"Les 5 premiers km — départ contrôlé 4'20–4'25/km", tip:"L'euphorie du départ est l'ennemi principal. Reste sur 4'20–4'25/km les 5 premiers km — tu peux accélérer plus tard, tu ne peux pas réparer une sortie trop rapide."},
+        {type:"main",     dist:"13 km",         desc:"Corps de la course — allure 4'16/km", tip:"Installe 4'16/km et régule avec le GPS. La sensation doit être 'difficile mais gérable'. Si ça devient 'difficile et qui se dégrade', recule de 3–4 sec/km."},
         {type:"interval", dist:"3 derniers km", desc:"Finish — accélération progressive si les jambes répondent", tip:"Si tu arrives au km 18 avec de la marge, accélère progressivement vers 4'10/km sur le dernier km. Sinon : maintiens 4'16/km jusqu'à la ligne — tu obtiens le 1h30."},
       ],
       tip:"⚠️ Rappels : chaussures rodées · Gel ou sucres toutes les 30 min · Ne regarde pas la montre avant le km 3 · Le 1h30 se gagne dans les 5 premiers km."
     },
   ]},
 ];
-
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
@@ -3111,7 +3002,7 @@ function toggleSkip(id) {
 // ═══════════════════════════════════════════════════
 let currentSport = 'week';
 let currentWeekView = null; // null = auto (active week)
-const TOTAL_WEEKS = 16;
+const TOTAL_WEEKS = 15;
 
 const DISCIPLINE_CONFIG = {
   swim: { label: 'Natation', emoji: '🏊', color: 'swim', accent: '#38bdf8', defaultUnit: 'm' },
@@ -3122,9 +3013,9 @@ const DISCIPLINE_CONFIG = {
 
 const WEEK_PHASES = [
   { phase: 1, name: 'BASE AÉROBIE', weeks: [1,2,3,4,5] },
-  { phase: 2, name: 'CONSTRUCTION', weeks: [6,7,8,9,10,11] },
-  { phase: 3, name: 'SPÉCIFIQUE', weeks: [12,13,14] },
-  { phase: 4, name: 'AFFÛTAGE', weeks: [15,16] },
+  { phase: 2, name: 'CONSTRUCTION', weeks: [6,7,8,9,10] },
+  { phase: 3, name: 'SPÉCIFIQUE', weeks: [11,12,13] },
+  { phase: 4, name: 'AFFÛTAGE', weeks: [14,15] },
 ];
 
 function addDays(date, days) {
