@@ -13,7 +13,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Half Ironman — Tracker Triathlon</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #07090f;
@@ -608,34 +608,6 @@ body {
   flex-shrink: 0;
 }
 
-/* ─── ZONE LEGEND ─── */
-.zone-legend {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 18px;
-  margin-bottom: 28px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-.zone-legend-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted2);
-  width: 100%;
-}
-.zl-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.zl-item .zone-tag { font-size: 10px; padding: 2px 7px; }
 
 /* ─── STATS BAR ─── */
 .stats-bar {
@@ -1029,6 +1001,210 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ─── PERF SHEET ─── */
+#perf-backdrop {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.72); z-index: 799;
+}
+#perf-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #131d2e; border-radius: 16px 16px 0 0;
+  max-height: 88vh; overflow: hidden; z-index: 800;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+#perf-sheet.open { transform: translateY(0); }
+.perf-handle {
+  width: 36px; height: 4px; background: #1c2d44;
+  border-radius: 99px; margin: 10px auto 0;
+}
+.perf-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+  padding: 12px 16px;
+}
+.perf-discipline-label {
+  display: block; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+}
+.perf-session-name {
+  display: block; font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: #5a7a99; margin-top: 2px;
+}
+.perf-close-btn {
+  min-width: 44px; min-height: 44px; display: flex;
+  align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: #5a7a99; font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; flex-shrink: 0;
+}
+.perf-body {
+  overflow-y: auto; padding: 16px 16px 0;
+  -webkit-overflow-scrolling: touch;
+  max-height: calc(88vh - 54px - 72px);
+}
+.perf-field-label {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  font-weight: 500; color: #5a7a99; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.perf-sep {
+  height: 1px; background: #1c2d44; margin: 16px 0;
+}
+.rpe-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+}
+.rpe-btn {
+  min-height: 52px; border-radius: 8px;
+  border: 1px solid #1c2d44; background: #111827;
+  color: #5a7a99; font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.08s;
+}
+.rpe-btn:active { transform: scale(0.94); }
+.rpe-btn.selected { color: #07090f; }
+.rpe-label-zone {
+  height: 22px; text-align: center; margin-top: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-style: italic;
+}
+.perf-actions {
+  display: flex; gap: 12px; align-items: center;
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #1c2d44; background: #131d2e;
+}
+.perf-btn-cancel {
+  min-width: 80px; min-height: 56px; background: transparent;
+  border: 1px solid #1c2d44; border-radius: 8px;
+  color: #5a7a99; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+}
+.perf-btn-submit {
+  flex: 1; height: 56px; border: none; border-radius: 8px;
+  color: #07090f; font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 1px; cursor: pointer;
+  opacity: 1; transition: opacity 0.15s;
+}
+.perf-btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+.perf-metric-block { margin-bottom: 16px; }
+.perf-label-row {
+  display: flex; justify-content: space-between;
+  align-items: baseline; margin-bottom: 6px;
+}
+.perf-label-row-left {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  color: #5a7a99; text-transform: uppercase; letter-spacing: 1px;
+}
+.perf-label-row-right {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5a7a99;
+}
+.perf-optional-tag {
+  font-family: 'DM Sans', sans-serif; font-size: 9px;
+  padding: 2px 6px; border-radius: 4px;
+  background: #0d1117; border: 1px solid #1c2d44; color: #5a7a99;
+}
+.perf-input-wrap { position: relative; }
+.perf-input {
+  width: 100%; height: 52px; background: #111827;
+  border: 1px solid #1c2d44; border-radius: 8px;
+  color: #e2eaf4; font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 600; text-align: right;
+  padding: 0 32px 0 12px; box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.perf-input:focus { outline: none; }
+.perf-input-suffix {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%); pointer-events: none;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: #5a7a99;
+}
+.perf-diff {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 6px; font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 600;
+}
+.perf-diff-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.perf-pace-group {
+  display: flex; align-items: center; gap: 8px;
+}
+.perf-pace-input {
+  width: 64px; height: 52px; background: #111827;
+  border: 1px solid #1c2d44; border-radius: 8px;
+  color: #e2eaf4; font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 600; text-align: center;
+  transition: border-color 0.15s;
+}
+.perf-pace-input:focus { outline: none; }
+.perf-pace-sep {
+  font-family: 'DM Sans', sans-serif; font-size: 20px;
+  font-weight: 600; color: #5a7a99; flex-shrink: 0;
+}
+.perf-pace-suffix {
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: #5a7a99; margin-left: 4px;
+}
+.perf-2col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.perf-slider-wrap { height: 44px; display: flex; align-items: center; }
+.perf-slider {
+  -webkit-appearance: none; width: 100%; height: 6px;
+  border-radius: 99px; outline: none; cursor: pointer;
+  background: #1c2d44;
+}
+.perf-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 24px; height: 24px;
+  border-radius: 50%; border: 2px solid #131d2e; cursor: pointer;
+  background: #e2eaf4;
+}
+.perf-slider-values {
+  text-align: center; margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;
+}
+.perf-textarea {
+  width: 100%; height: 80px; background: #111827;
+  border: 1px solid #1c2d44; border-radius: 8px;
+  color: #e2eaf4; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; padding: 10px 12px;
+  box-sizing: border-box; resize: none; overflow: hidden;
+  transition: border-color 0.15s;
+}
+.perf-textarea:focus { outline: none; }
+.wsc-results-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 6px; overflow: hidden; flex-wrap: nowrap;
+}
+.wsc-rpe-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 3px 8px; border-radius: 99px; height: 24px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  font-weight: 700; flex-shrink: 0; white-space: nowrap;
+}
+.wsc-summary-line {
+  flex: 1; min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+  font-size: 11px;
+}
+.sum-val {
+  font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #e2eaf4;
+}
+.sum-label { font-family: 'DM Sans', sans-serif; color: #5a7a99; }
+.sum-sep { font-family: 'DM Sans', sans-serif; color: #3a5570; }
+.wsc-edit-btn {
+  min-width: 44px; min-height: 44px; display: flex;
+  align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: #3a5570; transition: color 0.15s; flex-shrink: 0;
+}
+.wsc-edit-btn:active { color: #5a7a99; }
+.wsc-add-perf-link {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  cursor: pointer; text-decoration: underline; color: #5a7a99;
+}
 </style>
 </head>
 <body>
@@ -1065,13 +1241,6 @@ body {
 
 
 
-  <!-- LÉGENDE NAGE -->
-  <div class="zone-legend">
-    <div class="zone-legend-title">Types de nage</div>
-    <div class="zl-item"><span class="nage-tag crawl">CRAWL</span> Effort principal — travaille le cardio et l'endurance</div>
-    <div class="zl-item"><span class="nage-tag brasse">BRASSE</span> Récupération active — reprends ton souffle</div>
-    <div class="zl-item"><span class="nage-tag mixte">MIXTE</span> Alterne crawl et brasse au feeling selon ta fatigue</div>
-  </div>
 
   <div class="program-date-panel" id="program-date-panel">
     <div class="program-date-copy">
@@ -2233,6 +2402,7 @@ const STORE = {
   skipped:     'hi_swim_skipped_v1',
   notes:       'hi_tri_session_notes_v1',
   results:     'hi_tri_session_results_v1',
+  perfResults: 'hi_tri_perf_results_v1',
   programEnd:  'hi_tri_program_end',
   legacyStart: 'hi_tri_program_start',
 };
@@ -2251,12 +2421,14 @@ let completed    = loadStoredState(STORE.completed);
 let skipped      = loadStoredState(STORE.skipped);
 let sessionNotes = loadStoredState(STORE.notes);
 let sessionResults = loadStoredState(STORE.results);
+let perfResults  = loadStoredState(STORE.perfResults);
 
 function save() {
-  localStorage.setItem(STORE.completed,  JSON.stringify(completed));
+  localStorage.setItem(STORE.completed,   JSON.stringify(completed));
   localStorage.setItem(STORE.skipped,     JSON.stringify(skipped));
-  localStorage.setItem(STORE.notes,    JSON.stringify(sessionNotes));
-  localStorage.setItem(STORE.results,  JSON.stringify(sessionResults));
+  localStorage.setItem(STORE.notes,       JSON.stringify(sessionNotes));
+  localStorage.setItem(STORE.results,     JSON.stringify(sessionResults));
+  localStorage.setItem(STORE.perfResults, JSON.stringify(perfResults));
 }
 
 // Migration one-shot : convertit les anciens IDs muscu non qualifiés (tmw1a, tmw2a…)
@@ -2625,6 +2797,7 @@ function buildSessionCard(session, disciplineKey) {
         <div class="wsc-badge ${config.color}">${getDistLabel(session, disciplineKey)}</div>
       </div>
       <div class="wsc-meta">${session.typeLabel || ''}</div>
+      ${isDone ? buildPerfResultsRowHtml(session, disciplineKey) : ''}
       <div class="wsc-actions">${actionBtns}</div>
       ${buildSessionDetailHtml(session, disciplineKey)}
     </div>
@@ -2716,15 +2889,17 @@ function wvToggleDone(id) {
   const openCards = getOpenWeekSessionIds();
   if (completed[id]) {
     delete completed[id];
+    save();
+    updateStats();
+    buildWeekView(currentWeekView);
+    restoreOpenWeekSessions(openCards);
+    showToast(false);
   } else {
     completed[id] = true;
     delete skipped[id];
+    save();
+    openPerfSheet(id, openCards);
   }
-  save();
-  updateStats();
-  buildWeekView(currentWeekView);
-  restoreOpenWeekSessions(openCards);
-  showToast(!!completed[id]);
 }
 
 function wvToggleSkip(id) {
@@ -2948,11 +3123,12 @@ function exportData() {
   const data = {
     version: 1,
     exportedAt: new Date().toISOString(),
-    completed:  JSON.parse(localStorage.getItem(STORE.completed)  || '{}'),
-    skipped:    JSON.parse(localStorage.getItem(STORE.skipped)     || '{}'),
-    notes:      JSON.parse(localStorage.getItem(STORE.notes)    || '{}'),
-    results:    JSON.parse(localStorage.getItem(STORE.results)  || '{}'),
-    programEnd: localStorage.getItem(STORE.programEnd) || null,
+    completed:   JSON.parse(localStorage.getItem(STORE.completed)   || '{}'),
+    skipped:     JSON.parse(localStorage.getItem(STORE.skipped)     || '{}'),
+    notes:       JSON.parse(localStorage.getItem(STORE.notes)       || '{}'),
+    results:     JSON.parse(localStorage.getItem(STORE.results)     || '{}'),
+    perfResults: JSON.parse(localStorage.getItem(STORE.perfResults) || '{}'),
+    programEnd:  localStorage.getItem(STORE.programEnd) || null,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -2979,15 +3155,17 @@ function importData(event) {
       if (!data.completed || typeof data.completed !== 'object' || Array.isArray(data.completed) ||
           !data.skipped   || typeof data.skipped   !== 'object' || Array.isArray(data.skipped))
         throw new Error('Format invalide');
-      localStorage.setItem(STORE.completed,  JSON.stringify(data.completed));
+      localStorage.setItem(STORE.completed,   JSON.stringify(data.completed));
       localStorage.setItem(STORE.skipped,     JSON.stringify(data.skipped));
-      localStorage.setItem(STORE.notes,    JSON.stringify(data.notes    || {}));
-      localStorage.setItem(STORE.results,  JSON.stringify(data.results  || {}));
+      localStorage.setItem(STORE.notes,       JSON.stringify(data.notes       || {}));
+      localStorage.setItem(STORE.results,     JSON.stringify(data.results     || {}));
+      localStorage.setItem(STORE.perfResults, JSON.stringify(data.perfResults || {}));
       if (data.programEnd) localStorage.setItem(STORE.programEnd, data.programEnd);
       completed      = loadStoredState(STORE.completed);
       skipped        = loadStoredState(STORE.skipped);
       sessionNotes   = loadStoredState(STORE.notes);
       sessionResults = loadStoredState(STORE.results);
+      perfResults    = loadStoredState(STORE.perfResults);
       refreshCalendarViews();
       showToast('import-ok');
     } catch {
@@ -3032,6 +3210,8 @@ function showToast(state) {
   else if (state === 'import-ok')     { t.textContent = '✓ Données restaurées';        t.style.background = 'var(--green)'; }
   else if (state === 'import-error')  { t.textContent = '✗ Fichier invalide';          t.style.background = 'var(--red)'; }
   else if (state === 'result-saved')  { t.textContent = '⏱ Résultat enregistré';      t.style.background = 'var(--green)'; }
+  else if (state === 'perf-saved')   { t.textContent = '✓ Résultats enregistrés';    t.style.background = 'var(--green)'; }
+  else if (state === 'perf-skipped') { t.textContent = 'Séance validée — Ajoute tes résultats via ✏'; t.style.background = 'var(--muted)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
@@ -3155,12 +3335,475 @@ function addActiveWeekIndicator() {
 }
 
 // ═══════════════════════════════════════════════════
+// PERF SHEET — RPE + Résultats par discipline
+// ═══════════════════════════════════════════════════
+
+const RPE_LABELS = {
+  1: 'Très léger', 3: 'Modéré', 5: 'Difficile',
+  7: 'Très difficile', 10: 'Maximum'
+};
+const RPE_COLORS = {
+  1:  { bg: '#22c55e', txt: '#07090f' },
+  2:  { bg: '#84cc16', txt: '#07090f' },
+  3:  { bg: '#facc15', txt: '#07090f' },
+  4:  { bg: '#f59e0b', txt: '#07090f' },
+  5:  { bg: '#f97316', txt: '#fff' },
+  6:  { bg: '#ef4444', txt: '#fff' },
+  7:  { bg: '#dc2626', txt: '#fff' },
+  8:  { bg: '#b91c1c', txt: '#fff' },
+  9:  { bg: '#991b1b', txt: '#fff' },
+  10: { bg: '#7f1d1d', txt: '#fff' }
+};
+
+let perfSheetSessionId   = null;
+let perfSheetOpenCards   = null;
+let perfSheetSelectedRpe = null;
+let perfSheetDiscipline  = null;
+let perfSheetHadData     = false;
+
+function openPerfSheet(id, openCards) {
+  perfSheetSessionId = id;
+  perfSheetOpenCards = openCards;
+  perfSheetSelectedRpe = null;
+  perfSheetDiscipline = null;
+
+  // Find session and discipline in current week
+  const weekSessions = getWeekSessions(currentWeekView);
+  let session = null;
+  let discipline = null;
+  for (const [disc, sessions] of Object.entries(weekSessions)) {
+    const found = sessions.find(s => s.id === id);
+    if (found) { session = found; discipline = disc; break; }
+  }
+  if (!session || !discipline) {
+    // Fallback: rebuild without opening sheet
+    buildWeekView(currentWeekView);
+    restoreOpenWeekSessions(openCards);
+    updateStats();
+    showToast(true);
+    return;
+  }
+
+  perfSheetDiscipline = discipline;
+  const config = DISCIPLINE_CONFIG[discipline] || DISCIPLINE_CONFIG.swim;
+  const accent = config.accent;
+  const existing = perfResults[id] || null;
+  perfSheetHadData = !!existing;
+
+  // Fill header
+  const labelEl = document.querySelector('.perf-discipline-label');
+  const nameEl  = document.querySelector('.perf-session-name');
+  if (labelEl) { labelEl.textContent = config.emoji + ' ' + config.label; labelEl.style.color = accent; }
+  if (nameEl)  nameEl.textContent = getSessionDisplayName(session);
+
+  // Submit button
+  const submitBtn = document.getElementById('perfSubmitBtn');
+  if (submitBtn) { submitBtn.style.background = accent; submitBtn.disabled = true; }
+
+  // RPE grid
+  buildRpeGrid(existing ? existing.rpe : null);
+
+  // Pre-fill RPE if existing
+  if (existing && existing.rpe) {
+    perfSheetSelectedRpe = existing.rpe;
+    if (submitBtn) submitBtn.disabled = false;
+  }
+
+  // Metrics
+  buildMetricsSection(discipline, session, existing);
+
+  // Show sheet
+  const backdrop = document.getElementById('perf-backdrop');
+  const sheet    = document.getElementById('perf-sheet');
+  if (backdrop) backdrop.style.display = 'block';
+  if (sheet) {
+    sheet.style.display = 'block';
+    requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('open')));
+  }
+}
+
+function buildRpeGrid(existingRpe) {
+  const grid      = document.getElementById('rpeGrid');
+  const labelZone = document.getElementById('rpeLabelZone');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (labelZone) labelZone.textContent = '';
+
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'rpe-btn';
+    btn.textContent = i;
+    const val = i;
+    btn.onclick = () => selectRpe(val);
+    if (i === existingRpe) {
+      const c = RPE_COLORS[i];
+      btn.classList.add('selected');
+      btn.style.background   = c.bg;
+      btn.style.borderColor  = c.bg;
+      btn.style.color        = c.txt;
+      if (labelZone) { labelZone.textContent = RPE_LABELS[i] || ''; labelZone.style.color = c.bg; }
+    }
+    grid.appendChild(btn);
+  }
+}
+
+function selectRpe(val) {
+  perfSheetSelectedRpe = val;
+  document.querySelectorAll('.rpe-btn').forEach((b, idx) => {
+    b.classList.remove('selected');
+    b.style.background  = '';
+    b.style.borderColor = '';
+    b.style.color       = '';
+    if (idx + 1 === val) {
+      const c = RPE_COLORS[val];
+      b.classList.add('selected');
+      b.style.background  = c.bg;
+      b.style.borderColor = c.bg;
+      b.style.color       = c.txt;
+    }
+  });
+  const labelZone = document.getElementById('rpeLabelZone');
+  if (labelZone) {
+    labelZone.textContent = RPE_LABELS[val] || '';
+    labelZone.style.color = RPE_COLORS[val]?.bg || '#e2eaf4';
+  }
+  const btn = document.getElementById('perfSubmitBtn');
+  if (btn) btn.disabled = false;
+}
+
+function updateBrasseSlider(input) {
+  const val = parseInt(input.value) || 0;
+  const pct = val * 2;
+  input.style.background = `linear-gradient(to right, #4ade80 0%, #4ade80 ${pct}%, #38bdf8 ${pct}%, #38bdf8 100%)`;
+  const display = document.getElementById('perf-brasse-display');
+  if (display) display.textContent = `${val}% brasse — ${100 - val}% crawl`;
+}
+
+function updateBikeDiff(val) {
+  const diffEl  = document.getElementById('perf-watts-diff');
+  const inputEl = document.getElementById('perf-watts');
+  if (!diffEl) return;
+  const target = inputEl?.dataset?.target ? parseInt(inputEl.dataset.target) : null;
+  if (!target) { diffEl.style.display = 'none'; return; }
+  if (!val) { diffEl.style.display = 'none'; return; }
+  diffEl.style.display = 'flex';
+  const diff  = parseInt(val) - target;
+  const color = diff >= 0 ? '#4ade80' : '#f87171';
+  const sign  = diff >= 0 ? '+' : '';
+  diffEl.innerHTML = `<span class="perf-diff-dot" style="background:${color}"></span><span style="color:${color}">${sign}${diff} W vs cible ${target} W</span>`;
+}
+
+function buildMetricsSection(discipline, session, existing) {
+  const container = document.getElementById('perfMetrics');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (discipline === 'swim') {
+    const targetDist = session.dist || '';
+    const distVal    = existing?.distM ?? '';
+    const brasse     = existing?.pctBrasse ?? 25;
+    const brassPct   = brasse * 2;
+    const paceMin    = (existing?.paceS !== undefined) ? Math.floor(existing.paceS / 60) : '';
+    const paceSec    = (existing?.paceS !== undefined) ? String(existing.paceS % 60).padStart(2, '0') : '';
+
+    container.innerHTML = `
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Distance réalisée</span>
+          ${targetDist ? `<span class="perf-label-row-right">${targetDist} m planifiés</span>` : ''}
+        </div>
+        <div class="perf-input-wrap">
+          <input type="number" class="perf-input" id="perf-distM"
+            placeholder="${targetDist || '0'}" value="${distVal}" min="0" max="10000">
+          <span class="perf-input-suffix">m</span>
+        </div>
+      </div>
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Part brasse</span>
+        </div>
+        <div class="perf-slider-wrap">
+          <input type="range" class="perf-slider" id="perf-brasse"
+            min="0" max="50" step="5" value="${brasse}"
+            style="background:linear-gradient(to right,#4ade80 0%,#4ade80 ${brassPct}%,#38bdf8 ${brassPct}%,#38bdf8 100%)"
+            oninput="updateBrasseSlider(this)">
+        </div>
+        <div class="perf-slider-values" id="perf-brasse-display">${brasse}% brasse — ${100 - brasse}% crawl</div>
+      </div>
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Pace crawl</span>
+          <span class="perf-optional-tag">OPTIONNEL</span>
+        </div>
+        <div class="perf-pace-group">
+          <input type="number" class="perf-pace-input" id="perf-pace-mm"
+            placeholder="1" min="0" max="9" value="${paceMin}"
+            oninput="if(this.value.length>=1)document.getElementById('perf-pace-ss').focus()">
+          <span class="perf-pace-sep">:</span>
+          <input type="number" class="perf-pace-input" id="perf-pace-ss"
+            placeholder="30" min="0" max="59" value="${paceSec}">
+          <span class="perf-pace-suffix">/100m</span>
+        </div>
+      </div>
+    `;
+
+  } else if (discipline === 'bike') {
+    const wattsVal = existing?.watts    ?? '';
+    const durVal   = existing?.durationMin ?? '';
+    const distVal  = existing?.distKm   ?? '';
+    const planDur  = session.dist || '';
+
+    container.innerHTML = `
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Puissance moyenne</span>
+        </div>
+        <div class="perf-input-wrap">
+          <input type="number" class="perf-input" id="perf-watts"
+            placeholder="150" value="${wattsVal}" min="0" max="600"
+            oninput="updateBikeDiff(this.value)">
+          <span class="perf-input-suffix">W</span>
+        </div>
+        <div class="perf-diff" id="perf-watts-diff" style="display:none"></div>
+      </div>
+      <div class="perf-2col">
+        <div class="perf-metric-block">
+          <div class="perf-label-row">
+            <span class="perf-label-row-left">Durée</span>
+          </div>
+          <div class="perf-input-wrap">
+            <input type="number" class="perf-input" id="perf-durationMin"
+              placeholder="${planDur || '60'}" value="${durVal}" min="0" max="600">
+            <span class="perf-input-suffix">min</span>
+          </div>
+        </div>
+        <div class="perf-metric-block">
+          <div class="perf-label-row">
+            <span class="perf-label-row-left">Distance</span>
+          </div>
+          <div class="perf-input-wrap">
+            <input type="number" class="perf-input" id="perf-distKm"
+              placeholder="0" value="${distVal}" min="0" max="300" step="0.1">
+            <span class="perf-input-suffix">km</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Target watts from session tip or first set tip
+    const tipText   = (session.tip || '') + ' ' + (session.sets?.[0]?.tip || '');
+    const wMatch    = tipText.match(/(\d{2,3})\s*W/);
+    const targetW   = wMatch ? parseInt(wMatch[1]) : null;
+    if (targetW) {
+      const wInput = document.getElementById('perf-watts');
+      if (wInput) {
+        wInput.dataset.target = targetW;
+        if (wattsVal) updateBikeDiff(wattsVal);
+      }
+    }
+
+  } else if (discipline === 'run') {
+    const paceMin = (existing?.paceKmS !== undefined) ? Math.floor(existing.paceKmS / 60) : '';
+    const paceSec = (existing?.paceKmS !== undefined) ? String(existing.paceKmS % 60).padStart(2, '0') : '';
+    const distVal = existing?.distKm ?? '';
+
+    container.innerHTML = `
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Allure</span>
+        </div>
+        <div class="perf-pace-group">
+          <input type="number" class="perf-pace-input" id="perf-pace-mm"
+            placeholder="5" min="0" max="15" value="${paceMin}"
+            oninput="if(this.value.length>=2||(this.value.length>=1&&parseInt(this.value)<=9))document.getElementById('perf-pace-ss').focus()">
+          <span class="perf-pace-sep">:</span>
+          <input type="number" class="perf-pace-input" id="perf-pace-ss"
+            placeholder="00" min="0" max="59" value="${paceSec}">
+          <span class="perf-pace-suffix">/km</span>
+        </div>
+      </div>
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Distance</span>
+        </div>
+        <div class="perf-input-wrap">
+          <input type="number" class="perf-input" id="perf-distKm"
+            placeholder="0" value="${distVal}" min="0" max="100" step="0.1">
+          <span class="perf-input-suffix">km</span>
+        </div>
+      </div>
+    `;
+
+  } else if (discipline === 'str') {
+    const noteVal = existing?.chargesNote ?? '';
+    container.innerHTML = `
+      <div class="perf-metric-block">
+        <div class="perf-label-row">
+          <span class="perf-label-row-left">Note charges</span>
+          <span class="perf-optional-tag">OPTIONNEL</span>
+        </div>
+        <textarea class="perf-textarea" id="perf-charges"
+          placeholder="Ex : Squat 80kg x 5, dev. couche 60kg x 8..."
+          onclick="event.stopPropagation()"
+          onkeydown="event.stopPropagation()">${escapeHtml(noteVal)}</textarea>
+      </div>
+    `;
+  }
+}
+
+function submitPerfSheet() {
+  if (!perfSheetSelectedRpe) return;
+  const id   = perfSheetSessionId;
+  const disc = perfSheetDiscipline;
+  const data = { rpe: perfSheetSelectedRpe };
+
+  if (disc === 'swim') {
+    const distMEl  = document.getElementById('perf-distM');
+    const brasseEl = document.getElementById('perf-brasse');
+    const mmEl     = document.getElementById('perf-pace-mm');
+    const ssEl     = document.getElementById('perf-pace-ss');
+    if (distMEl?.value)  { const v = parseInt(distMEl.value);  if (!isNaN(v) && v > 0) data.distM = v; }
+    if (brasseEl)        { data.pctBrasse = parseInt(brasseEl.value) || 0; }
+    if (mmEl && ssEl && (mmEl.value !== '' || ssEl.value !== '')) {
+      const mm = parseInt(mmEl.value) || 0;
+      const ss = parseInt(ssEl.value) || 0;
+      if (mm > 0 || ss > 0) data.paceS = mm * 60 + ss;
+    }
+  } else if (disc === 'bike') {
+    const wattsEl = document.getElementById('perf-watts');
+    const durEl   = document.getElementById('perf-durationMin');
+    const distEl  = document.getElementById('perf-distKm');
+    if (wattsEl?.value)  { const v = parseInt(wattsEl.value);   if (!isNaN(v) && v > 0) data.watts       = v; }
+    if (durEl?.value)    { const v = parseInt(durEl.value);     if (!isNaN(v) && v > 0) data.durationMin  = v; }
+    if (distEl?.value)   { const v = parseFloat(distEl.value);  if (!isNaN(v) && v > 0) data.distKm       = v; }
+  } else if (disc === 'run') {
+    const mmEl   = document.getElementById('perf-pace-mm');
+    const ssEl   = document.getElementById('perf-pace-ss');
+    const distEl = document.getElementById('perf-distKm');
+    if (mmEl && ssEl && (mmEl.value !== '' || ssEl.value !== '')) {
+      const mm = parseInt(mmEl.value) || 0;
+      const ss = parseInt(ssEl.value) || 0;
+      if (mm > 0 || ss > 0) data.paceKmS = mm * 60 + ss;
+    }
+    if (distEl?.value) { const v = parseFloat(distEl.value); if (!isNaN(v) && v > 0) data.distKm = v; }
+  } else if (disc === 'str') {
+    const chargesEl = document.getElementById('perf-charges');
+    if (chargesEl?.value.trim()) data.chargesNote = chargesEl.value.trim();
+  }
+
+  perfResults[id] = data;
+  localStorage.setItem(STORE.perfResults, JSON.stringify(perfResults));
+  closePerfSheet(true);
+}
+
+function closePerfSheet(didSave) {
+  const sheet    = document.getElementById('perf-sheet');
+  const backdrop = document.getElementById('perf-backdrop');
+  const wasNew   = !perfSheetHadData;
+
+  sheet?.classList.remove('open');
+  setTimeout(() => {
+    if (sheet)    sheet.style.display    = 'none';
+    if (backdrop) backdrop.style.display = 'none';
+  }, 320);
+
+  buildWeekView(currentWeekView);
+  restoreOpenWeekSessions(perfSheetOpenCards || []);
+  updateStats();
+
+  if (didSave) {
+    showToast('perf-saved');
+  } else if (wasNew) {
+    showToast('perf-skipped');
+  }
+
+  // Reset state
+  perfSheetSessionId   = null;
+  perfSheetOpenCards   = null;
+  perfSheetSelectedRpe = null;
+  perfSheetDiscipline  = null;
+  perfSheetHadData     = false;
+}
+
+function buildPerfResultsRowHtml(session, disciplineKey) {
+  const perf = perfResults[session.id];
+
+  if (!perf) {
+    return `<div class="wsc-results-row">
+      <span class="wsc-add-perf-link" onclick="event.stopPropagation(); openPerfSheet('${session.id}', getOpenWeekSessionIds())">+ Ajouter les résultats</span>
+    </div>`;
+  }
+
+  const rpeColor = RPE_COLORS[perf.rpe] || { bg: '#5a7a99', txt: '#fff' };
+  const badge = `<span class="wsc-rpe-badge" style="background:${rpeColor.bg};color:${rpeColor.txt}">RPE ${perf.rpe}</span>`;
+
+  const parts = [];
+  if (disciplineKey === 'swim') {
+    if (perf.distM)                   parts.push(`<span class="sum-val">${perf.distM}</span><span class="sum-label">m</span>`);
+    if (perf.pctBrasse !== undefined) parts.push(`<span class="sum-val">${perf.pctBrasse}</span><span class="sum-label">% brasse</span>`);
+  } else if (disciplineKey === 'bike') {
+    if (perf.watts)  parts.push(`<span class="sum-val">${perf.watts}</span><span class="sum-label"> W</span>`);
+    if (perf.distKm) parts.push(`<span class="sum-val">${perf.distKm}</span><span class="sum-label"> km</span>`);
+  } else if (disciplineKey === 'run') {
+    if (perf.paceKmS) {
+      const mm = Math.floor(perf.paceKmS / 60);
+      const ss = String(perf.paceKmS % 60).padStart(2, '0');
+      parts.push(`<span class="sum-val">${mm}:${ss}</span><span class="sum-label">/km</span>`);
+    }
+    if (perf.distKm) parts.push(`<span class="sum-val">${perf.distKm}</span><span class="sum-label"> km</span>`);
+  }
+  // str : pas de ligne résumé
+
+  const summaryHtml = parts.length
+    ? `<span class="wsc-summary-line">${parts.join('<span class="sum-sep"> · </span>')}</span>`
+    : '<span class="wsc-summary-line"></span>';
+
+  const editBtn = `<button class="wsc-edit-btn" onclick="event.stopPropagation(); openPerfSheet('${session.id}', getOpenWeekSessionIds())" aria-label="Modifier les résultats">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M11.5 2.5L13.5 4.5L5 13H3V11L11.5 2.5Z"/>
+      <path d="M10 4L12 6"/>
+    </svg>
+  </button>`;
+
+  return `<div class="wsc-results-row">${badge}${summaryHtml}${editBtn}</div>`;
+}
+
+// ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
 
 // Default to week view on load
 currentSport = 'week';
 migrateStrengthSessionIds(); // one-shot : renomme les anciens IDs muscu non qualifiés
+
+// Injection du bottom sheet perf (fils direct de body, jamais dans #plan)
+document.body.insertAdjacentHTML('beforeend', `
+<div id="perf-backdrop" style="display:none" onclick="closePerfSheet(false)"></div>
+<div id="perf-sheet" style="display:none">
+  <div class="perf-handle"></div>
+  <div class="perf-header">
+    <div class="perf-header-info">
+      <span class="perf-discipline-label"></span>
+      <span class="perf-session-name"></span>
+    </div>
+    <button class="perf-close-btn" onclick="closePerfSheet(false)">&#x2715;</button>
+  </div>
+  <div class="perf-body">
+    <div class="perf-rpe-section">
+      <div class="perf-field-label">EFFORT PERCU (RPE)</div>
+      <div class="rpe-grid" id="rpeGrid"></div>
+      <div class="rpe-label-zone" id="rpeLabelZone"></div>
+    </div>
+    <div class="perf-sep"></div>
+    <div class="perf-metrics-section" id="perfMetrics"></div>
+  </div>
+  <div class="perf-actions">
+    <button class="perf-btn-cancel" onclick="closePerfSheet(false)">Fermer</button>
+    <button class="perf-btn-submit" id="perfSubmitBtn" onclick="submitPerfSheet()" disabled>VALIDER LA SEANCE</button>
+  </div>
+</div>
+`);
+
 renderProgramEndControl();
 buildWeekView(null);
 updateStats();
