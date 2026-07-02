@@ -2952,7 +2952,7 @@ function formatSetDesc(desc) {
   const listHtml = exerciseLines.length
     ? `<div class="set-exercise-list">${exerciseLines.map(l => `<span class="set-exercise-item">${l}</span>`).join('')}</div>`
     : '';
-  return introHtml + listHtml || esc(desc);
+  return introHtml + listHtml || escapeHtml(desc);
 }
 
 function buildSessionSetsHtml(session, disciplineKey) {
