@@ -3477,7 +3477,8 @@ function updateStats() {
       if (completed[s.id]) {
         done++;
         weeksActive.add(w.weekNum);
-        if (s.id.startsWith('sw'))       minSwim += (s.dist || 0);
+        if (s.id.startsWith('sw'))        minSwim += (s.dist || 0);
+        else if (s.id.startsWith('brw')) { minBike += (s.dist || 0); minRun += (s.dist || 0); }
         else if (s.id.startsWith('bw'))  minBike += (s.dist || 0);
         else if (s.id.startsWith('rw'))  minRun  += (s.dist || 0);
       }
