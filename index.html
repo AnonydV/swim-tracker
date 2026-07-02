@@ -2701,27 +2701,6 @@ function save() {
   localStorage.setItem(STORE.perfResults, JSON.stringify(perfResults));
 }
 
-// Migration one-shot : convertit les anciens IDs muscu non qualifiés (tmw1a, tmw2a…)
-// vers les nouveaux IDs qualifiés par première occurrence de cycle (tmw1a_w1, tmw2a_w2…).
-// Exécutée une seule fois au chargement ; sans effet si les anciennes clés sont absentes.
-function migrateStrengthSessionIds() {
-  const firstOccurrence = { tmw1a: 1, tmw2a: 2, tmw2b: 2, tmw3a: 3, tmw3b: 3 };
-  let changed = false;
-  Object.entries(firstOccurrence).forEach(([oldId, firstWeek]) => {
-    const newId = `${oldId}_w${firstWeek}`;
-    if (completed[oldId] !== undefined) {
-      if (completed[oldId]) completed[newId] = true;
-      delete completed[oldId];
-      changed = true;
-    }
-    if (skipped[oldId] !== undefined) {
-      if (skipped[oldId]) skipped[newId] = true;
-      delete skipped[oldId];
-      changed = true;
-    }
-  });
-  if (changed) save();
-}
 
 function toggleSkip(id) {
   wvToggleSkip(id);
@@ -3277,9 +3256,11 @@ function calcEstimateHtml(value) {
 }
 
 function buildSessionResultHtml(session) {
-  if (session.type !== 'r-quality' && session.type !== 'r-race') return '';
+  const qualityTypes = ['r-quality', 'r-race', 'r-threshold', 'r-tempo'];
+  const isRaceByName = session.name && session.name.startsWith('RACE');
+  if (!qualityTypes.includes(session.type) && !isRaceByName) return '';
   const result   = getSessionResult(session.id);
-  const isTest10k = session.id === 'smw9a';
+  const isTest10k = false;
   const placeholder = isTest10k
     ? 'Ex : 43:22 — estimation semi calculée automatiquement'
     : session.type === 'r-race'
@@ -4007,7 +3988,6 @@ function buildPerfResultsRowHtml(session, disciplineKey) {
 
 // Default to week view on load
 currentSport = 'week';
-migrateStrengthSessionIds(); // one-shot : renomme les anciens IDs muscu non qualifiés
 
 // Injection du bottom sheet perf (fils direct de body, jamais dans #plan)
 document.body.insertAdjacentHTML('beforeend', `
