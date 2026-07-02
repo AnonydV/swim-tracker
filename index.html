@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -28,6 +28,7 @@
   --green-dim: rgba(74,222,128,0.12);
   --orange: #fb923c;
   --orange-dim: rgba(251,146,60,0.12);
+  --brick: #fb923c;
   --red: #f87171;
   --text: #e2eaf4;
   --muted: #5a7a99;
@@ -917,9 +918,11 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
 }
-.wsc-badge.swim { background: rgba(56,189,248,0.15); color: var(--accent); }
-.wsc-badge.bike { background: rgba(250,204,21,0.15); color: #facc15; }
-.wsc-badge.run  { background: rgba(163,230,53,0.15); color: #a3e635; }
+.wsc-badge.swim  { background: rgba(56,189,248,0.15);  color: var(--accent); }
+.wsc-badge.bike  { background: rgba(250,204,21,0.15);  color: #facc15; }
+.wsc-badge.run   { background: rgba(163,230,53,0.15);  color: #a3e635; }
+.wsc-badge.str   { background: rgba(192,132,252,0.15); color: #c084fc; }
+.wsc-badge.brick { background: rgba(251,146,60,0.15);  color: #fb923c; }
 .wsc-meta {
   font-size: 11px;
   color: var(--muted);
@@ -1234,9 +1237,9 @@ body {
     <div class="stat-box"><div class="val" id="statDone">0</div><div class="lbl">Séances faites</div></div>
     <div class="stat-box"><div class="val" id="statTotal">20</div><div class="lbl">Toutes disciplines</div></div>
     <div class="stat-box"><div class="val" id="statSkipped" style="color:var(--orange)">0</div><div class="lbl">Skippées</div></div>
-    <div class="stat-box"><div class="val" style="color:#38bdf8" id="statKmSwim">0</div><div class="lbl">🏊 km nage</div></div>
+    <div class="stat-box"><div class="val" style="color:#38bdf8" id="statKmSwim">0</div><div class="lbl">🏊 min nage</div></div>
     <div class="stat-box"><div class="val" style="color:#facc15" id="statMinBike">0</div><div class="lbl">🚴 min vélo</div></div>
-    <div class="stat-box"><div class="val" style="color:#a3e635" id="statKmRun">0</div><div class="lbl">🏃 km run</div></div>
+    <div class="stat-box"><div class="val" style="color:#a3e635" id="statKmRun">0</div><div class="lbl">🏃 min run</div></div>
   </div>
 
 
@@ -1277,1122 +1280,1389 @@ body {
 
 <script>
 // ═══════════════════════════════════════════════════
-// DATA — Plans d'entraînement
+// DATA — Plan d'entraînement unifié 15 semaines
 // ═══════════════════════════════════════════════════
-const swimPlan = [
-  // ── PHASE 1 : REPRISE PROGRESSIVE (S1–S5) ───────────────────────────
-  // S1–2 : ~1800m/séance · S3–5 : ~2000–2200m/séance
-  { weekNum: 1, sessions: [
-    { id:"sw1a", name:"N1 — Technique + continu", type:"s-technique", typeLabel:"En semaine · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement crawl/brasse au feeling",            tip:"Aucun chrono. Tu cherches une sensation agréable dans l'eau."},
-        {type:"interval", dist:"600m",  nage:"crawl",  desc:"6×2 longueurs drills — catch-up · fingertip drag · rotation exagérée — 15s repos brasse entre", tip:"Chaque drill cible une chose : catch-up = extension bras, fingertip = coude haut sortie, rotation = transfert de poids. 2 lon par drill en rotation."},
-        {type:"long",     dist:"800m",  nage:"mixte",  desc:"16 longueurs continues crawl/brasse au feeling, sans s'arrêter au mur", tip:"Le 'sans s'arrêter' est la consigne principale. Brasse quand tu dois, crawl quand tu peux."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"4 longueurs retour au calme brasse très lente",               tip:"Sors avec l'impression d'avoir nagé, pas souffert."},
-      ],
-      tip:"Première séance de la phase — le but est de retrouver les sensations, pas de performer."
-    },
-    { id:"sw1b", name:"N2 — Continu fondamental", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs échauffement brasse facile",                        tip:"Épaules relâchées, amplitude confortable."},
-        {type:"long", dist:"1400m", nage:"mixte",  desc:"28 longueurs continues — crawl dominant, brasse en récupération ponctuelle", tip:"L'objectif est la continuité. Brasse uniquement quand tu dois souffler — essaie de réduire cette proportion chaque semaine."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"4 longueurs retour au calme",                                  tip:""},
-      ],
-      tip:"28 longueurs sans arrêt au mur — ce format est le socle de toute la phase 1."
-    },
-  ]},
-  { weekNum: 2, sessions: [
-    { id:"sw2a", name:"N3 — Drills + continu", type:"s-technique", typeLabel:"En semaine · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"600m",  nage:"crawl",  desc:"6×2 longueurs drills — même rotation que S1, 15s repos brasse", tip:"Note les sensations différentes vs S1 — le corps commence à mémoriser les gestes."},
-        {type:"long",     dist:"800m",  nage:"mixte",  desc:"16 longueurs continues — essaie de tenir le crawl plus longtemps que S1", tip:"Pas d'obligation. Juste une intention. Si tu tiens 3 lon crawl avant une brasse au lieu de 2, c'est une progression."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"4 longueurs retour au calme",                               tip:""},
-      ],
-      tip:"Même structure que S1 — la progression vient du 'tenir plus longtemps en crawl'."
-    },
-    { id:"sw2b", name:"N4 — Long continu", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1400m", nage:"mixte",  desc:"28 longueurs continues — objectif : moins brasser que S1",      tip:"L'amélioration se mesure dans le ratio crawl/brasse, pas dans le temps."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Si tu as nagé S1b il y a 7 jours, compares les sensations — tu devrais te sentir plus à l'aise."
-    },
-  ]},
-  { weekNum: 3, sessions: [
-    { id:"sw3a", name:"N5 — Blocs crawl structurés", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2000, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"400m",  nage:"crawl",  desc:"4×2 longueurs drills — 15s repos brasse",                   tip:""},
-        {type:"interval", dist:"800m",  nage:"crawl",  desc:"4×4 longueurs crawl continu — 30s repos brasse entre blocs",tip:"4 longueurs crawl = 200m sans arrêt. Le repos brasse entre blocs te permet de souffler avant le prochain bloc."},
-        {type:"long",     dist:"400m",  nage:"mixte",  desc:"8 longueurs continues au feeling",                          tip:""},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"4 longueurs retour au calme",                               tip:""},
-      ],
-      tip:"Introduction des blocs crawl structurés. 4×4 lon = 800m de crawl organisé."
-    },
-    { id:"sw3b", name:"N6 — Long 2000m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2000, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1600m", nage:"mixte",  desc:"32 longueurs continues — crawl dominant",                       tip:"Premier 'long' à 2000m. Découpe mentalement en 2 blocs de 16 lon."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"3e semaine — le volume commence à compter. Note le ratio crawl/brasse à la fin."
-    },
-  ]},
-  { weekNum: 4, sessions: [
-    { id:"sw4a", name:"N7 — Technique + continu modéré", type:"s-technique", typeLabel:"En semaine · Piscine 50m",
-      dist: 2000, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"400m",  nage:"crawl",  desc:"4×2 longueurs drills — 15s repos",                          tip:"Focus : rotation des hanches et extension complète du bras avant traction."},
-        {type:"long",     dist:"1200m", nage:"mixte",  desc:"24 longueurs continues au feeling",                         tip:"Semaine récup run — natation se maintient. Allure confortable sans chercher à progresser."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"Retour au calme",                                           tip:""},
-      ],
-      tip:"Semaine de récup run — la natation reste présente mais sans pression."
-    },
-    { id:"sw4b", name:"N8 — Continu tranquille", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2000, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1600m", nage:"mixte",  desc:"32 longueurs — allure confortable, aucune structure forcée",    tip:"Profite de l'énergie récupérée sur le run pour nager fluide."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Maintien du volume sans stress. Le corps assimile les 3 premières semaines."
-    },
-  ]},
-  { weekNum: 5, sessions: [
-    { id:"sw5a", name:"N9 — Blocs progressifs + drills", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2200, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"400m",  nage:"crawl",  desc:"4×2 longueurs drills — 15s repos",                          tip:""},
-        {type:"interval", dist:"1200m", nage:"crawl",  desc:"4×6 longueurs crawl continu — 30s repos brasse entre blocs",tip:"6 lon crawl = 300m sans arrêt. Si c'est trop dur, passe à 4×5 lon."},
-        {type:"cool",     dist:"400m",  nage:"brasse", desc:"8 longueurs retour au calme",                               tip:""},
-      ],
-      tip:"Avant l'entrée en Phase 2 — les blocs crawl s'allongent à 6 lon (300m)."
-    },
-    { id:"sw5b", name:"N10 — Long 2200m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2200, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1800m", nage:"mixte",  desc:"36 longueurs continues — crawl très dominant",                  tip:"36 lon est la distance de référence des séances longues Phase 1–2. Note ton ratio crawl."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Dernière longue de Phase 1. Le travail de fond est posé — Phase 2 commence S6."
-    },
-  ]},
-
-  // ── PHASE 2 : DÉVELOPPEMENT (S6–S10) — Pic de progression swim ───────
-  { weekNum: 6, sessions: [
-    { id:"sw6a", name:"N11 — Séries structurées", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2200, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"1500m", nage:"crawl",  desc:"5×6 longueurs crawl — 30s repos brasse — sensation 'tu peux dire un mot, pas une phrase'", tip:"C'est la première fois à cette intensité. L'allure doit être soutenue mais maîtrisée — pas à bloc. Si le 4e bloc dégrade, récup 45s."},
-        {type:"long",     dist:"300m",  nage:"mixte",  desc:"6 longueurs continues au feeling",                          tip:"Récupération active après les séries."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"4 longueurs retour au calme",                               tip:""},
-      ],
-      tip:"Entrée Phase 2 — l'intensité monte pour la première fois. 5×6 lon = 1500m de crawl soutenu."
-    },
-    { id:"sw6b", name:"N12 — Long + technique", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2200, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"brasse", desc:"4 longueurs échauffement brasse",                           tip:""},
-        {type:"long",     dist:"1800m", nage:"mixte",  desc:"36 longueurs continues — crawl très dominant",              tip:"Récupération active après les séries du milieu de semaine. Allure confortable."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"Retour au calme",                                           tip:""},
-      ],
-      tip:"La longue reste en Z2 natation — c'est une séance de volume, pas d'intensité."
-    },
-  ]},
-  { weekNum: 7, sessions: [
-    { id:"sw7a", name:"N13 — Séries progressives", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2300, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"1500m", nage:"crawl",  desc:"5×6 longueurs crawl — 30s repos brasse — maintiens l'allure de S6", tip:"Si S6 était confortable, commence à réduire la récup à 25s sur les 2 derniers blocs."},
-        {type:"long",     dist:"400m",  nage:"mixte",  desc:"8 longueurs continues",                                     tip:"Plus de volume en fin de séance vs S6."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"Retour au calme",                                           tip:""},
-      ],
-      tip:"Même structure que S6 mais +100m en fin de séance. Progression par accumulation."
-    },
-    { id:"sw7b", name:"N14 — Long 2300m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2300, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1900m", nage:"mixte",  desc:"38 longueurs continues — crawl quasi total",                   tip:"Objectif : brasser le moins possible. Note le ratio — tu approches de la capacité race."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"38 lon sans arrêt — tu t'approches de la distance race half (76 lon en bassin 25m ou 38 en 50m)."
-    },
-  ]},
-  { weekNum: 8, sessions: [
-    { id:"sw8a", name:"N15 — Séries qualité", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2300, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"1500m", nage:"crawl",  desc:"5×6 longueurs crawl — 30s repos — focus technique sous fatigue", tip:"Semaine récup run — natation à intensité normale. Profite des jambes fraîches pour soigner la technique dans les séries."},
-        {type:"long",     dist:"400m",  nage:"mixte",  desc:"8 longueurs continues",                                     tip:""},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"Retour au calme",                                           tip:""},
-      ],
-      tip:"Récup run = natation plus facile à tenir. Bonne semaine pour consolider la technique."
-    },
-    { id:"sw8b", name:"N16 — Long 2300m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2300, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1900m", nage:"mixte",  desc:"38 longueurs continues — crawl dominant",                      tip:"Troisième semaine consécutive à 38 lon. Le corps s'adapte — tu devrais te sentir plus à l'aise qu'en S7."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Le volume s'installe. S9 et S10 vont encore monter légèrement."
-    },
-  ]},
-  { weekNum: 9, sessions: [
-    { id:"sw9a", name:"N17 — Séries + blocs longs", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2400, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"1600m", nage:"crawl",  desc:"4×8 longueurs crawl — 30s repos brasse — blocs plus longs vs séries courtes", tip:"Blocs de 8 lon (400m) plutôt que 6 lon (300m). Change le stimulus — endurance crawl plutôt que répétitions."},
-        {type:"long",     dist:"400m",  nage:"mixte",  desc:"8 longueurs continues",                                     tip:""},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"Retour au calme",                                           tip:""},
-      ],
-      tip:"Changement de format : 4×8 lon. La continuité du crawl sur 400m est plus spécifique half."
-    },
-    { id:"sw9b", name:"N18 — Long 2400m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2400, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"2000m", nage:"mixte",  desc:"40 longueurs continues — crawl quasi total",                   tip:"40 lon en bassin 50m = 2000m. C'est la distance nage du half. Si tu la tiens sans t'effondrer, tu es prêt pour la nage race."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"40 lon = 2000m = distance race. Pas à bloc — le but est de finir frais, comme le jour J."
-    },
-  ]},
-  { weekNum: 10, sessions: [
-    { id:"sw10a", name:"N19 — Séries pic 5×8 lon", type:"s-intervals", typeLabel:"En semaine · Piscine 50m",
-      dist: 2500, unit:"m",
-      sets: [
-        {type:"warm",     dist:"200m",  nage:"mixte",  desc:"4 longueurs échauffement",                                   tip:""},
-        {type:"interval", dist:"2000m", nage:"crawl",  desc:"5×8 longueurs crawl — 30s repos brasse — pic de volume sérié", tip:"5×400m de crawl = 2000m structurés. C'est la séance la plus exigeante du plan. Reste sur l'allure des séances précédentes — l'objectif est le volume, pas l'accélération."},
-        {type:"cool",     dist:"300m",  nage:"brasse", desc:"6 longueurs retour au calme",                               tip:""},
-      ],
-      tip:"SEMAINE PIC NATATION — 5×8 lon = 2000m de crawl soutenu. Après S10, on réduit."
-    },
-    { id:"sw10b", name:"N20 — Long pic 2500m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2500, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"2100m", nage:"mixte",  desc:"42 longueurs continues — crawl quasi total",                   tip:"Le plus long du plan. Découpe en 3 blocs de 14 lon. Sur le dernier bloc, si tu peux accélérer légèrement, c'est un bon signe."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Dernière grande longue. Après ça, les longues descendent — apprécie ce que tu as construit."
-    },
-  ]},
-
-  // ── PHASE 3 : MAINTIEN SOUTENU (S11–S13) — Rôle récupération ─────────
-  { weekNum: 11, sessions: [
-    { id:"sw11a", name:"N21 — Léger feeling", type:"s-endurance", typeLabel:"En semaine · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"long", dist:"1400m", nage:"mixte", desc:"28 longueurs au feeling — aucune structure — focus sensations et relâchement", tip:"Phase 3 : la natation change de rôle. Ce n'est plus une progression — c'est une récupération active. Nage comme tu en as envie."},
-        {type:"cool", dist:"400m",  nage:"brasse", desc:"8 longueurs très lentes — étirement des épaules",               tip:"Profite de l'eau pour relâcher les épaules tendues par les séances run."},
-      ],
-      tip:"TRANSITION — la natation devient récupération active. Zéro pression de volume ou d'allure."
-    },
-    { id:"sw11b", name:"N22 — Continu modéré", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1400m", nage:"mixte",  desc:"28 longueurs continues — allure confortable, jamais à l'effort", tip:"La distance diminue de 42 → 28 lon. C'est voulu — le run est en bloc spécifique, et les jambes ont besoin de récupérer entre les séances."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"28 lon confortables. Si l'eau est froide ou que tu te sens crevé, 24 lon suffisent."
-    },
-  ]},
-  { weekNum: 12, sessions: [
-    { id:"sw12a", name:"N23 — Léger + drills si envie", type:"s-technique", typeLabel:"En semaine · Piscine 50m",
-      dist: 2000, unit:"m",
-      sets: [
-        {type:"long",     dist:"1200m", nage:"mixte",  desc:"24 longueurs au feeling — crawl/brasse selon envie",        tip:"Pas de structure imposée. Si la forme est là, tu peux nager plus vif sur quelques portions."},
-        {type:"interval", dist:"600m",  nage:"crawl",  desc:"6×2 longueurs drills — si l'envie est là — 15s repos brasse", tip:"Optionnel selon les sensations. Les drills restent utiles pour maintenir la technique."},
-        {type:"cool",     dist:"200m",  nage:"brasse", desc:"Retour au calme",                                           tip:""},
-      ],
-      tip:"Séance flexible — la structure dépend de tes sensations du jour."
-    },
-    { id:"sw12b", name:"N24 — Continu 2000m", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 2000, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1600m", nage:"mixte",  desc:"32 longueurs continues — allure confortable",                  tip:"Légère remontée vs S11 (28 → 32 lon). Tu récupères mieux avec un peu plus de volume qu'avec pas assez."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"32 lon tranquilles. L'intensité run de S12 est haute — la nage doit rester facile."
-    },
-  ]},
-  { weekNum: 13, sessions: [
-    { id:"sw13a", name:"N25 — Sensation pure", type:"s-endurance", typeLabel:"En semaine · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"long", dist:"1600m", nage:"mixte",  desc:"32 longueurs au feeling total — aucune contrainte",            tip:"Tu es en S13, la semaine la plus dure du run. La nage est ici pour relâcher, pas pour performer. Si tu sors de l'eau avec moins de tension dans les épaules qu'en entrant, c'est une réussite."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Dernière semaine chargée du run — la nage sert uniquement à récupérer activement."
-    },
-    { id:"sw13b", name:"N26 — Continu tranquille", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 1800, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs faciles",                                           tip:""},
-        {type:"long", dist:"1400m", nage:"mixte",  desc:"28 longueurs continues — allure conversationnelle, jamais à l'effort", tip:"Avant l'affûtage run — conserve les jambes. Nage fluide et économique."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Dernière longue de Phase 3. L'affûtage commence S14."
-    },
-  ]},
-
-  // ── PHASE 4 : ALLÈGEMENT (S14–S15) ──────────────────────────────────
-  { weekNum: 14, sessions: [
-    { id:"sw14a", name:"N27 — Léger plaisir", type:"s-endurance", typeLabel:"En semaine · Piscine 50m",
-      dist: 1600, unit:"m",
-      sets: [
-        {type:"long", dist:"1400m", nage:"mixte", desc:"28 longueurs au feeling — technique si envie, plaisir surtout",  tip:"AFFÛTAGE. Volume en baisse, aucune intensité. L'eau est là pour détendre, pas pour fatiguer."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"16–20 lon au feeling selon la forme. Si 20 lon te fatiguent, arrête à 16."
-    },
-    { id:"sw14b", name:"N28 — Continu facile", type:"s-long", typeLabel:"Week-end · Piscine 50m",
-      dist: 1600, unit:"m",
-      sets: [
-        {type:"warm", dist:"200m",  nage:"brasse", desc:"4 longueurs très faciles",                                      tip:""},
-        {type:"long", dist:"1200m", nage:"mixte",  desc:"24 longueurs continues au feeling — plaisir pur",              tip:"Profite de l'eau. Dans une semaine c'est la course."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"Retour au calme",                                               tip:""},
-      ],
-      tip:"Séance courte et agréable. L'énergie est précieuse pour le run — ne la dépense pas ici."
-    },
-  ]},
-  { weekNum: 15, sessions: [
-    { id:"sw15a", name:"N29 — Activation légère J-5", type:"s-endurance", typeLabel:"RACE WEEK · Piscine 50m",
-      dist: 1200, unit:"m",
-      sets: [
-        {type:"long", dist:"1000m", nage:"mixte",  desc:"20 longueurs au feeling très léger — technique, relâchement", tip:"RACE WEEK. Cette séance existe pour garder les épaules mobiles et l'eau familière. Sors frais."},
-        {type:"cool", dist:"200m",  nage:"brasse", desc:"4 longueurs retour au calme",                                  tip:""},
-      ],
-      tip:"20 lon maximum. Si tu te sens fatigué à l'eau, arrête à 12 lon — aucun problème."
-    },
-    { id:"sw15b", name:"N30 — Toucher d'eau J-2", type:"s-endurance", typeLabel:"RACE WEEK · Piscine ou mer",
-      dist: 800, unit:"m",
-      sets: [
-        {type:"long", dist:"800m", nage:"mixte", desc:"16 longueurs très légères — juste le contact avec l'eau", tip:"La dernière nage avant la course. Garder les épaules souples. Aucune intensité. Si tu as accès à la mer ou l'eau du plan d'eau race, utilise-la — mieux vaut se familiariser avec l'open water."},
-      ],
-      tip:"16 lon max — ou moins. Tu n'amélioreras rien en nageant plus. Sors de l'eau frais et confiant."
-    },
-  ]},
-];
-
-const bikePlan = [
-  // ── PHASE 1 : REPRISE PROGRESSIVE (S1–S5) ───────────────────────────
-  // S1–2 : Z1–Z2 fondamental · S3–5 : Sweet Spot léger (155–170W)
-  { weekNum: 1, sessions: [
-    { id:"bw1a", name:"V1 — Z2 fondamental court", type:"v-endurance", typeLabel:"En semaine · Home trainer",
-      dist: 45, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Échauffement très facile — 80–100W, cadence libre",  tip:"Aucune intensité. Tu cherches juste à faire tourner les jambes."},
-        {type:"main", dist:"30 min", desc:"Z2 continu — 110–140W · cadence 85–90 rpm",           tip:"Z2 : tu peux parler en phrases complètes. FTP 210W → Z2 = 118–145W. Reste dans cette plage."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme — très facile",                       tip:""},
-      ],
-      tip:"Séance fondatrice de la phase. Volume limité, intensité absente — on pose le socle aérobie."
-    },
-    { id:"bw1b", name:"V2 — Sortie longue Z2", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 70, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif — 80–110W",                   tip:"Commence à 80W, monte doucement vers 110W sur 15 min."},
-        {type:"long", dist:"45 min", desc:"Z2 continu — 118–145W, terrain plat de préférence",   tip:"Si tu es dehors, terrain plat ou légèrement vallonné. Évite les longues montées qui font sortir de Z2 involontairement."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme facile",                              tip:""},
-      ],
-      tip:"Première longue du plan. L'objectif est de tenir Z2 stable — pas de pics d'effort."
-    },
-  ]},
-  { weekNum: 2, sessions: [
-    { id:"bw2a", name:"V3 — Z2 + foulées haute cadence", type:"v-endurance", typeLabel:"En semaine · Home trainer",
-      dist: 50, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Échauffement facile",                                  tip:""},
-        {type:"main", dist:"30 min", desc:"Z2 — 118–145W · cadence 88–92 rpm",                   tip:"Légère hausse de cadence vs S1. Une cadence plus élevée réduit la fatigue musculaire et prépare les jambes au run."},
-        {type:"interval", dist:"3×20s", desc:"3 accélérations de cadence à 100+ rpm — récup 1 min entre", tip:"Pas d'effort — juste réveiller les jambes rapides. Tu restes en Z2 niveau effort perçu."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Les accélérations de cadence ne sont pas un effort — elles travaillent le système nerveux."
-    },
-    { id:"bw2b", name:"V4 — Sortie longue Z2", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 80, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"55 min", desc:"Z2 — 118–145W",                                       tip:"+10 min vs S1. Même intensité, plus de volume. Le cardio s'adapte."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"80 min total — progression douce du volume longue."
-    },
-  ]},
-  { weekNum: 3, sessions: [
-    { id:"bw3a", name:"V5 — Sweet Spot léger 2×10 min", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 55, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif — finir à 130W",           tip:"Montée progressive. Les 15 dernières secondes de l'échauff peuvent être à 150W pour préparer le Sweet Spot."},
-        {type:"interval", dist:"2×10 min", desc:"Sweet Spot léger — 155–170W · récup 5 min Z1 entre (90–110W)", tip:"SS léger = 74–81% FTP. À 210W FTP → 155–170W. La sensation : difficile mais très contrôlé. Tu peux encore dire une phrase courte."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme facile — 80–100W",                 tip:""},
-      ],
-      tip:"Introduction du Sweet Spot. L'allure est soutenue mais loin du max — tu dois finir frais."
-    },
-    { id:"bw3b", name:"V6 — Longue Z2 1h30", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 90, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"60 min", desc:"Z2 — 118–145W — terrain mixte OK",                    tip:"1h en Z2 stable. Si tu es dehors et qu'une montée te fait monter à 160W, c'est ok — redescends après."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Première longue à 1h30. Le Sweet Spot du milieu de semaine + cette longue construisent vraiment le vélo."
-    },
-  ]},
-  { weekNum: 4, sessions: [
-    { id:"bw4a", name:"V7 — Z2 récupération", type:"v-endurance", typeLabel:"En semaine · Home trainer",
-      dist: 45, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Échauffement facile",                                  tip:""},
-        {type:"main", dist:"30 min", desc:"Z2 continu — 110–135W · aucune intensité",             tip:"Semaine récup run — le vélo reste présent mais sans effort. 110–135W au lieu de 155–170W."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Semaine récup run — le vélo descend en intensité. Objectif : garder les jambes actives."
-    },
-    { id:"bw4b", name:"V8 — Longue Z2 légère", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 75, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"50 min", desc:"Z2 tranquille — 110–140W",                            tip:"Volume légèrement réduit vs S3. Récup active."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"75 min de Z2 léger — la semaine de récup sert le run, mais le vélo reste présent."
-    },
-  ]},
-  { weekNum: 5, sessions: [
-    { id:"bw5a", name:"V9 — Sweet Spot 2×12 min", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 60, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif",                          tip:""},
-        {type:"interval", dist:"2×12 min", desc:"Sweet Spot léger — 158–172W · récup 5 min Z1",  tip:"2 min de plus vs S3. Même allure, plus de durée = progression qualitative."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme",                                  tip:""},
-      ],
-      tip:"Dernière séance Sweet Spot de Phase 1. Phase 2 va augmenter significativement la charge vélo."
-    },
-    { id:"bw5b", name:"V10 — Longue Z2 1h30", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 90, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"60 min", desc:"Z2 — 118–145W",                                       tip:"Deuxième fois à 90 min. Tu devrais te sentir plus à l'aise qu'en S3."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Avant de rentrer en Phase 2 — vérification que la base Z2 est solide."
-    },
-  ]},
-
-  // ── PHASE 2 : DÉVELOPPEMENT (S6–S10) — Pic de progression vélo ───────
-  { weekNum: 6, sessions: [
-    { id:"bw6a", name:"V11 — Sweet Spot 2×15 min", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 65, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif — finir à 135W",           tip:""},
-        {type:"interval", dist:"2×15 min", desc:"Sweet Spot — 160–175W · récup 5 min Z1 entre",  tip:"PHASE 2 — l'intensité monte. 160–175W = 76–83% FTP. Sensation : difficile mais maîtrisé, tu peux tenir une conversation de quelques mots. Si tu dépasses 180W, redescends."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme facile",                           tip:""},
-      ],
-      tip:"Entrée Phase 2 — les séances Sweet Spot deviennent le stimulus principal de progression FTP."
-    },
-    { id:"bw6b", name:"V12 — Longue Z2 1h45", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 105, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"75 min", desc:"Z2 — 118–155W · terrain mixte OK",                    tip:"1h15 en Z2. La durée monte — c'est ici que se construit le fond aérobie vélo. Hydrate-toi bien."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"1h45 total. Volume le plus haut jusqu'ici — gère bien l'alimentation."
-    },
-  ]},
-  { weekNum: 7, sessions: [
-    { id:"bw7a", name:"V13 — Sweet Spot 2×17 min", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 70, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif",                          tip:""},
-        {type:"interval", dist:"2×17 min", desc:"Sweet Spot — 160–178W · récup 5 min Z1",        tip:"2 min de plus vs S6. L'adaptation se fait par accumulation — même allure, plus de temps sous tension."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme",                                  tip:""},
-      ],
-      tip:"Chaque semaine en Phase 2, les blocs Sweet Spot s'allongent de 2 min. La progression est contrôlée."
-    },
-    { id:"bw7b", name:"V14 — Longue Z2 2h", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 120, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"90 min", desc:"Z2 — 118–158W",                                       tip:"2h total. 1h30 en Z2. Plan de ravitaillement : 1 bidon/heure, barre ou gel à 45 min et 1h15."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"2h = format qui commence à simuler une longue sortie d'entraînement half."
-    },
-  ]},
-  { weekNum: 8, sessions: [
-    { id:"bw8a", name:"V15 — Sweet Spot 2×15 min récup", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 60, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif",                          tip:""},
-        {type:"interval", dist:"2×15 min", desc:"Sweet Spot — 158–172W · récup 5 min Z1",        tip:"Semaine récup run — le vélo garde son intensité mais revient à la durée S6. Le corps consolide S6–7."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme",                                  tip:""},
-      ],
-      tip:"Même allure Sweet Spot mais durée réduite — récup active pour préparer S9–10."
-    },
-    { id:"bw8b", name:"V16 — Longue Z2 1h45", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 105, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"75 min", desc:"Z2 — 118–155W",                                       tip:"Légèrement moins que S7 (90 min → 75 min). Récup physique sans perdre le fil."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Semaine récup run = bonne semaine pour soigner la technique de pédalage sur la longue."
-    },
-  ]},
-  { weekNum: 9, sessions: [
-    { id:"bw9a", name:"V17 — Sweet Spot 2×18 min", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 70, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif",                          tip:""},
-        {type:"interval", dist:"2×18 min", desc:"Sweet Spot — 162–178W · récup 5 min Z1",        tip:"18 min de Sweet Spot — tu approches de la durée de course sur segment vélo. Reste discipliné sur l'allure — ne commence pas trop fort."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme",                                  tip:""},
-      ],
-      tip:"S9 = test run en milieu de semaine + Sweet Spot vélo. Planifie bien l'ordre — run avant vélo."
-    },
-    { id:"bw9b", name:"V18 — Longue Z2 2h", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 120, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"90 min", desc:"Z2 — 118–158W",                                       tip:"Retour à 2h après la récup de S8. Tu devrais te sentir plus fort qu'en S7 sur la même durée."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Deuxième fois à 2h. Si tu te sens bien à 1h30, ajoute 15 min — pas plus."
-    },
-  ]},
-  { weekNum: 10, sessions: [
-    { id:"bw10a", name:"V19 — Sweet Spot pic 2×20 min", type:"v-quality", typeLabel:"En semaine · Home trainer",
-      dist: 75, unit:"min",
-      sets: [
-        {type:"warm",     dist:"15 min", desc:"Échauffement progressif",                          tip:""},
-        {type:"interval", dist:"2×20 min", desc:"Sweet Spot — 165–180W · récup 5 min Z1",        tip:"2×20 min = 40 min de Sweet Spot total — le pic de la phase. Surveille bien le premier bloc : si tu arrives à 20 min avec encore de la marge, le 2e sera bon. Si tu souffres à 15 min, réduis à 2×16 min."},
-        {type:"cool",     dist:"10 min", desc:"Retour au calme",                                  tip:""},
-      ],
-      tip:"SÉANCE PIC VÉLO. Après ça, la charge Sweet Spot descend — ton FTP a probablement progressé."
-    },
-    { id:"bw10b", name:"V20 — Longue Z2 2h", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 120, unit:"min",
-      sets: [
-        {type:"warm", dist:"15 min", desc:"Échauffement progressif",                              tip:""},
-        {type:"long", dist:"90 min", desc:"Z2 — 118–158W",                                       tip:"Troisième fois à 2h. C'est une séance de volume — pas d'intensité malgré la fatigue de la semaine."},
-        {type:"cool", dist:"15 min", desc:"Retour au calme",                                     tip:"Hydrate-toi bien — tu as beaucoup travaillé cette semaine."},
-      ],
-      tip:"SEMAINE PIC (run + vélo). Récup complète prévue en S11."
-    },
-  ]},
-
-  // ── PHASE 3 : MAINTIEN SOUTENU (S11–S13) — Récupération active ───────
-  { weekNum: 11, sessions: [
-    { id:"bw11a", name:"V21 — Z1–Z2 léger", type:"v-endurance", typeLabel:"En semaine · Home trainer ou extérieur",
-      dist: 50, unit:"min",
-      sets: [
-        {type:"main", dist:"45 min", desc:"Z1–Z2 — 90–140W · cadence élevée 88–95 rpm · aucune intensité forcée", tip:"PHASE 3 — le vélo change de rôle. Il sert à faire circuler le sang après les séances run dures, pas à progresser. Aucun bloc d'intensité."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"45 min Z1–Z2 = récupération active. Si les jambes sont lourdes, 30 min suffisent."
-    },
-    { id:"bw11b", name:"V22 — Sortie tranquille 1h15", type:"v-long", typeLabel:"Week-end · Extérieur",
-      dist: 75, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Mise en route facile",                                 tip:""},
-        {type:"long", dist:"55 min", desc:"Z1–Z2 — 90–140W · allure sociale · pas de watts ciblés", tip:"RÉCUPÉRATION TRANSITION. Le run de S11 est déjà léger — le vélo l'est aussi. Profite du paysage."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"1h15 tranquille. Si tu as envie d'aller plus vite, résiste — ça ne sert pas le plan."
-    },
-  ]},
-  { weekNum: 12, sessions: [
-    { id:"bw12a", name:"V23 — Z1–Z2 récupération active", type:"v-endurance", typeLabel:"En semaine · Home trainer ou extérieur",
-      dist: 50, unit:"min",
-      sets: [
-        {type:"main", dist:"45 min", desc:"Z1–Z2 — 95–140W · cadence 88–92 rpm",                 tip:"Le run de S12 est très chargé (seuil + 12×400m + longue 22km). Le vélo doit absorber la charge, pas en ajouter. Aucune intensité."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"45 min de flux sanguin. Cette séance récupère les jambes autant qu'une séance de repos."
-    },
-    { id:"bw12b", name:"V24 — Sortie tranquille 1h30", type:"v-long", typeLabel:"Week-end · Extérieur",
-      dist: 90, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Mise en route facile",                                 tip:""},
-        {type:"long", dist:"70 min", desc:"Z1–Z2 — 95–145W · aucune contrainte de watts",        tip:"Après la longue run de S12 (22km), les jambes ont besoin d'un effort léger à faible impact. Le vélo est parfait pour ça."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Le dimanche après une longue run de 22km — reste vraiment léger sur le vélo."
-    },
-  ]},
-  { weekNum: 13, sessions: [
-    { id:"bw13a", name:"V25 — Z1–Z2 léger", type:"v-endurance", typeLabel:"En semaine · Home trainer ou extérieur",
-      dist: 45, unit:"min",
-      sets: [
-        {type:"main", dist:"40 min", desc:"Z1–Z2 — 90–135W · aucune intensité",                  tip:"Dernière semaine de run chargée (S13). Le vélo est purement récupération. Si les jambes sont très lourdes, 30 min suffisent."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"45 min maximum. L'affûtage run commence S14 — les jambes doivent arriver fraîches."
-    },
-    { id:"bw13b", name:"V26 — Sortie tranquille 1h15", type:"v-long", typeLabel:"Week-end · Extérieur",
-      dist: 75, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Mise en route facile",                                 tip:""},
-        {type:"long", dist:"55 min", desc:"Z1–Z2 — 90–140W · allure sociale",                   tip:"Dernière longue vélo avant l'affûtage. Aucune pression de performance."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Dernière sortie vélo de Phase 3. S14 commence l'allègement général."
-    },
-  ]},
-
-  // ── PHASE 4 : ALLÈGEMENT (S14–S15) ──────────────────────────────────
-  { weekNum: 14, sessions: [
-    { id:"bw14a", name:"V27 — Z1 très léger", type:"v-endurance", typeLabel:"En semaine · Home trainer",
-      dist: 40, unit:"min",
-      sets: [
-        {type:"main", dist:"35 min", desc:"Z1 pur — 80–120W · cadence libre · juste garder les jambes mobiles", tip:"AFFÛTAGE. Cette séance n'améliore rien — elle maintient la fluidité neuromusculaire. Aucune intensité. Aucune contrainte."},
-        {type:"cool", dist:"5 min",  desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"40 min Z1 — aligné avec l'affûtage run de S14. La forme monte, ne l'entame pas."
-    },
-    { id:"bw14b", name:"V28 — Sortie légère 1h", type:"v-long", typeLabel:"Week-end · Extérieur ou home trainer",
-      dist: 60, unit:"min",
-      sets: [
-        {type:"warm", dist:"10 min", desc:"Mise en route très douce",                             tip:""},
-        {type:"long", dist:"40 min", desc:"Z1–Z2 léger — 90–130W · allure très confortable",     tip:"Dans une semaine c'est la course. Garde les jambes légères. Si tu te sens bien, résiste à l'envie d'aller plus fort."},
-        {type:"cool", dist:"10 min", desc:"Retour au calme",                                     tip:""},
-      ],
-      tip:"Dernière longue vélo avant la race week. 1h, pas plus."
-    },
-  ]},
-  { weekNum: 15, sessions: [
-    { id:"bw15a", name:"V29 — Activation J-3", type:"v-endurance", typeLabel:"RACE WEEK · Home trainer",
-      dist: 30, unit:"min",
-      sets: [
-        {type:"main",     dist:"20 min", desc:"Z1 — 80–110W · cadence 85–90 rpm",                tip:"RACE WEEK. 20 min maximum. Garder les jambes actives sans les fatiguer."},
-        {type:"interval", dist:"3×10s",  desc:"3 accélérations légères de cadence — 95–100 rpm · récup 1 min", tip:"Juste réveiller les fibres rapides. Aucun effort."},
-        {type:"cool",     dist:"5 min",  desc:"Retour au calme",                                  tip:""},
-      ],
-      tip:"30 min maximum. La course est dans 3 jours — tout ce que tu fais maintenant peut nuire, pas aider."
-    },
-    { id:"bw15b", name:"V30 — Check J-1", type:"v-endurance", typeLabel:"RACE WEEK · Home trainer",
-      dist: 20, unit:"min",
-      sets: [
-        {type:"main", dist:"15 min", desc:"Z1 très léger — 70–100W — juste vérifier que le matériel fonctionne", tip:"Cette séance sert à vérifier le home trainer / le vélo, pas à s'entraîner. 15 min suffit amplement. Si tu as peur de la fatigue, saute cette séance."},
-        {type:"cool", dist:"5 min",  desc:"Arrêt progressif",                                    tip:""},
-      ],
-      tip:"Vérification matériel J-1. Surtout : dors tôt, mange bien, prépare ton sac de course."
-    },
-  ]},
-];
-
-const strengthPlan = [
+const weeklyPlan = [
   {
-    weekNum: 1,
-    sessions: [
+    "weekNum": 1,
+    "phase": "Base aérobie — Reprise",
+    "sessions": [
       {
-        id:"tmw1a", name:"Semaine A — Mobilité optionnelle", type:"m-mobility", typeLabel:"Optionnel",
-        dist: 20, unit:"min",
-        sets: [
-          {type:"main", dist:"15–20 min", desc:"Mobilité et étirements uniquement", tip:"Si tu n'as pas envie, tu ne fais pas. Zéro culpabilité."},
+        "id": "rw1a",
+        "name": "Footing Z2 — Reprise",
+        "type": "r-endurance",
+        "typeLabel": "40 min · Z2",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km, très progressif. Aucune pression.", "tip": "" },
+          { "type": "main", "dist": "27 min", "desc": "Course continue Z2 à 4:50–5:10/km. Effort conversationnel, fréquence cardiaque basse.", "tip": "Si les jambes sont lourdes en sortie de prépa annulée, descends à 5:10 sans hésiter." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min. Respirations profondes.", "tip": "" }
         ],
-        tip:"Le repos fait partie du plan."
+        "tip": "Semaine 1 : reprise progressive après l'annulation du HIM. Les jambes ont de la mémoire — laisse le corps parler avant de pousser."
       },
+      {
+        "id": "rw1b",
+        "name": "Run Z2 + Strides",
+        "type": "r-endurance",
+        "typeLabel": "45 min · Z2 + strides",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot Z1 à >5:30/km, accélération très progressive.", "tip": "" },
+          { "type": "main", "dist": "25 min", "desc": "Course continue Z2 à 4:50–5:10/km, sensation de facilité requise.", "tip": "" },
+          { "type": "interval", "dist": "4 × 20 s", "desc": "4 strides de 20 s à ~3:50/km (sprint contrôlé, non maximal). Récupération 60 s trot Z1 entre chaque. Réactivation neuromusculaire sans stress métabolique.", "tip": "Les strides doivent être fluides, jambe détendue. Si ça tire, réduis la vitesse." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Les strides en fin de Z2 sont le meilleur investissement neuromusculaire à faible coût. Ne les saute pas."
+      },
+      {
+        "id": "sw1a",
+        "name": "Natation — Technique crawl",
+        "type": "s-technique",
+        "typeLabel": "40 min · Technique",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl libre, très confortable. Relâchement des épaules.", "tip": "" },
+          { "type": "main", "dist": "4 × 50 m", "desc": "Drill catch-up : 4 × 50 m crawl avec touch-and-go (une main attend l'autre à l'avant avant de tirer). Récupération 30 s. Objectif : rallonger le coup de bras.", "tip": "La main avant reste tendue jusqu'au contact — patience dans l'extension." },
+          { "type": "interval", "dist": "4 × 50 m", "desc": "Fingertip drag : 4 × 50 m, doigts effleurant la surface à la récupération. Récupération 30 s. Travail de la hauteur du coude en sortie d'eau.", "tip": "" },
+          { "type": "main", "dist": "200 m", "desc": "200 m crawl continu, allure Z2 natation, consolidation des sensations du drill.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération, allure très douce.", "tip": "" }
+        ],
+        "tip": "Séance technique pure : oublie la vitesse. Si tu dois choisir entre allure et sensation, prends toujours la sensation."
+      },
+      {
+        "id": "sw1b",
+        "name": "Natation — Endurance crawl",
+        "type": "s-endurance",
+        "typeLabel": "45 min · Endurance",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple, accélération progressive sur les 50 derniers mètres.", "tip": "" },
+          { "type": "main", "dist": "600 m", "desc": "600 m crawl continu à allure confortable et régulière. Pas de chrono — sens l'eau, maintiens une technique propre.", "tip": "Si la technique lâche avant 600 m, arrête-toi 15 s puis repars. La continuité technique prime sur la continuité de nage." },
+          { "type": "interval", "dist": "4 × 50 m", "desc": "4 × 50 m crawl légèrement plus soutenu (sans sprint), récupération 20 s brasse douce. Régularité de la foulée aquatique.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération active, très lent.", "tip": "" }
+        ],
+        "tip": "Cette séance construit l'endurance aérobie en eau. Objectif : sortir de l'eau avec de la réserve."
+      },
+      {
+        "id": "mw1a",
+        "name": "Renforcement — Activation générale",
+        "type": "strength",
+        "typeLabel": "40 min · Force fonctionnelle",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Mobilité articulaire : cercles de hanches 30 s, leg swings 10 × / jambe, bras en croix 10 reps, montées de genoux sur place 30 s.", "tip": "" },
+          { "type": "main", "dist": "3 circuits", "desc": "3 tours, 45 s de repos entre exercices, 90 s entre tours :\n1. Squat haltères — 3 × 12 reps (descente contrôlée 3 s, charge légère)\n2. Romanian deadlift haltères — 3 × 10 reps (dos plat, poussée des hanches)\n3. Pompes — 3 × 10 reps (coudes à 45°, gainage abdominal)\n4. Fente alternée haltères — 3 × 10 reps / jambe\n5. Planche frontale — 3 × 30 s", "tip": "S1 : charge légère pour apprendre les mouvements. Mieux vaut finir frais que cassé." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements statiques : ischio-jambiers 45 s / côté, psoas-iliaque 45 s / côté, pectoraux 30 s.", "tip": "" }
+        ],
+        "tip": "Haltères et élastiques uniquement — tout se fait debout ou au sol. Priorité absolue à la qualité de mouvement sur la charge."
+      }
     ]
   },
   {
-    weekNum: 2,
-    sessions: [
+    "weekNum": 2,
+    "phase": "Base aérobie — Construction",
+    "sessions": [
       {
-        id:"tmw2a", name:"Semaine B — Muscu réduite A", type:"m-strength", typeLabel:"20 min · Haltères",
-        dist: 20, unit:"min",
-        sets: [
-          {type:"main", dist:"20 min", desc:"Volume léger, haut du corps et gainage", tip:"Format réduit comme l'affûtage. Tu gardes le geste sans fatigue."},
+        "id": "rw2a",
+        "name": "Footing Z2 Long",
+        "type": "r-endurance",
+        "typeLabel": "50 min · Z2",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km, progressif.", "tip": "" },
+          { "type": "main", "dist": "37 min", "desc": "Course continue Z2 à 4:50–5:10/km. Allure régulière sans variations. Surface souple recommandée.", "tip": "Allure Z2 constante sur le plat. Si les côtes te sortent de Z2, marche les montées et récupère sans t'en vouloir." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
-        tip:"Arrête avant de sentir une vraie fatigue musculaire."
+        "tip": "Le volume Z2 est le béton de ta performance au semi. Cette séance bête et méchante construit plus que tu ne le sens sur le moment."
       },
       {
-        id:"tmw2b", name:"Semaine B — Muscu réduite B", type:"m-strength", typeLabel:"20 min · Haltères",
-        dist: 20, unit:"min",
-        sets: [
-          {type:"main", dist:"20 min", desc:"Volume léger, mobilité + rappel haut du corps", tip:"Reste facile."},
+        "id": "rw2b",
+        "name": "Run Tempo — Introduction",
+        "type": "r-tempo",
+        "typeLabel": "50 min · Tempo",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "12 min", "desc": "10 min trot Z1 puis 2 min accélération progressive vers Z2. Éducatifs optionnels : 3 × 30 m talons-fesses + 3 × 30 m montées de genoux.", "tip": "" },
+          { "type": "interval", "dist": "2 × 10 min", "desc": "2 blocs de 10 min à allure tempo 4:20–4:30/km. Récupération 3 min trot Z1 entre blocs. Effort soutenu mais contrôlé — tu dois pouvoir tenir une phrase courte, pas une conversation.", "tip": "Si à 8 min tu sens que tu vas exploser au 2e bloc, recule à 4:30. Mieux finir maîtrisé que rater le 2e bloc." },
+          { "type": "cool", "dist": "10 min", "desc": "Trot Z1 décroissant, finir à marche 2 min.", "tip": "" }
         ],
-        tip:"Séance courte, utile, pas héroïque."
+        "tip": "Premier tempo du programme. L'allure 4:20–4:30 doit piquer sans brûler — tu dois rester maître de ton effort sur les 10 min."
       },
+      {
+        "id": "sw2a",
+        "name": "Natation — Technique + Vitesse courte",
+        "type": "s-technique",
+        "typeLabel": "45 min · Technique",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple, focus longueur de coulée.", "tip": "" },
+          { "type": "main", "dist": "6 × 25 m", "desc": "Drill one-arm crawl : 6 × 25 m nage sur un bras (l'autre tendu devant). Récupération 30 s. Objectif : sentir la traction individuelle de chaque bras.", "tip": "Si le drill est difficile sur 25 m, fais 15 m + retour brasse. Ce n'est pas une compétition." },
+          { "type": "interval", "dist": "4 × 50 m", "desc": "4 × 50 m crawl à allure soutenue (non maximale), récupération 40 s brasse douce. Sensations de vitesse sans cassure technique.", "tip": "" },
+          { "type": "main", "dist": "200 m", "desc": "200 m crawl continu, intégration des sensations du drill.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "Le one-arm drill est inconfortable — c'est normal. Le but est de corriger les asymétries de traction avant qu'elles deviennent des habitudes."
+      },
+      {
+        "id": "sw2b",
+        "name": "Natation — Volume continu",
+        "type": "s-endurance",
+        "typeLabel": "50 min · Endurance",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl progressif, très souple.", "tip": "" },
+          { "type": "main", "dist": "800 m", "desc": "800 m crawl continu à allure régulière et confortable. Toutes les 200 m : check mental technique (tête, rotation du buste, finition du coup de bras).", "tip": "Si la technique se dégrade avant 800 m, insère 25 m brasse toutes les 200 m. Mieux vaut 800 m fragmentés en technique que 800 m dégradés." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m sprint modéré, récupération 45 s. Vivacité neuromusculaire en fin de séance.", "tip": "" },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération, très lent.", "tip": "" }
+        ],
+        "tip": "800 m continus : note le temps si tu veux un point de référence pour suivre ta progression en natation semaine après semaine."
+      },
+      {
+        "id": "mw2a",
+        "name": "Renforcement — Chaîne postérieure et gainage",
+        "type": "strength",
+        "typeLabel": "45 min · Force fonctionnelle",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Mobilité active : chat-vache 10 reps, hip circles 30 s / sens, inchworm 5 reps, jumping jacks 30 s.", "tip": "" },
+          { "type": "main", "dist": "3 circuits", "desc": "3 tours, 45 s repos entre exercices, 90 s entre tours :\n1. Romanian deadlift haltères — 3 × 10 reps (charge modérée, dos neutre, poussée de hanches)\n2. Pont fessier unilatéral avec élastique au-dessus des genoux — 3 × 12 reps / côté\n3. Row haltère unilatéral — 3 × 10 reps / bras (dos horizontal, coude qui remonte)\n4. Fente arrière avec élévation de genou — 3 × 10 reps / jambe\n5. Planche latérale — 3 × 25 s / côté\n6. Dead bug — 3 × 8 reps / côté", "tip": "Le Romanian deadlift est l'exercice roi pour la propulsion en course. Charge suffisante pour sentir les ischios — pas juste les fessiers." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : piriforme 45 s / côté, mollets 45 s / côté, ouverture thoracique au sol 30 s.", "tip": "" }
+        ],
+        "tip": "La chaîne postérieure (fessiers, ischios, lombaires) est le moteur de ta foulée. Ces exercices ont un transfert direct sur la vitesse en course."
+      }
     ]
   },
   {
-    weekNum: 3,
-    sessions: [
+    "weekNum": 3,
+    "phase": "Base aérobie — Récupération",
+    "sessions": [
       {
-        id:"tmw3a", name:"Semaine C — Muscu standard A", type:"m-strength", typeLabel:"25–30 min · Haut du corps",
-        dist: 30, unit:"min",
-        sets: [
-          {type:"main", dist:"25–30 min", desc:"Format début de programme half, niveau S1", tip:"Haut du corps esthétique, charge modérée, exécution propre."},
+        "id": "rw3a",
+        "name": "Footing Z2 — Allégé",
+        "type": "r-endurance",
+        "typeLabel": "40 min · Z2 souple",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "27 min", "desc": "Course Z2 à 4:50–5:10/km, perception d'effort très basse. Si tu es fatigué, reste à 5:10/km ou plus. Ne cherche pas à profiter de la semaine légère pour aller plus vite.", "tip": "Cette semaine, l'adaptation se fait pendant la récupération, pas pendant l'entraînement. Résiste à l'envie de forcer." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min, respiration nasale.", "tip": "" }
         ],
-        tip:"Entretien, pas recherche de record."
+        "tip": "S3 = récupération intentionnelle. Volume réduit. C'est pendant ces semaines que le corps intègre les adaptations des 2 semaines précédentes."
       },
       {
-        id:"tmw3b", name:"Semaine C — Muscu standard B", type:"m-strength", typeLabel:"25–30 min · Haut du corps",
-        dist: 30, unit:"min",
-        sets: [
-          {type:"main", dist:"25–30 min", desc:"Deuxième rappel haut du corps + gainage", tip:"Même esprit : propre, contrôlé, pas à l'échec."},
+        "id": "rw3b",
+        "name": "Run — Strides et mobilité",
+        "type": "r-recovery",
+        "typeLabel": "35 min · Récup + strides",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot très léger Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "15 min", "desc": "Course Z1–Z2 basse à 5:10–5:30/km, sensation quasi nulle d'effort.", "tip": "" },
+          { "type": "interval", "dist": "4 × 20 s", "desc": "4 strides de 20 s à ~3:50/km, récupération 90 s marche/trot. Foulée légère, appui avant, jambe décontractée.", "tip": "Strides en semaine de récup : garder la vivacité neuromusculaire uniquement. Pas d'effort maximal." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min + étirements mollets et fléchisseurs de hanche sur place.", "tip": "" }
         ],
-        tip:"Tu dois pouvoir répéter cette semaine plusieurs fois."
+        "tip": "35 min légères avec strides : suffisant pour maintenir le stimulus neuromusculaire sans accumuler de fatigue supplémentaire."
       },
+      {
+        "id": "sw3a",
+        "name": "Natation — Technique légère",
+        "type": "s-technique",
+        "typeLabel": "35 min · Technique souple",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl très souple.", "tip": "" },
+          { "type": "main", "dist": "4 × 50 m", "desc": "4 × 50 m : alterner catch-up drill (25 m) et nage libre intégrée (25 m). Récupération 30 s. Qualité de sensation uniquement.", "tip": "Si tu es fatigué, fais 3 répétitions au lieu de 4. L'objectif est de rester en eau sans accumuler de charge." },
+          { "type": "main", "dist": "200 m", "desc": "200 m crawl continu très confortable.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "Séance courte et propre. Profites-en pour travailler une sensation unique : position de la tête ou entrée de main — une seule chose à la fois."
+      },
+      {
+        "id": "sw3b",
+        "name": "Natation — Endurance légère",
+        "type": "s-endurance",
+        "typeLabel": "35 min · Endurance souple",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "150 m", "desc": "150 m crawl progressif.", "tip": "" },
+          { "type": "main", "dist": "600 m", "desc": "600 m crawl à allure très confortable, en dessous de ton rythme habituel. Si tu sens de la fatigue, insère 25 m brasse toutes les 150 m.", "tip": "600 m vs 800 m en S2 : volume réduit intentionnellement. 600 m bien nagés valent mieux que 800 m en mode survie." },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse douce.", "tip": "" }
+        ],
+        "tip": "600 m faciles pour maintenir la sensation aquatique sans sur-solliciter. Ton objectif de 1h30 se construit aussi dans les semaines légères."
+      },
+      {
+        "id": "mw3a",
+        "name": "Renforcement — Volume réduit",
+        "type": "strength",
+        "typeLabel": "35 min · Force légère",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Mobilité légère : rotations d'épaules, cercles de hanches, leg swings.", "tip": "" },
+          { "type": "main", "dist": "2 circuits", "desc": "2 tours (au lieu de 3), 60 s repos entre exercices, charges allégées -15% vs S2 :\n1. Squat haltères — 2 × 10 reps\n2. Romanian deadlift — 2 × 10 reps\n3. Pompes — 2 × 8 reps\n4. Planche frontale — 2 × 30 s\n5. Dead bug — 2 × 6 reps / côté", "tip": "L'objectif est de maintenir le patron moteur, pas de progresser. Charges allégées, pas de challenge." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements statiques : quadriceps, ischio-jambiers, pectoraux.", "tip": "" }
+        ],
+        "tip": "Si la fatigue générale est forte (sommeil perturbé, jambes lourdes), tu peux remplacer cette séance par 30 min de marche + étirements. La récupération systémique prime."
+      }
     ]
   },
-];
-
-
-
-// ═══════════════════════════════════════════════════
-// SEMI-MARATHON PLAN — 16 semaines · objectif 1h30
-// ═══════════════════════════════════════════════════
-const semiRunPlan = [
-  // ── PHASE 1 : BASE (S1–S5) ─────────────────────────────────────────
-  // S1–2 : 2 séances/sem · S3–5 : 3 séances/sem
-  { weekNum: 1, sessions: [
-    { id:"smw1a", name:"R1 — Seuil intro 2×8 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing 5'30–6'00/km", tip:"Montée progressive. Finir par 4×20s de foulées rapides."},
-        {type:"interval", dist:"2×8 min",  desc:"Allure seuil — 4'35–4'45/km (récup 3 min trot)", tip:"Seuil lacté confortable. Sensation : tu peux encore parler, mais tu ne veux pas."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme 5'30+/km", tip:"Décélère vraiment."},
-      ],
-      tip:"Première séance de qualité — prudence. Mieux vaut finir en dessous que claquer dès S1."
-    },
-    { id:"smw1b", name:"R2 — Footing longue", type:"r-easy", typeLabel:"Week-end",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"long", dist:"12 km", desc:"Footing 5'30–6'00/km — allure conversation", tip:"Si tu peux parler en phrases complètes, l'allure est bonne. C'est le socle aérobie de tout le plan."},
-      ],
-      tip:"Allure strictement aérobie. Aucune négociation sur la vitesse ce week-end."
-    },
-  ]},
-  { weekNum: 2, sessions: [
-    { id:"smw2a", name:"R3 — Seuil 3×8 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing 5'30–6'00/km", tip:"Montée en température 15 min minimum."},
-        {type:"interval", dist:"3×8 min",  desc:"Allure seuil — 4'35–4'45/km (récup 3 min trot)", tip:"Progression de l'effort : premier répétition conservateur, deuxième au rythme cible, troisième jusqu'à la limite confortable."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Une répétition de plus vs S1. Reste gérable — l'accumulation fait le travail, pas l'intensité."
-    },
-    { id:"smw2b", name:"R4 — Footing longue", type:"r-easy", typeLabel:"Week-end",
-      dist: 16, unit:"km",
-      sets: [
-        {type:"long", dist:"16 km", desc:"Footing 5'30–6'00/km", tip:"+4 km vs S1. L'allure reste la même — c'est le volume qui monte, pas l'intensité."},
-      ],
-      tip:"Long run fondamental — c'est ici que se construit l'endurance de base du demi."
-    },
-  ]},
-  { weekNum: 3, sessions: [
-    { id:"smw3a", name:"R5 — Seuil 3×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 11, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"3×10 min", desc:"Allure seuil — 4'30–4'40/km (récup 3 min trot)", tip:"Les répétitions s'allongent. Commence conservateur sur le 1er."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Première semaine à 3 séances. Répartir sur Mar/Jeu/Sam ou Mar/Ven/Dim."
-    },
-    { id:"smw3b", name:"R6 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing très facile 5'45–6'15/km", tip:"Séance de récupération active. Si tu sens la fatigue, réduis à 5 km — aucun problème."},
-      ],
-      tip:"Séance de liaison. Elle ne fait pas la performance — elle permet les deux autres."
-    },
-    { id:"smw3c", name:"R7 — Longue 14 km", type:"r-easy", typeLabel:"Week-end",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"long", dist:"14 km", desc:"Footing 5'30–6'00/km", tip:"Troisième semaine — le volume commence à compter. Mange et bois avant."},
-      ],
-      tip:"Fais-le facile. La qualité vient des deux autres séances, pas de celle-ci."
-    },
-  ]},
-  { weekNum: 4, sessions: [
-    { id:"smw4a", name:"R8 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 6'00+/km", tip:"Semaine de récupération — allure basse, durée courte. Le corps assimile S1–3."},
-      ],
-      tip:"SEMAINE RÉCUP — baisse l'intensité et le volume volontairement."
-    },
-    { id:"smw4b", name:"R9 — Footing", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"8 km", desc:"Footing modéré 5'45–6'00/km", tip:"Si les jambes sont légères, tu peux ajouter 4×20s de foulées en fin de sortie."},
-      ],
-      tip:"Reprise progressive après la légèreté du lundi."
-    },
-    { id:"smw4c", name:"R10 — Longue légère", type:"r-easy", typeLabel:"Week-end",
-      dist: 9, unit:"km",
-      sets: [
-        {type:"long", dist:"9 km", desc:"Footing aisé 5'30–5'50/km", tip:"Long run court — le but est de maintenir la routine sans fatiguer. Profites-en pour noter les sensations."},
-      ],
-      tip:"Récupération active. Moins c'est plus cette semaine."
-    },
-  ]},
-  { weekNum: 5, sessions: [
-    { id:"smw5a", name:"R11 — Seuil 4×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"4×10 min", desc:"Allure seuil — 4'28–4'38/km (récup 2'30 trot)", tip:"4 répétitions — volume seuil le plus élevé jusqu'ici. Récup raccourcie à 2'30. Reste discipliné sur l'allure."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Séance charnière avant l'introduction de VMA en S6. Solidifie le seuil."
-    },
-    { id:"smw5b", name:"R12 — Footing + strides", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main",     dist:"6 km",    desc:"Footing 5'30–6'00/km", tip:""},
-        {type:"interval", dist:"4×80 m",  desc:"Foulées — allure 3'50–4'00/km · récup 90s marche", tip:"Intro aux foulées rapides — préparation neuromusculaire avant la VMA S6. Pas d'effort maximal — 85% de l'effort perçu."},
-        {type:"cool",     dist:"1 km",    desc:"Retour au calme", tip:""},
-      ],
-      tip:"Les foulées préparent les fibres rapides avant S6. C'est l'intro à la VMA, pas de la VMA."
-    },
-    { id:"smw5c", name:"R13 — Longue 17 km", type:"r-easy", typeLabel:"Week-end",
-      dist: 17, unit:"km",
-      sets: [
-        {type:"long", dist:"17 km", desc:"Footing 5'30–6'00/km", tip:"La plus longue sortie du bloc 1. Plan de ravitaillement : emporte de l'eau, mange 2h avant."},
-      ],
-      tip:"Après ça, tu sais courir 17 km. La base est posée pour attaquer la construction S6."
-    },
-  ]},
-
-  // ── PHASE 2 : CONSTRUCTION (S6–S10) ─────────────────────────────────
-  // S6–7, S9–10 : 4 séances/sem · S8 : récup 3 séances
-  { weekNum: 6, sessions: [
-    { id:"smw6a", name:"R14 — Seuil 4×8 min allure cible", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"4×8 min",  desc:"Allure seuil spécifique — 4'25–4'35/km (récup 2'30 trot)", tip:"On est maintenant à l'allure cible du semi. 4'16/km visé en course, seuil un peu au-dessus = 4'25–4'35/km."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Première séance à l'allure spécifique semi. Le corps apprend à reconnaître 4'25–4'35."
-    },
-    { id:"smw6b", name:"R15 — VMA 6×400 m", type:"r-quality", typeLabel:"En semaine",
-      dist: 9, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2 km",    desc:"Échauffement 5'30–6'00/km", tip:""},
-        {type:"interval", dist:"6×400 m", desc:"VMA — allure 3'48–3'58/km (récup 90s marche/trot)", tip:"PREMIÈRE VMA du plan. 400 m = 95 sec environ à cette allure. L'objectif est de tenir l'allure sur les 6 répétitions, pas d'aller plus vite."},
-        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
-      ],
-      tip:"VMA introduite progressivement. Si l'allure est trop dure, c'est 4'00–4'10/km — pas de problème."
-    },
-    { id:"smw6c", name:"R16 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:"Récupération active entre deux séances de qualité. Si les jambes sont lourdes, 5 km suffisent."},
-      ],
-      tip:"Séance tampon — maintient la routine sans ajouter de stress."
-    },
-    { id:"smw6d", name:"R17 — Longue 18 km + blocs", type:"r-easy", typeLabel:"Week-end",
-      dist: 18, unit:"km",
-      sets: [
-        {type:"long",     dist:"8 km",    desc:"Footing aisé 5'30–6'00/km", tip:"Première heure détendue."},
-        {type:"interval", dist:"2×8 min", desc:"Blocs allure cible — 4'16/km (récup 5 min trot entre)", tip:"BLOCS ALLURE CIBLE sur longue — nouveau stimulus. 4'16/km sur legs déjà fatigués. Réaliste de race day."},
-        {type:"cool",     dist:"2 km",    desc:"Retour au calme facile", tip:""},
-      ],
-      tip:"Long run avec qualité intégrée. La fatigue en fin de longue ressemble à la fatigue en fin de course."
-    },
-  ]},
-  { weekNum: 7, sessions: [
-    { id:"smw7a", name:"R18 — Seuil 4×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"4×10 min", desc:"Allure seuil — 4'25–4'35/km (récup 2'30 trot)", tip:"Répétitions plus longues vs S6. Même allure, plus de durée = progression qualitative."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Montée en durée des répétitions seuil. Le corps s'adapte au maintien de l'allure plus longtemps."
-    },
-    { id:"smw7b", name:"R19 — VMA 8×400 m", type:"r-quality", typeLabel:"En semaine",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2 km",    desc:"Échauffement", tip:""},
-        {type:"interval", dist:"8×400 m", desc:"VMA — allure 3'48–3'58/km (récup 90s)", tip:"2 répétitions de plus vs S6. L'allure ne change pas — c'est le volume VMA qui progresse."},
-        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
-      ],
-      tip:"Si les dernières répétitions dégradent l'allure de >5 sec/km, arrête à 6 ou 7 — mieux vaut ça que terminer cassé."
-    },
-    { id:"smw7c", name:"R20 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:""},
-      ],
-      tip:"Récupération active entre les deux blocs de qualité."
-    },
-    { id:"smw7d", name:"R21 — Longue 19 km + blocs", type:"r-easy", typeLabel:"Week-end",
-      dist: 19, unit:"km",
-      sets: [
-        {type:"long",     dist:"9 km",    desc:"Footing aisé 5'30–6'00/km", tip:""},
-        {type:"interval", dist:"3×8 min", desc:"Blocs allure cible — 4'16/km (récup 4 min entre)", tip:"Un bloc de plus vs S6. Les 3 blocs = 24 min à allure course. Récupération raccourcie."},
-        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
-      ],
-      tip:"Long run le plus ambitieux jusqu'ici. Si tu tiens les 3 blocs, le 1h30 est à portée."
-    },
-  ]},
-  { weekNum: 8, sessions: [
-    { id:"smw8a", name:"R22 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"8 km", desc:"Footing léger 6'00+/km", tip:"SEMAINE RÉCUP — volume réduit, zéro qualité. Le corps consolide S6–7."},
-      ],
-      tip:"Semaine de récupération après deux semaines denses à 4 séances."
-    },
-    { id:"smw8b", name:"R23 — Footing", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"8 km", desc:"Footing modéré 5'45–6'00/km", tip:"Légèrement plus vif que lundi si les jambes le permettent."},
-      ],
-      tip:"Maintien de la routine sans forcer."
-    },
-    { id:"smw8c", name:"R24 — Longue légère", type:"r-easy", typeLabel:"Week-end",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"long", dist:"12 km", desc:"Footing aisé 5'30–5'50/km", tip:"Longue réduite — récupération après S6–7. Aucun bloc de qualité."},
-      ],
-      tip:"Bonne semaine de récup = S9 et S10 exécutés à 100%."
-    },
-  ]},
-  { weekNum: 9, sessions: [
-    { id:"smw9a", name:"R25 — TEST 10 km", type:"r-race", typeLabel:"TEST RACE",
-      dist: 10, unit:"km",
-      sets: [
-        {type:"warm",  dist:"2 km",  desc:"Échauffement footing + foulées", tip:"5–10 min facile puis 3×30s progressives pour activer les fibres rapides."},
-        {type:"main",  dist:"10 km", desc:"TEST 10 km — allure maximale sur la distance", tip:"Objectif : réaliser un 10 km race-like. Utiliser le résultat pour valider l'allure semi. Formule : temps 10km × 2.1 = objectif semi. Si tu fais 43'00, semi objectif = ~1h30."},
-        {type:"cool",  dist:"1 km",  desc:"Retour au calme très léger", tip:""},
-      ],
-      tip:"Baromètre du plan. Pas de pression — c'est une donnée, pas un jugement. Résultat <43'30 → 1h30 est jouable."
-    },
-    { id:"smw9b", name:"R26 — Récup test", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"8 km", desc:"Footing très léger 6'00+/km", tip:"Après un test, le corps a besoin de 48h avant de reprendre un travail qualitatif."},
-      ],
-      tip:"Récup obligatoire après le test. Aucune intensité."
-    },
-    { id:"smw9c", name:"R27 — Reconstruction", type:"r-easy", typeLabel:"Week-end",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"long", dist:"14 km", desc:"Footing modéré 5'30–5'45/km", tip:"Reprise du volume avec des jambes récupérées du test. Allure un peu plus vive que d'habitude si la forme est là."},
-      ],
-      tip:"Ferme la semaine test. On repart fort sur S10 — semaine pic."
-    },
-  ]},
-  { weekNum: 10, sessions: [
-    { id:"smw10a", name:"R28 — Seuil 5×8 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"5×8 min",  desc:"Allure seuil — 4'22–4'32/km (récup 2 min trot)", tip:"5 répétitions — volume seuil le plus élevé du plan. Récup raccourcie à 2 min. Exigeant mais faisable après la récup de S8–9."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"SEMAINE PIC — charge maximale du plan. Sois frais mentalement pour celle-ci."
-    },
-    { id:"smw10b", name:"R29 — VMA 5×1000 m", type:"r-quality", typeLabel:"En semaine",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",    desc:"Échauffement", tip:""},
-        {type:"interval", dist:"5×1000 m",  desc:"VMA — allure 3'48–3'58/km (récup 2 min trot)", tip:"Passage aux 1000 m — répétitions plus longues que les 400 m. Qualité de course. Si le 1000 m devient trop dur, reste sur 5×600 m."},
-        {type:"cool",     dist:"2 km",      desc:"Retour au calme", tip:""},
-      ],
-      tip:"La séance VMA la plus exigeante du plan. C'est ici que se construit le plafond de vitesse."
-    },
-    { id:"smw10c", name:"R30 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:"Tampon entre les deux séances de qualité. Priorité à la récupération."},
-      ],
-      tip:"Séance tampon indispensable en semaine pic."
-    },
-    { id:"smw10d", name:"R31 — Longue 22 km + blocs", type:"r-easy", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long",     dist:"10 km",    desc:"Footing aisé 5'30–6'00/km", tip:"Commence vraiment facile — tu es fatigué de la semaine."},
-        {type:"interval", dist:"2×12 min", desc:"Blocs allure cible — 4'16/km (récup 5 min entre)", tip:"2×12 min = 24 min à allure race, sur jambes fatiguées. Si tu tiens ça, tu tiens le 1h30."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Long run pic. Après ça, on entre en phase spécifique. Tu as fait le plus dur."
-    },
-  ]},
-
-  // ── PHASE 3 : SPÉCIFIQUE (S11–S13) ──────────────────────────────────
-  // S11 : récup 3 séances · S12–13 : 4 séances/sem
-  { weekNum: 11, sessions: [
-    { id:"smw11a", name:"R32 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"8 km", desc:"Footing léger 6'00+/km", tip:"Récup transition après la semaine pic. Corps en assimilation."},
-      ],
-      tip:"SEMAINE RÉCUP TRANSITION — S10 était la semaine la plus dure. Laisse le corps digérer."
-    },
-    { id:"smw11b", name:"R33 — Footing", type:"r-easy", typeLabel:"En semaine",
-      dist: 8, unit:"km",
-      sets: [
-        {type:"main", dist:"8 km", desc:"Footing modéré 5'45–6'00/km", tip:""},
-      ],
-      tip:"Reprise progressive."
-    },
-    { id:"smw11c", name:"R34 — Longue légère", type:"r-easy", typeLabel:"Week-end",
-      dist: 14, unit:"km",
-      sets: [
-        {type:"long", dist:"14 km", desc:"Footing aisé 5'30–5'50/km", tip:"Maintien du volume sans forcer. Préparation mentale : dans 4 semaines c'est la course."},
-      ],
-      tip:"Transition vers la phase spécifique. La forme revient, l'affûtage arrive."
-    },
-  ]},
-  { weekNum: 12, sessions: [
-    { id:"smw12a", name:"R35 — Seuil spécifique 4×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"4×10 min", desc:"Allure seuil — 4'18–4'25/km (récup 2 min trot)", tip:"Allure encore plus proche de la course. 4'18–4'25 = entre seuil et allure race. Récup courte."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Phase spécifique — toutes les séances de qualité s'approchent de l'allure course."
-    },
-    { id:"smw12b", name:"R36 — Mixte VMA+Spécifique", type:"r-quality", typeLabel:"En semaine",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2 km",    desc:"Échauffement", tip:""},
-        {type:"interval", dist:"6×600 m", desc:"VMA — allure 3'48–3'58/km (récup 90s)", tip:"D'abord le travail VMA — jambes fraîches."},
-        {type:"interval", dist:"4×400 m", desc:"Spécifique — allure 4'16/km (récup 60s)", tip:"Enchaîner directement sur de l'allure course. Simulation de la sensation de maintenir 4'16 sur jambes déjà sollicitées."},
-        {type:"cool",     dist:"2 km",    desc:"Retour au calme", tip:""},
-      ],
-      tip:"Séance combinée — l'une des plus spécifiques du plan. Qualité + spécificité sur jambes chargées."
-    },
-    { id:"smw12c", name:"R37 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:""},
-      ],
-      tip:"Tampon entre les séances de qualité."
-    },
-    { id:"smw12d", name:"R38 — Longue 22 km allure progressive", type:"r-easy", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long",     dist:"10 km", desc:"Footing progressif 5'30→5'00/km", tip:"Accélération progressive sur les 10 premiers km — pas une brique."},
-        {type:"interval", dist:"10 km", desc:"Allure course — 4'16/km", tip:"10 km à allure course sur longue — le segment le plus exigeant du plan. Ça fait mal. C'est prévu."},
-        {type:"cool",     dist:"2 km",  desc:"Retour au calme", tip:""},
-      ],
-      tip:"Long run le plus spécifique. Si tu tiens 10 km à 4'16 sur jambes fatiguées, le semi est dans tes cordes."
-    },
-  ]},
-  { weekNum: 13, sessions: [
-    { id:"smw13a", name:"R39 — Seuil 5×8 min allure cible", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 13, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"5×8 min",  desc:"Allure seuil — 4'18–4'25/km (récup 2 min trot)", tip:"5 répétitions à allure cible. Récup 2 min. Exigeant — dernière grosse séance seuil du plan."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Avant-dernière semaine chargée. Après S13, l'affûtage commence."
-    },
-    { id:"smw13b", name:"R40 — 12×400 m allure race", type:"r-quality", typeLabel:"En semaine",
-      dist: 12, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2 km",     desc:"Échauffement", tip:""},
-        {type:"interval", dist:"12×400 m", desc:"Allure 4'16/km (récup 60s trot)", tip:"12 répétitions courtes à allure race exacte — 400 m à 4'16/km = 101 secondes chacune. Récup courte. Maintien de la qualité sur le volume."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"Séance de volume à allure race. Si les derniers 400 m dégradent, c'est OK — tu n'es pas loin de la course."
-    },
-    { id:"smw13c", name:"R41 — Footing récup", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:""},
-      ],
-      tip:"Tampon."
-    },
-    { id:"smw13d", name:"R42 — Longue 22 km + segment race", type:"r-easy", typeLabel:"Week-end",
-      dist: 22, unit:"km",
-      sets: [
-        {type:"long",     dist:"8 km",  desc:"Footing aisé 5'30–6'00/km", tip:""},
-        {type:"interval", dist:"12 km", desc:"Segment allure course — 4'16/km", tip:"12 km à allure race sur longue — la préparation mentale ultime. Si tu tiens ça en S13, tu tiens le semi."},
-        {type:"cool",     dist:"2 km",  desc:"Retour au calme", tip:""},
-      ],
-      tip:"Dernière longue avec qualité. Après ça, les longues de S14–15 sont légères par comparaison."
-    },
-  ]},
-
-  // ── PHASE 4 : AFFÛTAGE (S14–S15) ────────────────────────────────────
-  // S14–15 : 3 séances/sem · Volume -30% · Intensité maintenue
-  { weekNum: 14, sessions: [
-    { id:"smw14a", name:"R43 — Seuil allégé 3×10 min", type:"r-quality", typeLabel:"En semaine · Midi",
-      dist: 11, unit:"km",
-      sets: [
-        {type:"warm",     dist:"2–3 km",   desc:"Échauffement footing", tip:""},
-        {type:"interval", dist:"3×10 min", desc:"Allure seuil — 4'20–4'30/km (récup 3 min trot)", tip:"Volume réduit vs S13. L'allure reste proche de la course — on maintient la stimulation neuromusculaire sans accumuler de fatigue."},
-        {type:"cool",     dist:"2 km",     desc:"Retour au calme", tip:""},
-      ],
-      tip:"AFFÛTAGE — moins de volume, qualité maintenue. Le corps commence à se recharger."
-    },
-    { id:"smw14b", name:"R44 — Footing facile", type:"r-easy", typeLabel:"En semaine",
-      dist: 7, unit:"km",
-      sets: [
-        {type:"main", dist:"7 km", desc:"Footing léger 5'45–6'15/km", tip:"Aucune intensité. Juste garder les jambes actives."},
-      ],
-      tip:"Simple maintien de la routine. Ni trop ni trop peu."
-    },
-    { id:"smw14c", name:"R45 — Longue légère + segment cible", type:"r-easy", typeLabel:"Week-end",
-      dist: 16, unit:"km",
-      sets: [
-        {type:"long",     dist:"10 km",  desc:"Footing aisé 5'30–6'00/km", tip:""},
-        {type:"interval", dist:"20 min", desc:"Segment allure cible — 4'16/km", tip:"Dernier rappel de l'allure course — 20 min à 4'16/km sur jambes fraîches. Doit se sentir difficile mais maîtrisé."},
-        {type:"cool",     dist:"2 km",   desc:"Retour au calme", tip:""},
-      ],
-      tip:"Dernière sortie avec intention. Après ça, tout ce qui reste c'est de gérer la récup."
-    },
-  ]},
-  { weekNum: 15, sessions: [
-    { id:"smw15a", name:"R46 — Activation J-4", type:"r-easy", typeLabel:"RACE WEEK · J-4",
-      dist: 4, unit:"km",
-      sets: [
-        {type:"warm",     dist:"3 km",    desc:"Footing 5'30–5'45/km", tip:"Activation légère — débloquer les jambes sans fatiguer."},
-        {type:"interval", dist:"4×80 m",  desc:"Foulées rapides — allure 3'50–4'00/km · récup 90s", tip:"Réveiller les fibres rapides avant la course. Pas d'effort soutenu."},
-        {type:"cool",     dist:"1 km",    desc:"Retour au calme", tip:""},
-      ],
-      tip:"RACE WEEK — J-4. L'entraînement est fini. Ce qui se fait maintenant peut nuire, pas aider."
-    },
-    { id:"smw15b", name:"R47 — Footing J-2", type:"r-easy", typeLabel:"RACE WEEK · J-2",
-      dist: 3, unit:"km",
-      sets: [
-        {type:"main", dist:"3 km", desc:"Footing très léger — 15–20 min, allure 6'00+/km", tip:"Juste maintenir la circulation. 15–20 min suffisent. Après ça : repos complet jusqu'au jour J."},
-      ],
-      tip:"Dernière sortie avant la course. L'essentiel est fait — 15 semaines de travail sont dans les jambes."
-    },
-    { id:"smw15c", name:"🏁 RACE DAY — Semi-marathon 1h30", type:"r-race", typeLabel:"COURSE",
-      dist: 21, unit:"km",
-      sets: [
-        {type:"warm",     dist:"5 km",          desc:"Les 5 premiers km — départ contrôlé 4'20–4'25/km", tip:"L'euphorie du départ est l'ennemi principal. Reste sur 4'20–4'25/km les 5 premiers km — tu peux accélérer plus tard, tu ne peux pas réparer une sortie trop rapide."},
-        {type:"main",     dist:"13 km",         desc:"Corps de la course — allure 4'16/km", tip:"Installe 4'16/km et régule avec le GPS. La sensation doit être 'difficile mais gérable'. Si ça devient 'difficile et qui se dégrade', recule de 3–4 sec/km."},
-        {type:"interval", dist:"3 derniers km", desc:"Finish — accélération progressive si les jambes répondent", tip:"Si tu arrives au km 18 avec de la marge, accélère progressivement vers 4'10/km sur le dernier km. Sinon : maintiens 4'16/km jusqu'à la ligne — tu obtiens le 1h30."},
-      ],
-      tip:"⚠️ Rappels : chaussures rodées · Gel ou sucres toutes les 30 min · Ne regarde pas la montre avant le km 3 · Le 1h30 se gagne dans les 5 premiers km."
-    },
-  ]},
+  {
+    "weekNum": 4,
+    "phase": "Construction — Ajout vélo",
+    "sessions": [
+      {
+        "id": "rw4a",
+        "name": "Footing Z2 — Volume croissant",
+        "type": "r-endurance",
+        "typeLabel": "55 min · Z2",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot Z1 à >5:30/km, progressif.", "tip": "" },
+          { "type": "main", "dist": "40 min", "desc": "Course continue Z2 à 4:50–5:10/km. Allure régulière, effort constant. Surface souple recommandée.", "tip": "À 55 min de Z2, la tentation de dériver vers 4:40 existe. Résiste — chaque minute à 4:40 au lieu de 5:00 est une dette de récupération pour les séances qui suivent." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "S4 marque le début de la phase Construction. Le volume run monte. Garde la discipline sur l'allure Z2 — c'est ton capital pour les semaines de seuil qui arrivent."
+      },
+      {
+        "id": "rw4b",
+        "name": "Run Tempo — Progression",
+        "type": "r-tempo",
+        "typeLabel": "55 min · Tempo",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "12 min", "desc": "10 min trot Z1, puis 2 min accélération vers Z2. Éducatifs : 3 × 30 m montées de genoux + 3 × 30 m talons-fesses.", "tip": "" },
+          { "type": "interval", "dist": "3 × 10 min", "desc": "3 blocs de 10 min à allure tempo 4:20–4:30/km. Récupération 2 min 30 trot Z1 entre blocs. Progression vs S2 : 3 blocs au lieu de 2.", "tip": "Le 3e bloc est le plus dur. Si tu es à 4:35 sur le 3e, c'est acceptable en S4. Si tu passes à 4:50, tu es sorti du tempo — raccourcis le bloc plutôt que de le bâcler." },
+          { "type": "cool", "dist": "8 min", "desc": "Trot Z1 décroissant puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "3 × 10 min tempo : séance clé de la semaine. Cette allure 4:20–4:30 va devenir ta zone de confort d'ici S10. Pour l'instant, ça doit piquer en fin de bloc — c'est bon signe."
+      },
+      {
+        "id": "sw4a",
+        "name": "Natation — Technique et transfert",
+        "type": "s-technique",
+        "typeLabel": "45 min · Technique",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl progressif.", "tip": "" },
+          { "type": "main", "dist": "4 × 75 m", "desc": "4 × 75 m : 25 m fingertip drag + 50 m nage intégrée. Récupération 30 s entre reps. Travail de la finition du coup de bras et hauteur du coude en sortie.", "tip": "Le fingertip drag force un coude haut en sortie d'eau — défaut courant chez les triathlètes. Sur le 50 m nage libre : une consigne unique, coude haut." },
+          { "type": "interval", "dist": "4 × 50 m", "desc": "4 × 50 m crawl à allure soutenue, récupération 35 s. Maintenir la sensation du drill dans la nage libre.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "Le 75 m drill+nage est un format clé pour transférer la technique à la nage réelle. Ne saute pas la transition — c'est là que l'intégration se fait."
+      },
+      {
+        "id": "sw4b",
+        "name": "Natation — Cap 1000 m",
+        "type": "s-endurance",
+        "typeLabel": "55 min · Endurance",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "1000 m", "desc": "1000 m crawl continu à allure régulière et confortable. Décompose en 4 × 250 m mentalement. Toutes les 250 m : check position de la tête, rotation du buste, extension avant.", "tip": "Premier cap symbolique à 1000 m. Objectif : finir à la même allure qu'au départ. Si tu accélères les 200 derniers mètres, tu es parti trop conservateur — c'est bien." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m sprint modéré, récupération 40 s. Vivacité en fin de séance.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "Note le temps de ton 1000 m. C'est ton premier chrono de référence en natation pour mesurer la progression jusqu'au triathlon L."
+      },
+      {
+        "id": "bw4a",
+        "name": "Vélo — Endurance Z2 (reprise)",
+        "type": "b-endurance",
+        "typeLabel": "70 min · Z2 vélo",
+        "dist": 70,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "Pédalage progressif de Z1 (<126 W) vers 140–150 W sur 15 min. Cadence libre, jambes qui se réveillent.", "tip": "" },
+          { "type": "main", "dist": "45 min", "desc": "45 min à 126–168 W (Z2 vélo, 60–80% FTP). Cadence cible 85–90 rpm. Effort conversationnel. Si tu n'as pas de capteur de puissance : allure où tu peux chanter sans t'essouffler.", "tip": "En Z2 vélo, si la FC dépasse 150 bpm, réduis la puissance. La physiologie vélo est différente de la course — les zones ne sont pas identiques à allure identique." },
+          { "type": "cool", "dist": "10 min", "desc": "Retour progressif à <126 W, pédalage très souple 5 min.", "tip": "" }
+        ],
+        "tip": "Premier bloc vélo du programme. Objectif : retrouver les sensations, calibrer les zones. Pas de performance à chercher ici."
+      },
+      {
+        "id": "mw4a",
+        "name": "Renforcement — Force propulsive",
+        "type": "strength",
+        "typeLabel": "40 min · Force fonctionnelle",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Mobilité active : leg swings 10 / sens / jambe, cercles d'épaules, montées de genoux 30 s, rotations thoraciques.", "tip": "" },
+          { "type": "main", "dist": "3 circuits", "desc": "3 tours, 45 s repos entre exercices, 90 s entre tours :\n1. Goblet squat haltère (tenu verticalement des deux mains) — 3 × 12 reps, descente profonde\n2. Romanian deadlift haltères — 3 × 10 reps (charge progression +2–4 kg vs S2)\n3. Row haltère unilatéral — 3 × 10 reps / côté\n4. Fente bulgare (pied arrière surélevé sur chaise) — 3 × 8 reps / jambe\n5. Gainage anti-rotation avec élastique latéral — 3 × 10 reps / côté\n6. Superman / lever de buste ventral — 3 × 12 reps", "tip": "La fente bulgare est l'exercice le plus exigeant — charge légère d'abord, équilibre en priorité. C'est le meilleur exercice unilatéral pour la propulsion en course." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : fléchisseurs de hanche 45 s / côté, piriforme 45 s / côté, dorsaux.", "tip": "" }
+        ],
+        "tip": "S4 : retour à 3 tours. Progression sur le Romanian deadlift si les mouvements étaient propres en S1–S2."
+      }
+    ]
+  },
+  {
+    "weekNum": 5,
+    "phase": "Construction — Charge",
+    "sessions": [
+      {
+        "id": "rw5a",
+        "name": "Footing Z2 — Long",
+        "type": "r-endurance",
+        "typeLabel": "60 min · Z2",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot Z1 à >5:30/km, progressif.", "tip": "" },
+          { "type": "main", "dist": "45 min", "desc": "Course continue Z2 à 4:50–5:10/km. Sortie longue de la semaine — rythme de croisière, régularité. Surface souple si disponible.", "tip": "À 35 min tu vas commencer à sentir les jambes. Maintiens l'allure et la respiration — c'est exactement là que le travail physiologique se fait." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "La sortie longue Z2 est non-négociable dans la phase de construction. C'est la base de ton endurance aérobie pour le triathlon L et le semi."
+      },
+      {
+        "id": "rw5b",
+        "name": "Run Seuil — Introduction",
+        "type": "r-threshold",
+        "typeLabel": "60 min · Seuil",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "12 min trot Z1, puis 3 min accélération progressive vers Z3. Éducatifs : 4 × 30 m montées de genoux + 2 × 60 m accélérations progressives.", "tip": "" },
+          { "type": "interval", "dist": "4 × 5 min", "desc": "4 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 2 min trot Z1 entre reps. Effort exigeant : 2–3 mots max par phrase possible, pas plus.", "tip": "L'allure 4:00–4:10 est calibrée sur l'objectif 1h30, pas ta forme actuelle. Si 4:10 est déjà dur, reste à 4:10. Ne descends pas sous 4:00 en S5 — la progression viendra avec les semaines." },
+          { "type": "cool", "dist": "12 min", "desc": "Trot Z1 décroissant 10 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Première séance seuil du programme. 4 × 5 min est le volume d'entrée — il montera progressivement jusqu'en S9. Note tes impressions sur la tenue de l'allure."
+      },
+      {
+        "id": "sw5a",
+        "name": "Natation — Technique avancée",
+        "type": "s-technique",
+        "typeLabel": "55 min · Technique",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "4 × 100 m", "desc": "4 × 100 m : 25 m catch-up drill + 25 m fingertip drag + 50 m nage intégrée. Récupération 40 s. Automatiser les sensations des drills dans la nage libre.", "tip": "Sur le 50 m nage libre : une consigne unique — coude haut à la récupération du bras. Pas 5 consignes à la fois." },
+          { "type": "interval", "dist": "4 × 50 m", "desc": "4 × 50 m à intensité progressive : 1re à allure confort, 2e légèrement plus soutenu, 3e et 4e à allure course. Récupération 40 s brasse.", "tip": "" },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "4 × 100 m drill+nage : la technique doit tenir sur 100 m. Si elle lâche à 75 m, c'est ton signal de travail prioritaire pour la suite."
+      },
+      {
+        "id": "sw5b",
+        "name": "Natation — Volume + Intervalles",
+        "type": "s-endurance",
+        "typeLabel": "60 min · Endurance + vitesse",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl progressif.", "tip": "" },
+          { "type": "main", "dist": "1200 m", "desc": "1200 m crawl continu à allure régulière et confortable. Décompose en 3 × 400 m. Toutes les 400 m : 30 s pause brasse facultative si la technique dégrade.", "tip": "Ton rythme de nage doit être constant du début à la fin. Si tu accélères les 200 derniers mètres, tu es parti trop conservateur — c'est parfait." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m sprint court, récupération 50 s. Finis la séance avec de la puissance.", "tip": "" },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "1200 m continus : cap intermédiaire important. En triathlon L tu nages 1900 m — t'approcher de ce volume en continu te prépare mentalement autant que physiquement."
+      },
+      {
+        "id": "bw5a",
+        "name": "Vélo — Sweet Spot",
+        "type": "b-sweetspot",
+        "typeLabel": "80 min · Sweet spot",
+        "dist": 80,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "15 min progressif de Z1 (<126 W) à Z2 basse (130–140 W). Cadence 85–90 rpm.", "tip": "" },
+          { "type": "interval", "dist": "2 × 20 min", "desc": "2 blocs de 20 min à sweet spot : 168–189 W (80–90% FTP). Récupération 5 min à Z1 (<130 W) entre blocs. Cadence 85–90 rpm. Effort soutenu mais contrôlé : tu peux tenir une phrase courte.", "tip": "168–189 W = entre Z3 basse et Z4 basse. Si tu n'as pas de capteur : perception d'effort 7/10, tu pourrais tenir encore 20 min si obligé. La récup de 5 min est non-négociable." },
+          { "type": "cool", "dist": "10 min", "desc": "Retour progressif à <126 W, pédalage souple 5 min.", "tip": "" }
+        ],
+        "tip": "Première séance sweet spot. 2 × 20 min est le format classique pour développer l'économie vélo à haute intensité. La qualité de la 2e répétition est ton indicateur clé."
+      },
+      {
+        "id": "mw5a",
+        "name": "Renforcement — Puissance et stabilité",
+        "type": "strength",
+        "typeLabel": "45 min · Force",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Mobilité dynamique : squat to stand 8 reps, leg swings, rotations thoraciques avec haltère léger.", "tip": "" },
+          { "type": "main", "dist": "3 circuits", "desc": "3 tours, 45 s repos entre exercices, 90 s entre tours :\n1. Squat jump haltères légers — 3 × 8 reps (atterrissage contrôlé et amorti)\n2. Romanian deadlift haltères — 3 × 8 reps (charge lourde, contrôle total)\n3. Row haltères bilatéral — 3 × 10 reps\n4. Step-up avec haltères sur marche stable — 3 × 10 reps / jambe\n5. Planche avec élévation de bras alternée — 3 × 8 reps / côté\n6. Curl marteau haltères + press épaule enchaîné — 3 × 10 reps", "tip": "Le squat jump développe la puissance explosive. Atterrissage souple, genoux en ligne, pas de bruit d'impact. Si la fatigue cumulée est forte, remplace par un squat normal." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : ischio-jambiers, quadriceps, pectoraux, rotation lombaire au sol.", "tip": "" }
+        ],
+        "tip": "Si la fatigue cumulée de la semaine est forte, remplace le squat jump par un squat normal. La fraîcheur musculaire pour les séances run prime sur la progression muscu."
+      }
+    ]
+  },
+  {
+    "weekNum": 6,
+    "phase": "Construction — Récupération",
+    "sessions": [
+      {
+        "id": "rw6a",
+        "name": "Run Récupération active",
+        "type": "r-recovery",
+        "typeLabel": "35 min · Récup",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Marche 3 min + trot très léger 2 min.", "tip": "" },
+          { "type": "main", "dist": "25 min", "desc": "Course Z1 à >5:30/km, perception d'effort quasi nulle. Les jambes ont le droit d'être lourdes après S5.", "tip": "Si les jambes sont lourdes, ralentis encore. 6:00/km est parfait ici. Aucun ego en semaine de récup." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min.", "tip": "" }
+        ],
+        "tip": "S6 = récupération obligatoire, volume -35% vs S5. Tu n'accumules rien cette semaine — tu intègres. C'est aussi une semaine d'entraînement."
+      },
+      {
+        "id": "rw6b",
+        "name": "Footing Z2 court",
+        "type": "r-endurance",
+        "typeLabel": "40 min · Z2 léger",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "27 min", "desc": "Course Z2 à 4:50–5:10/km, allure confortable. Pas de strides, pas de tempo — juste du Z2 propre et relâché.", "tip": "En semaine récup, le Z2 devient ta zone haute. Ne dépasse pas 5:00/km sauf si tu te sens réellement très frais." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Cette séance doit te laisser frais à la fin. Si tu finis fatigué, tu es allé trop vite ou la récupération n'est pas complète — signale-le."
+      },
+      {
+        "id": "sw6a",
+        "name": "Natation — Technique légère",
+        "type": "s-technique",
+        "typeLabel": "35 min · Technique souple",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "150 m", "desc": "150 m crawl très souple.", "tip": "" },
+          { "type": "main", "dist": "4 × 50 m", "desc": "4 × 50 m drill libre : choisis le drill sur lequel tu as senti le plus de progrès en S4–S5 (catch-up, fingertip drag ou one-arm). Récupération 40 s. Qualité uniquement.", "tip": "" },
+          { "type": "main", "dist": "200 m", "desc": "200 m crawl continu à allure confortable, conscience technique.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse douce.", "tip": "" }
+        ],
+        "tip": "Séance courte et propre. Idéal pour ancrer les sensations techniques avant S7 qui relance la charge."
+      },
+      {
+        "id": "sw6b",
+        "name": "Natation — Volume réduit",
+        "type": "s-endurance",
+        "typeLabel": "40 min · Endurance allégée",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "150 m", "desc": "150 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "800 m", "desc": "800 m crawl continu à allure très confortable, en dessous de ton rythme habituel. Insère 25 m brasse toutes les 200 m si tu préfères.", "tip": "800 m vs 1200 m en S5 : volume réduit intentionnellement. Profites-en pour travailler une sensation précise plutôt que de chercher la performance." },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "800 m faciles pour maintenir le stimulus aquatique sans charger le système. Après 2 semaines de construction, le corps a besoin de cette fenêtre d'adaptation."
+      },
+      {
+        "id": "bw6a",
+        "name": "Vélo — Endurance légère",
+        "type": "b-endurance",
+        "typeLabel": "50 min · Z2 récup vélo",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage souple <126 W (Z1), cadence libre.", "tip": "" },
+          { "type": "main", "dist": "35 min", "desc": "35 min à 126–155 W (Z2 basse, <74% FTP). Cadence 85–90 rpm. Reste dans le bas de la Z2 vélo — pas de sweet spot cette semaine.", "tip": "50 min au lieu de 80 min (S5) : réduction de volume -37%. Profite de ce pédalage pour travailler la cadence si tu peines à tenir 85 rpm en conditions légères." },
+          { "type": "cool", "dist": "5 min", "desc": "Pédalage <120 W, arrêt progressif.", "tip": "" }
+        ],
+        "tip": "Séance vélo légère en récup. Cette séance doit se terminer sans fatigue. Si tu utilises un home-trainer, résistance minimum."
+      },
+      {
+        "id": "mw6a",
+        "name": "Renforcement — Maintenance",
+        "type": "strength",
+        "typeLabel": "35 min · Force légère",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Mobilité articulaire légère : épaules, hanches, chevilles.", "tip": "" },
+          { "type": "main", "dist": "2 circuits", "desc": "2 tours (réduit vs S5), 60 s repos entre exercices, charges allégées -15% :\n1. Squat haltères — 2 × 10 reps\n2. Romanian deadlift — 2 × 8 reps\n3. Pompes — 2 × 8 reps\n4. Planche frontale — 2 × 30 s\n5. Pont fessier bilatéral — 2 × 12 reps", "tip": "L'objectif est de maintenir le patron moteur, pas de progresser. 2 tours, charges légères, repos longs." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements statiques clés : ischio-jambiers, psoas, pectoraux.", "tip": "" }
+        ],
+        "tip": "Si la fatigue générale est forte, remplace cette séance par 30 min de marche + étirements. La récupération systémique prime sur la continuité muscu."
+      }
+    ]
+  },
+  {
+    "weekNum": 7,
+    "phase": "Transition — Premier brick",
+    "sessions": [
+      {
+        "id": "rw7a",
+        "name": "Footing Z2 — Consolidation",
+        "type": "r-endurance",
+        "typeLabel": "60 min · Z2",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot Z1 à >5:30/km, progressif.", "tip": "" },
+          { "type": "main", "dist": "45 min", "desc": "Course continue Z2 à 4:50–5:10/km. Allure régulière, effort constant. Surface souple recommandée.", "tip": "Ce footing doit se sentir plus facile qu'en S4 à durée identique. Si ce n'est pas le cas, la récupération S6 n'était pas complète — signale-le avant la séance seuil." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "S7 marque l'entrée dans la phase Spécifique Triathlon (S8–S10). Le volume monte, le brick arrive. Cette sortie Z2 pose les fondations de la semaine."
+      },
+      {
+        "id": "rw7b",
+        "name": "Run Seuil — Progression volume",
+        "type": "r-threshold",
+        "typeLabel": "60 min · Seuil",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "12 min trot Z1, puis 3 min accélération vers Z3. Éducatifs : 4 × 30 m montées de genoux + 2 × 60 m accélérations progressives.", "tip": "" },
+          { "type": "interval", "dist": "5 × 5 min", "desc": "5 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 90 s trot Z1 entre reps. Progression vs S5 : 5 reps au lieu de 4, récup réduite à 90 s.", "tip": "Récupération 90 s : tu ne récupères pas totalement entre les reps — c'est voulu. La 5e rep doit être complète même à 4:10. Si les 3 premières reps sont déjà au rouge, allonge la récup à 2 min : qualité prime sur quantité." },
+          { "type": "cool", "dist": "10 min", "desc": "Trot Z1 décroissant 8 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "5 × 5 min seuil à 90 s de récup : c'est costaud pour S7. Si la récupération S6 était bonne, tu dois tenir. Bonne séance seuil ici = tu es sur la trajectoire pour le semi en 1h30."
+      },
+      {
+        "id": "sw7a",
+        "name": "Natation — Endurance + Blocs vitesse",
+        "type": "s-endurance",
+        "typeLabel": "55 min · Endurance + intervalles",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "600 m", "desc": "600 m crawl continu à allure régulière. Socle endurance de la séance — allure confortable, pas d'effort.", "tip": "" },
+          { "type": "interval", "dist": "6 × 50 m", "desc": "6 × 50 m crawl à allure soutenue (au-dessus de l'allure endurance, non maximale). Récupération 30 s brasse. Objectif : vitesse en eau avec technique maintenue.", "tip": "Sur ces 50 m : focus unique sur ne pas lâcher la technique sur les 10 derniers mètres. C'est là que ça se casse d'habitude." },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "Format mixte endurance + intervalles : prépare le système à nager longtemps puis à accélérer. Utile en triathlon quand on ressort du peloton de nage."
+      },
+      {
+        "id": "sw7b",
+        "name": "Natation — Long 1500 m",
+        "type": "s-endurance",
+        "typeLabel": "65 min · Endurance longue",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl progressif.", "tip": "" },
+          { "type": "main", "dist": "1500 m", "desc": "1500 m crawl continu à allure régulière et confortable. Décompose en 3 × 500 m. Toutes les 500 m : 30 s pause brasse optionnelle si la technique dégrade. Gestion du rythme respiratoire prioritaire.", "tip": "Premier 1500 m du programme. Objectif : finir en technique propre, pas en vitesse. Si c'est ta première fois à cette distance, prends les pauses brasse sans hésiter — aucune honte, c'est tactique." },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "1500 m continus : cap psychologique. Si tu tiens cette distance en technique correcte, la nage du triathlon L (1900 m) n'a rien d'insurmontable. Note tes impressions."
+      },
+      {
+        "id": "bw7a",
+        "name": "Vélo — Sweet Spot long",
+        "type": "b-sweetspot",
+        "typeLabel": "85 min · Sweet spot",
+        "dist": 85,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "15 min progressif de Z1 à Z2. Cadence 85–90 rpm.", "tip": "" },
+          { "type": "interval", "dist": "2 × 25 min", "desc": "2 blocs de 25 min à sweet spot 168–189 W (80–90% FTP). Récupération 5 min Z1 entre blocs. Progression vs S5 : 25 min au lieu de 20 min par bloc. Cadence 85–90 rpm.", "tip": "25 min de sweet spot : tu travailles des durées proches des efforts spécifiques HIM. En triathlon L tu restes ~2h30 sur le vélo — cette séance entraîne ta capacité à maintenir l'effort dans la durée." },
+          { "type": "cool", "dist": "10 min", "desc": "Retour progressif à <126 W, pédalage souple 5 min.", "tip": "" }
+        ],
+        "tip": "2 × 25 min sweet spot : progression logique depuis S5. Si tu tiens la puissance en fin de 2e bloc, tu es sur la bonne trajectoire pour la phase triathlon."
+      },
+      {
+        "id": "brw7a",
+        "name": "Brick Vélo → Run — Premier enchaînement",
+        "type": "brick",
+        "typeLabel": "65 min · Brick",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage souple Z1 (<126 W), montée progressive vers 155 W.", "tip": "" },
+          { "type": "main", "dist": "40 min vélo", "desc": "40 min vélo à 168–189 W (sweet spot / Z3 vélo). Cadence 85–90 rpm. Les 5 dernières minutes : monte la cadence à 90–95 rpm avec puissance légèrement réduite (150–160 W) pour préparer la transition.", "tip": "Les 5 dernières minutes à cadence haute : c'est le secret du brick. Ça pré-active les fibres musculaires pour la course et réduit le temps d'adaptation à la foulée." },
+          { "type": "interval", "dist": "Transition T2", "desc": "Transition rapide : descendre du vélo, chaussures de course, chrono relancé. Objectif : transition < 90 s. Note le temps.", "tip": "La T2 se travaille à l'entraînement. Savoir dans quel ordre faire les choses réduit le stress le jour J." },
+          { "type": "main", "dist": "15 min run", "desc": "15 min de course immédiatement après le vélo. Cible Z2 à 4:50–5:10/km, mais cours à la sensation les 5 premières minutes. Les jambes seront bizarres 3–4 min — c'est normal, les muscles passent du mode vélo au mode course.", "tip": "Ne te bats pas contre le corps les 3 premières minutes. Garde la régularité et ça revient. Ne cherche pas à aller vite — la transition musculaire est le seul objectif." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min, respiration nasale, récupération active.", "tip": "" }
+        ],
+        "tip": "Premier brick du programme. Objectif unique : découvrir la sensation de la transition vélo→course et apprendre à gérer les premières minutes sur jambes fatiguées. La performance est secondaire."
+      },
+      {
+        "id": "mw7a",
+        "name": "Renforcement — Dernière séance lourde",
+        "type": "strength",
+        "typeLabel": "40 min · Force fonctionnelle",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Mobilité dynamique : squat to stand, leg swings, rotations thoraciques, montées de genoux rapides 30 s.", "tip": "" },
+          { "type": "main", "dist": "3 circuits", "desc": "3 tours, 45 s repos entre exercices, 90 s entre tours :\n1. Fente bulgare haltères — 3 × 8 reps / jambe (charge progression vs S5)\n2. Romanian deadlift haltères — 3 × 8 reps (charge maximale contrôlée du programme)\n3. Row haltère unilatéral — 3 × 10 reps / côté\n4. Squat jump haltères légers — 3 × 6 reps (puissance, atterrissage amorti)\n5. Gainage anti-rotation élastique latéral — 3 × 10 reps / côté\n6. Hip thrust unilatéral au sol — 3 × 12 reps / jambe", "tip": "Charge maximale propre sur le RDL et la fente bulgare — c'est le pic de charge muscu du programme. À partir de S8, la muscu passe en maintenance. Profite de cette séance." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : fléchisseurs de hanche 60 s / côté, ischio-jambiers 60 s / côté, pectoraux.", "tip": "" }
+        ],
+        "tip": "Dernière séance de musculation lourde avant la phase triathlon. De S8 à S11, la muscu passe à 1 séance/semaine en mode maintenance — charges stabilisées, volume réduit."
+      }
+    ]
+  },
+  {
+    "weekNum": 8,
+    "phase": "Spécifique Triathlon — Peak",
+    "sessions": [
+      {
+        "id": "rw8a",
+        "name": "Run Z2 — Long peak",
+        "type": "r-endurance",
+        "typeLabel": "70 min · Z2",
+        "dist": 70,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot Z1 à >5:30/km, progressif.", "tip": "" },
+          { "type": "main", "dist": "55 min", "desc": "Course continue Z2 à 4:50–5:10/km. Surface souple recommandée. Semaine pic — garde l'allure basse pour préserver les ressources pour les séances clés.", "tip": "Si tu arrives à 40 min et que les jambes tirent, reste à 5:10/km. Le volume ici est secondaire — la fraîcheur pour le seuil et le brick est prioritaire." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "Semaine pic du programme (~9h30). Gère ton énergie — le brick et le seuil sont les priorités absolues, le Z2 est le remplissage aérobie."
+      },
+      {
+        "id": "sw8a",
+        "name": "Natation — Longue endurance",
+        "type": "s-endurance",
+        "typeLabel": "75 min · Endurance longue",
+        "dist": 75,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "300 m", "desc": "300 m crawl progressif : 100 m très souple + 100 m intermédiaire + 100 m allure séance.", "tip": "" },
+          { "type": "main", "dist": "1800 m", "desc": "1800 m crawl continu à allure régulière et confortable. Décompose en 3 × 600 m. Toutes les 600 m : 30 s pause brasse optionnelle. Priorité à la respiration et à la rotation.", "tip": "1800 m : tu approches la distance race (1900 m). Allure et technique comptent, pas le chrono." },
+          { "type": "interval", "dist": "6 × 50 m", "desc": "6 × 50 m crawl légèrement soutenu, au-dessus de l'allure endurance. Récupération 25 s brasse. Maintien de la technique sous légère pression.", "tip": "" },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "1800 m continus : 95% de la distance race. Si tu tiens cette distance avec technique correcte, la nage du triathlon L est maîtrisée."
+      },
+      {
+        "id": "bw8a",
+        "name": "Vélo — Long sweetspot",
+        "type": "b-sweetspot",
+        "typeLabel": "130 min · Sweetspot long",
+        "dist": 130,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "20 min", "desc": "20 min progressif de Z1 (<126 W) à Z2 (140–155 W). Cadence 85–90 rpm.", "tip": "" },
+          { "type": "interval", "dist": "3 × 30 min", "desc": "3 blocs de 30 min à 168–189 W (sweetspot, 80–90% FTP). Récupération 5 min Z1 (<130 W) entre chaque. Cadence 85–90 rpm. Blocs 1 et 2 : 170–175 W. Bloc 3 : selon les sensations, 165–175 W acceptable.", "tip": "3 × 30 min simule la charge du segment vélo HIM. Mange et bois pendant les blocs comme en course — c'est autant de la pratique nutrition qu'un entraînement." },
+          { "type": "cool", "dist": "15 min", "desc": "Retour progressif à <126 W, pédalage souple 10 min.", "tip": "" }
+        ],
+        "tip": "La séance vélo la plus exigeante du programme. Si la puissance chute sous 160 W au 3e bloc, réduis à 160 W et tiens — ne pas abandonner la séance."
+      },
+      {
+        "id": "rw8b",
+        "name": "Run Seuil — Volume pic",
+        "type": "r-threshold",
+        "typeLabel": "70 min · Seuil avancé",
+        "dist": 70,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "12 min trot Z1, puis 3 min accélération vers Z3. Éducatifs : 4 × 30 m montées de genoux + 2 × 60 m accélérations.", "tip": "" },
+          { "type": "interval", "dist": "6 × 5 min", "desc": "6 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 90 s trot Z1. Volume seuil maximum du programme.", "tip": "6e répétition : 4:10/km = excellente séance. Si tu es à 4:20 dès la 4e rep, réduis à 5 reps — la fatigue de la semaine pic est là et c'est normal." },
+          { "type": "cool", "dist": "12 min", "desc": "Trot Z1 décroissant 10 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "6 × 5 min seuil : pic de volume en séance seuil sur tout le programme. La tenue de l'allure sur les 5e et 6e reps est ton meilleur indicateur de forme pour le semi en S15."
+      },
+      {
+        "id": "brw8a",
+        "name": "Brick Long — Simulation race",
+        "type": "brick",
+        "typeLabel": "110 min · Brick long",
+        "dist": 110,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage Z1 (<126 W), montée progressive vers 155 W.", "tip": "" },
+          { "type": "main", "dist": "80 min vélo", "desc": "80 min à 168–189 W (sweetspot). Nutrition pendant le bloc : 60 g de glucides. Dernières 5 min : cadence 90–95 rpm à puissance réduite 150–160 W pour préparer la transition.", "tip": "80 min de sweetspot avant un run : c'est exactement le stress cumulatif que tu vivras en course. Si la puissance chute sous 160 W à 60 min, c'est acceptable — continue." },
+          { "type": "interval", "dist": "Transition T2", "desc": "Transition rapide : chaussures de course, chrono relancé. Objectif < 75 s.", "tip": "Chaque seconde économisée en T2 est une seconde gratuite. Optimise la séquence." },
+          { "type": "main", "dist": "20 min run", "desc": "20 min à allure HIM run : 4:30–4:40/km. Les 4 premières minutes seront difficiles — tiens l'allure et ça revient à 5–6 min.", "tip": "4:30–4:40/km post-vélo : c'est ton allure de compétition HIM run, pas l'allure seuil. Maîtrise cet effort ici pour ne pas partir trop vite le jour J." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min, récupération active.", "tip": "" }
+        ],
+        "tip": "Brick le plus long du programme. Si tu tiens 4:30–4:40/km sur ces 20 min après 80 min de sweetspot, tu es prêt pour la course."
+      },
+      {
+        "id": "sw8b",
+        "name": "Natation — Vitesse et intervalles",
+        "type": "s-endurance",
+        "typeLabel": "65 min · Endurance + vitesse",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl progressif.", "tip": "" },
+          { "type": "main", "dist": "800 m", "desc": "800 m crawl continu à allure confortable. Socle endurance de la séance.", "tip": "" },
+          { "type": "interval", "dist": "8 × 50 m", "desc": "8 × 50 m crawl à allure race (soutenu, technique maintenue). Récupération 25 s brasse. Simulation des accélérations tactiques en début de race.", "tip": "Tête plate sur ces 50 m — en triathlon, la tête trop haute coûte de l'énergie sur 1900 m." },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "2e séance natation de la semaine : moins de volume, plus de vitesse. Elle complète sw8a orientée endurance."
+      },
+      {
+        "id": "mw8a",
+        "name": "Renforcement — Maintenance pic",
+        "type": "strength",
+        "typeLabel": "35 min · Maintenance",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Mobilité légère : cercles de hanches, leg swings, rotations d'épaules.", "tip": "" },
+          { "type": "main", "dist": "2 circuits", "desc": "2 tours, 60 s repos entre exercices, charges allégées vs S7 :\n1. Squat haltères — 2 × 10 reps\n2. Romanian deadlift — 2 × 8 reps\n3. Pompes — 2 × 8 reps\n4. Planche frontale — 2 × 30 s\n5. Pont fessier bilatéral — 2 × 12 reps", "tip": "2 circuits uniquement, charges allégées. Maintenir le stimulus musculaire sans vider les réserves neuromusculaires." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : ischio-jambiers, psoas, pectoraux.", "tip": "" }
+        ],
+        "tip": "En semaine de pic, la muscu est l'accessoire. Si les jambes sont très lourdes, remplace par 20 min de marche + étirements."
+      }
+    ]
+  },
+  {
+    "weekNum": 9,
+    "phase": "Spécifique Triathlon — Consolidation",
+    "sessions": [
+      {
+        "id": "rw9a",
+        "name": "Run Z2 — Endurance",
+        "type": "r-endurance",
+        "typeLabel": "65 min · Z2",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "50 min", "desc": "Course continue Z2 à 4:50–5:10/km. Surface souple recommandée. S9 : légère réduction de volume vs S8, intensité maintenue.", "tip": "Si les jambes sont encore lourdes de S8, reste à 5:10/km. La récupération entre semaines est courte dans cette phase." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "S9 à 7h45 vs S8 à 9h30 : réduction intentionnelle. Cette semaine prépare l'affûtage de S10 — conserve les réserves sur les séances Z2."
+      },
+      {
+        "id": "sw9a",
+        "name": "Natation — Endurance longue",
+        "type": "s-endurance",
+        "typeLabel": "65 min · Endurance",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "300 m", "desc": "300 m crawl progressif.", "tip": "" },
+          { "type": "main", "dist": "1600 m", "desc": "1600 m crawl continu à allure régulière. Décompose en 4 × 400 m. Pause brasse 20 s optionnelle toutes les 400 m. Objectif : aisance et régularité.", "tip": "L'allure des 1re et 4e séries de 400 m doit être identique. La régularité est le signe de maîtrise." },
+          { "type": "interval", "dist": "4 × 50 m", "desc": "4 × 50 m crawl à allure race, récupération 30 s brasse.", "tip": "" },
+          { "type": "cool", "dist": "150 m", "desc": "150 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "Avec 1800 m en S8 et 1600 m ici, ton endurance en nage est solide pour les 1900 m de la course."
+      },
+      {
+        "id": "bw9a",
+        "name": "Vélo — Sweetspot solide",
+        "type": "b-sweetspot",
+        "typeLabel": "100 min · Sweetspot",
+        "dist": 100,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "15 min progressif Z1 → Z2. Cadence 85–90 rpm.", "tip": "" },
+          { "type": "interval", "dist": "2 × 30 min", "desc": "2 blocs de 30 min à 168–189 W (sweetspot 80–90% FTP). Récupération 5 min Z1. Réduction vs S8 (3 blocs → 2) mais intensité identique. Cadence 85–90 rpm.", "tip": "2 × 30 min au lieu de 3 × 30 min : volume réduit, pas l'intensité. Si tu tiens 175–185 W sur les 2 blocs sans forcer, tu es en excellente forme pour S11." },
+          { "type": "cool", "dist": "10 min", "desc": "Retour à <126 W, pédalage souple 5 min.", "tip": "" }
+        ],
+        "tip": "100 min vs 130 min en S8 : la réduction de volume en vue de l'affûtage commence. La qualité de l'effort reste identique."
+      },
+      {
+        "id": "rw9b",
+        "name": "Run Seuil — Consolidation",
+        "type": "r-threshold",
+        "typeLabel": "65 min · Seuil",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "12 min trot Z1, puis 3 min accélération vers Z3. Éducatifs : 4 × 30 m.", "tip": "" },
+          { "type": "interval", "dist": "5 × 5 min", "desc": "5 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 90 s trot Z1. Légère réduction vs S8 (5 reps au lieu de 6) mais même intensité.", "tip": "5 reps au lieu de 6 : ce n'est pas un recul, c'est la progressivité vers l'affûtage. Qualité de l'allure prime. Si tu tiens 4:00–4:05 sur les 5 reps, tu es devant le programme." },
+          { "type": "cool", "dist": "12 min", "desc": "Trot Z1 décroissant 10 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Dernière séance seuil lourde avant l'affûtage de S10. Conserve de la marge — ne pars pas sous 4:00/km même si tu te sens bien."
+      },
+      {
+        "id": "brw9a",
+        "name": "Brick — Allure race confirmée",
+        "type": "brick",
+        "typeLabel": "85 min · Brick",
+        "dist": 85,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage Z1, montée progressive vers 155 W.", "tip": "" },
+          { "type": "main", "dist": "60 min vélo", "desc": "60 min à 168–189 W (sweetspot). Dernières 5 min : cadence 90–95 rpm à 150–160 W.", "tip": "60 min vs 80 min en S8 : volume réduit, même intensité. Gère ton rythme pour arriver aux chaussures de course avec de l'énergie." },
+          { "type": "interval", "dist": "Transition T2", "desc": "T2 : < 75 s. 3e pratique de transition — la séquence doit être automatique.", "tip": "" },
+          { "type": "main", "dist": "15 min run", "desc": "15 min à allure HIM run 4:30–4:40/km. Si les 5 premières minutes s'installent facilement à 4:35, c'est un signal de forme excellent. Régularité, pas progression.", "tip": "3e brick run : cette sensation de transition doit commencer à sembler normale. Note si les premières minutes sont moins chaotiques qu'en S7 — c'est ta progression réelle." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min.", "tip": "" }
+        ],
+        "tip": "Avant-dernier brick du cycle triathlon. La confirmation de l'allure 4:30–4:40/km sur jambes fatiguées est l'objectif principal."
+      },
+      {
+        "id": "sw9b",
+        "name": "Natation — Technique et vitesse",
+        "type": "s-technique",
+        "typeLabel": "60 min · Technique + vitesse",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "4 × 100 m", "desc": "4 × 100 m : 25 m catch-up + 75 m nage intégrée. Récupération 40 s. Technique maintenue sur 100 m complets.", "tip": "Sur le 75 m nage : consigne unique — finition du coup de bras jusqu'à la cuisse avant de sortir le bras." },
+          { "type": "interval", "dist": "6 × 50 m", "desc": "6 × 50 m à allure race soutenue. Récupération 25 s brasse.", "tip": "" },
+          { "type": "cool", "dist": "200 m", "desc": "200 m brasse récupération douce.", "tip": "" }
+        ],
+        "tip": "Technique sous effort sur 100 m : si la technique tient sur les 6 × 50 m sans dégradation notable, l'intégration est réussie."
+      },
+      {
+        "id": "mw9a",
+        "name": "Renforcement — Maintenance",
+        "type": "strength",
+        "typeLabel": "35 min · Maintenance",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Mobilité articulaire légère.", "tip": "" },
+          { "type": "main", "dist": "2 circuits", "desc": "2 tours, 60 s repos entre exercices :\n1. Squat haltères — 2 × 10 reps\n2. Romanian deadlift — 2 × 8 reps\n3. Fente arrière — 2 × 8 reps / jambe\n4. Planche frontale — 2 × 30 s\n5. Dead bug — 2 × 6 reps / côté", "tip": "S9 : même format qu'en S8. Charges stables — pas de progression en semaine spécifique triathlon." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : ischio-jambiers, fléchisseurs de hanche, pectoraux.", "tip": "" }
+        ],
+        "tip": "Dernière séance muscu avant l'affûtage de S10. De S10 à S11, la musculation est très légère ou supprimée selon la fatigue."
+      }
+    ]
+  },
+  {
+    "weekNum": 10,
+    "phase": "Affûtage Triathlon L",
+    "sessions": [
+      {
+        "id": "rw10a",
+        "name": "Run Z2 — Affûtage",
+        "type": "r-endurance",
+        "typeLabel": "45 min · Z2 souple",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "32 min", "desc": "Course Z2 à 4:50–5:10/km. Volume réduit intentionnellement. La sensation de légèreté en fin de séance est le signal attendu.", "tip": "Semaine d'affûtage : si tu te sens bien, c'est que le plan fonctionne. Résiste à l'envie d'en faire plus." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1, marche 2 min.", "tip": "" }
+        ],
+        "tip": "S10 = affûtage pré-Triathlon L, volume -35% vs S8. La forme monte pendant les jours de repos relatif. Moins c'est mieux cette semaine."
+      },
+      {
+        "id": "sw10a",
+        "name": "Natation — Technique légère",
+        "type": "s-technique",
+        "typeLabel": "40 min · Technique",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "4 × 75 m", "desc": "4 × 75 m : 25 m drill choix libre + 50 m nage intégrée. Récupération 40 s. Mémorisation des sensations techniques, aucune charge.", "tip": "Choisis le drill qui te donne les meilleures sensations. Ancre ce feeling pour la race." },
+          { "type": "main", "dist": "300 m", "desc": "300 m crawl continu, allure confortable.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "En affûtage, la nage maintient les sensations aquatiques — aucune progression à chercher."
+      },
+      {
+        "id": "bw10a",
+        "name": "Vélo — Activation race pace",
+        "type": "b-sweetspot",
+        "typeLabel": "70 min · Race activation",
+        "dist": 70,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "15 min progressif Z1 → Z2. Cadence 85–90 rpm.", "tip": "" },
+          { "type": "interval", "dist": "2 × 15 min", "desc": "2 blocs de 15 min à 168–189 W (sweetspot). Récupération 5 min Z1. Volume divisé par 2 vs S9, intensité identique.", "tip": "15 min vs 30 min en S9 : les jambes doivent se sentir légères à la fin. Si non, davantage de repos s'impose avant la course." },
+          { "type": "interval", "dist": "2 × 5 min", "desc": "2 blocs de 5 min à allure race vélo : 175–185 W (83–88% FTP). Récupération 3 min Z1. Activation des sensations race-spécifiques.", "tip": "" },
+          { "type": "cool", "dist": "10 min", "desc": "Retour à <126 W, pédalage souple.", "tip": "" }
+        ],
+        "tip": "Cette séance touche l'allure race vélo (175–185 W) sur courtes durées. Objectif : ancrer la sensation de compétition avant J-7."
+      },
+      {
+        "id": "rw10b",
+        "name": "Run — Blocs allure race HIM",
+        "type": "r-threshold",
+        "typeLabel": "55 min · Allure HIM run",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "12 min", "desc": "10 min trot Z1, 2 min accélération progressive. 2 × 40 m strides.", "tip": "" },
+          { "type": "interval", "dist": "4 × 5 min", "desc": "4 répétitions de 5 min à allure HIM run : 4:30–4:40/km. Récupération 2 min trot Z1. Allure spécifique race, plus lente que le seuil pur des semaines précédentes.", "tip": "4:30–4:40/km doit se sentir confortablement soutenu. C'est exactement l'intensité du run triathlon L. Si 4:35 semble facile ici, c'est que l'affûtage fonctionne." },
+          { "type": "cool", "dist": "12 min", "desc": "Trot Z1 décroissant 10 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Dernière séance d'intensité run avant la race. 4:30–4:40/km = allure HIM, pas allure seuil. Si ça semble fluide, tu es prêt."
+      },
+      {
+        "id": "brw10a",
+        "name": "Brick — Dernière répétition pré-race",
+        "type": "brick",
+        "typeLabel": "65 min · Brick affûtage",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage Z1, montée progressive vers 155 W.", "tip": "" },
+          { "type": "main", "dist": "45 min vélo", "desc": "45 min : 20 min Z2 (126–155 W), puis 2 × 10 min à allure race 175–185 W avec 5 min Z1 entre blocs. Finir par 5 min cadence haute 90–95 rpm à 150 W.", "tip": "Dernier brick avant la course. 45 min avec activation à allure race — tu testes la machine sans l'épuiser." },
+          { "type": "interval", "dist": "Transition T2", "desc": "T2 soignée : objectif < 60 s. 4e pratique — la séquence doit être parfaitement automatique.", "tip": "" },
+          { "type": "main", "dist": "10 min run", "desc": "10 min à allure HIM 4:30–4:40/km. Legs check final. Si les 2 premières minutes s'installent sans chaos, tu es prêt.", "tip": "10 min seulement. Si les jambes sont excellentes, résiste à la tentation d'aller plus loin — l'affûtage se protège." },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min.", "tip": "" }
+        ],
+        "tip": "Dernier brick du cycle. Court, ciblé, pour confirmer les sensations. Pas de record, pas d'exploit — juste la validation que le corps est prêt."
+      },
+      {
+        "id": "sw10b",
+        "name": "Natation — Endurance légère",
+        "type": "s-endurance",
+        "typeLabel": "40 min · Endurance",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "150 m", "desc": "150 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "800 m", "desc": "800 m crawl continu à allure confortable et détendue. Volume divisé par 2 vs S9. Maintien de la sensation aquatique, aucun effort.", "tip": "800 m vs 1600 m en S9 : tu n'as plus rien à gagner en volume maintenant — seulement à préserver." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m à allure race, récupération 40 s. Vivacité et rappel de la vitesse.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse douce.", "tip": "" }
+        ],
+        "tip": "Dernière séance endurance natation avant la race week. Si l'eau te semble facile, c'est le signal que la forme est là."
+      },
+      {
+        "id": "mw10a",
+        "name": "Renforcement — Activation légère",
+        "type": "strength",
+        "typeLabel": "30 min · Activation",
+        "dist": 30,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Mobilité légère : cercles de hanches, leg swings, rotations d'épaules.", "tip": "" },
+          { "type": "main", "dist": "1 circuit", "desc": "1 seul tour, 60 s repos entre exercices, charges légères :\n1. Squat haltères — 1 × 12 reps\n2. Romanian deadlift — 1 × 10 reps\n3. Pompes — 1 × 10 reps\n4. Planche frontale — 1 × 30 s\n5. Pont fessier bilatéral — 1 × 15 reps", "tip": "1 tour uniquement. Maintenir le recrutement musculaire sans fatiguer. Si le moindre doute sur la fatigue, saute cette séance." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements doux.", "tip": "" }
+        ],
+        "tip": "Dernière séance muscu avant la course. Légère et facultative — si la fatigue est présente, la course prime sur tout."
+      }
+    ]
+  },
+  {
+    "weekNum": 11,
+    "phase": "Race Week — Triathlon L",
+    "sessions": [
+      {
+        "id": "sw11a",
+        "name": "Natation — Activation J-3",
+        "type": "s-technique",
+        "typeLabel": "30 min · Activation",
+        "dist": 30,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl très souple. Relâchement total, aucune pression.", "tip": "" },
+          { "type": "main", "dist": "4 × 50 m", "desc": "4 × 50 m : 25 m drill catch-up + 25 m nage libre intégrée. Récupération 45 s. Mémorisation des sensations techniques uniquement.", "tip": "J-3 : tu n'as plus rien à gagner en endurance ni en vitesse. Cette séance est pour les sensations aquatiques et la confiance." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m : 2 à allure race + 2 à allure confort. Récupération 40 s. Rappel de la vivacité.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse très douce.", "tip": "" }
+        ],
+        "tip": "Race week : la forme est là, elle ne peut plus être améliorée. Chaque séance ici sert uniquement à maintenir les sensations et la confiance. Zéro fatigue."
+      },
+      {
+        "id": "bw11a",
+        "name": "Vélo — Activation J-2",
+        "type": "b-endurance",
+        "typeLabel": "35 min · Activation vélo",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage très souple <120 W, cadence libre.", "tip": "" },
+          { "type": "main", "dist": "20 min", "desc": "20 min Z2 basse (126–145 W). 3 × 30 s à allure race (175–185 W) avec 2 min récup entre pics. Réactivation des fibres uniquement.", "tip": "3 pics de 30 s à allure race : tu testes que le moteur démarre bien. Pas d'effort prolongé." },
+          { "type": "cool", "dist": "5 min", "desc": "Pédalage <110 W, arrêt progressif.", "tip": "" }
+        ],
+        "tip": "J-2 : séance courte pour garder les jambes actives. Après ça, repos jusqu'à la course. Hydratation et nutrition sont tes vraies priorités de J-2."
+      },
+      {
+        "id": "rw11a",
+        "name": "Run — Activation J-1",
+        "type": "r-recovery",
+        "typeLabel": "20 min · Activation run",
+        "dist": 20,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot très léger Z1 à >5:30/km. Pas d'objectif d'allure.", "tip": "" },
+          { "type": "main", "dist": "8 min", "desc": "Trot Z1–Z2 très confortable. 3 × 20 s d'accélérations progressives vers ~4:30/km. Récupération 90 s marche entre chaque.", "tip": "20 s maximum. Réveiller le système neuromusculaire, pas l'épuiser." },
+          { "type": "cool", "dist": "4 min", "desc": "Marche 4 min, respiration nasale.", "tip": "" }
+        ],
+        "tip": "J-1 : 20 min uniquement. Si tu ressors avec des jambes légères, c'est parfait. Ce soir : dîner glucidique, coucher tôt, visualisation du plan de course."
+      },
+      {
+        "id": "rw11b",
+        "name": "RACE — Triathlon L",
+        "type": "brick",
+        "typeLabel": "Race · Triathlon L",
+        "dist": 315,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "Échauffement pré-course : 5 min trot léger, mobilité dynamique, 200 m nage souple si accès à l'eau. Respiration contrôlée, visualisation.", "tip": "" },
+          { "type": "main", "dist": "Nage 1900 m", "desc": "Nage 1900 m crawl. Départ : reste à l'extérieur de la masse pour éviter les contacts. Les 200 premiers mètres : allure conservatrice même si l'adrénaline pousse. Tête plate, rotation du buste, longueur de coulée.", "tip": "Pars toujours plus conservateur que tu ne le veux. L'adrénaline fausse la perception de 15 à 20%." },
+          { "type": "interval", "dist": "Transition T1", "desc": "T1 : combinaison, casque, lunettes, vélo. Séquence mémorisée. Calme et efficace.", "tip": "" },
+          { "type": "main", "dist": "Vélo 90 km", "desc": "Vélo 90 km. Cible : 175–185 W (83–88% FTP). Les 10 premiers km : ne dépasse pas 170 W. Alimentation : 60–80 g glucides / heure. Hydratation : 500–750 ml / heure.", "tip": "Ne chasse pas les autres cyclistes. Gère ta puissance — chaque watt au-delà de 190 W sur le vélo se paie sur le run." },
+          { "type": "interval", "dist": "Transition T2", "desc": "T2 : vélo, casque off, chaussures de course. Objectif < 75 s.", "tip": "" },
+          { "type": "main", "dist": "Run 21.1 km", "desc": "Run 21.1 km. Allure cible : 4:30–4:40/km. Les 2 premiers km : cours à la sensation, les jambes s'adaptent.", "tip": "Le run HIM est une longue négociation. Commence à 4:40/km même si tu te sens bien." },
+          { "type": "cool", "dist": "Post-race", "desc": "Post-course : marche 10 min, hydratation immédiate (500 ml eau + électrolytes), alimentation solide dans les 30 min.", "tip": "" }
+        ],
+        "tip": "C'est la course. 11 semaines de travail mènent ici. Confiance dans le corps — il sait quoi faire."
+      },
+      {
+        "id": "rw11c",
+        "name": "Run — Récupération J+1",
+        "type": "r-recovery",
+        "typeLabel": "25 min · Récup active",
+        "dist": 25,
+        "unit": "min",
+        "sets": [
+          { "type": "main", "dist": "25 min", "desc": "Trot très léger Z1 à >6:00/km. Pas de chrono, pas d'objectif. Juste du mouvement pour relancer la circulation et éliminer les toxines. Si les jambes sont très lourdes, marche 25 min au lieu de courir.", "tip": "" }
+        ],
+        "tip": "J+1 post-race : le trot léger accélère la récupération. Si tu as très mal, marche. La récup de S12 commence de toute façon."
+      }
+    ]
+  },
+  {
+    "weekNum": 12,
+    "phase": "Récupération post-Triathlon L",
+    "sessions": [
+      {
+        "id": "rw12a",
+        "name": "Run — Trot de récupération",
+        "type": "r-recovery",
+        "typeLabel": "25 min · Z1 récup",
+        "dist": 25,
+        "unit": "min",
+        "sets": [
+          { "type": "main", "dist": "25 min", "desc": "Trot Z1 à >6:00/km. Aucune structure, aucune allure cible. S'arrêter si douleur articulaire. Écoute exclusive du corps.", "tip": "Si les jambes sont encore lourdes à J+5, c'est normal après un triathlon L. Marche plutôt que trot si besoin." }
+        ],
+        "tip": "S12 = récupération non-négociable. Le corps vient de traverser 5h+ d'effort. Cette semaine, toute séance doit se terminer sans fatigue supplémentaire."
+      },
+      {
+        "id": "sw12a",
+        "name": "Natation — Récup active",
+        "type": "s-endurance",
+        "typeLabel": "30 min · Récup",
+        "dist": 30,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "100 m", "desc": "100 m crawl très souple ou brasse selon les sensations.", "tip": "" },
+          { "type": "main", "dist": "400 m", "desc": "400 m en alternance crawl souple / brasse toutes les 100 m, selon les sensations. Pas d'allure, pas de technique formelle.", "tip": "Si les épaules sont fatiguées du triathlon, fais 400 m brasse uniquement." },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse très lente.", "tip": "" }
+        ],
+        "tip": "La natation est le meilleur sport de récupération actif. L'eau décharge les articulations."
+      },
+      {
+        "id": "bw12a",
+        "name": "Vélo — Pédalage récup",
+        "type": "b-endurance",
+        "typeLabel": "35 min · Z1 vélo",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "main", "dist": "35 min", "desc": "35 min à <126 W (Z1 exclusivement), cadence libre et confortable, aucune résistance. Home-trainer recommandé.", "tip": "Aucun sweetspot, aucun Z2 cette semaine. Le vélo léger en récup post-tri accélère la circulation sanguine musculaire sans stress mécanique." }
+        ],
+        "tip": "35 min à Z1 strict : si la FC monte à 140 bpm, réduis la résistance. Cette séance est une promenade déguisée en sport."
+      },
+      {
+        "id": "rw12b",
+        "name": "Run — Retour en douceur",
+        "type": "r-recovery",
+        "typeLabel": "30 min · Z1–Z2 léger",
+        "dist": 30,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Marche 5 min.", "tip": "" },
+          { "type": "main", "dist": "20 min", "desc": "Course très légère Z1–Z2 basse à 5:20–5:40/km. Premier indicateur de récupération post-tri.", "tip": "Cette séance est un test de récupération autant qu'un entraînement. Note : est-ce que les jambes tournent normalement ?" },
+          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min, respirations profondes.", "tip": "" }
+        ],
+        "tip": "Fin de semaine 12 : si tu sors de cette séance avec des jambes relativement légères, tu es prêt pour la phase running de S13."
+      }
+    ]
+  },
+  {
+    "weekNum": 13,
+    "phase": "Spécifique Running Semi — Construction",
+    "sessions": [
+      {
+        "id": "rw13a",
+        "name": "Footing Z2 — Reprise qualité",
+        "type": "r-endurance",
+        "typeLabel": "45 min · Z2",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "32 min", "desc": "Course Z2 à 4:50–5:10/km. Premier vrai footing Z2 depuis le triathlon L.", "tip": "Si l'allure Z2 semble difficile, reste à 5:10/km. La forme revient vite post-récup." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "S13 marque le pivot vers le semi. Vélo et natation passent en mode maintenance."
+      },
+      {
+        "id": "sw13a",
+        "name": "Natation — Maintenance",
+        "type": "s-endurance",
+        "typeLabel": "40 min · Maintenance",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "800 m", "desc": "800 m crawl continu à allure confortable. Natation en mode maintenance.", "tip": "La natation en S13–S15 existe pour maintenir la mobilité des épaules et la fréquence aquatique." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m à allure soutenue, récupération 40 s.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "800 m + 4 × 25 m : format maintenance compact. La natation ne monte plus en volume jusqu'à la fin du programme."
+      },
+      {
+        "id": "bw13a",
+        "name": "Vélo — Maintenance active",
+        "type": "b-endurance",
+        "typeLabel": "50 min · Z2 maintenance",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage progressif Z1 → 140 W.", "tip": "" },
+          { "type": "main", "dist": "35 min", "desc": "35 min à 126–160 W (Z2 basse). Cadence 85–90 rpm. Séance de maintenance.", "tip": "Si les jambes sont lourdes après une séance run, décale ou supprime cette séance." },
+          { "type": "cool", "dist": "5 min", "desc": "Pédalage <120 W.", "tip": "" }
+        ],
+        "tip": "Vélo en roue libre — Z2 basse, jambes légères."
+      },
+      {
+        "id": "rw13b",
+        "name": "Run Tempo — Relance",
+        "type": "r-tempo",
+        "typeLabel": "50 min · Tempo",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "12 min", "desc": "10 min trot Z1, 2 min accélération vers Z2. Éducatifs : 3 × 30 m montées de genoux.", "tip": "" },
+          { "type": "interval", "dist": "3 × 10 min", "desc": "3 blocs de 10 min à allure tempo 4:20–4:30/km. Récupération 2 min 30 trot Z1 entre blocs.", "tip": "Post-tri, la première séance tempo peut sembler plus difficile que prévu. Si tu tiens 4:25–4:30 au lieu de 4:20, c'est une bonne séance." },
+          { "type": "cool", "dist": "8 min", "desc": "Trot Z1 décroissant puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "Retour au tempo après 2 semaines sans qualité running. Volume conservateur (3 × 10 min) — il montera en S14."
+      },
+      {
+        "id": "rw13c",
+        "name": "Run Seuil — Reprise",
+        "type": "r-threshold",
+        "typeLabel": "50 min · Seuil",
+        "dist": 50,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "12 min trot Z1, puis 3 min accélération vers Z3. Éducatifs : 4 × 30 m.", "tip": "" },
+          { "type": "interval", "dist": "4 × 5 min", "desc": "4 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 2 min trot Z1 entre reps.", "tip": "2 min de récup au lieu de 90 s : reprise prudente. La récup sera réduite à 90 s en S14." },
+          { "type": "cool", "dist": "12 min", "desc": "Trot Z1 décroissant 10 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "4 × 5 min avec 2 min de récup : reprise prudente du seuil."
+      },
+      {
+        "id": "rw13d",
+        "name": "Run Long Z2",
+        "type": "r-endurance",
+        "typeLabel": "55 min · Z2 long",
+        "dist": 55,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "42 min", "desc": "Course continue Z2 à 4:50–5:10/km. Sortie longue de la semaine — régularité et patience.", "tip": "Le long Z2 en S13 est la séance la plus importante de la semaine pour le semi." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "55 min de Z2 : la base du semi se construit ici. En S14, cette sortie longue inclura des blocs à allure race."
+      },
+      {
+        "id": "mw13a",
+        "name": "Renforcement — Retour force",
+        "type": "strength",
+        "typeLabel": "35 min · Force fonctionnelle",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Mobilité dynamique : squat to stand, leg swings, rotations thoraciques.", "tip": "" },
+          { "type": "main", "dist": "3 circuits", "desc": "3 tours, 45 s repos entre exercices, 90 s entre tours :\n1. Squat haltères — 3 × 12 reps\n2. Romanian deadlift — 3 × 10 reps\n3. Fente bulgare — 3 × 8 reps / jambe\n4. Pompes — 3 × 10 reps\n5. Planche frontale — 3 × 30 s", "tip": "Retour à 3 circuits après la phase triathlon. Charges modérées." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : ischio-jambiers, fléchisseurs de hanche, pectoraux.", "tip": "" }
+        ],
+        "tip": "Retour à la muscu lourde au service du semi. Fente bulgare et RDL ont le plus de transfert sur la foulée."
+      }
+    ]
+  },
+  {
+    "weekNum": 14,
+    "phase": "Spécifique Running Semi — Peak",
+    "sessions": [
+      {
+        "id": "rw14a",
+        "name": "Footing Z2 — Socle aérobie",
+        "type": "r-endurance",
+        "typeLabel": "45 min · Z2",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "32 min", "desc": "Course Z2 à 4:50–5:10/km. Séance de récup active entre les séances clés de la semaine.", "tip": "S14 est la semaine pic running. Ce Z2 est le tampon entre les séances de qualité." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Dernière semaine de charge complète avant le taper de S15."
+      },
+      {
+        "id": "sw14a",
+        "name": "Natation — Maintenance légère",
+        "type": "s-endurance",
+        "typeLabel": "40 min · Maintenance",
+        "dist": 40,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "150 m", "desc": "150 m crawl souple.", "tip": "" },
+          { "type": "main", "dist": "700 m", "desc": "700 m crawl continu à allure très confortable.", "tip": "Volume légèrement réduit vs S13 (700 m au lieu de 800 m)." },
+          { "type": "interval", "dist": "4 × 25 m", "desc": "4 × 25 m vivacité, récupération 40 s.", "tip": "" },
+          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
+        ],
+        "tip": "La natation ne monte plus. Séance rapide pour maintenir les sensations aquatiques."
+      },
+      {
+        "id": "rw14b",
+        "name": "Run Tempo — Volume pic",
+        "type": "r-tempo",
+        "typeLabel": "60 min · Tempo long",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "12 min", "desc": "10 min trot Z1, 2 min accélération vers Z2. Éducatifs : 3 × 30 m montées de genoux + 3 × 30 m talons-fesses.", "tip": "" },
+          { "type": "interval", "dist": "4 × 10 min", "desc": "4 blocs de 10 min à allure tempo 4:20–4:30/km. Récupération 2 min trot Z1 entre blocs. Pic du volume tempo sur le programme.", "tip": "4 × 10 min vs 3 × 10 min en S13 : un bloc de plus. Le 4e bloc est le plus formateur." },
+          { "type": "cool", "dist": "8 min", "desc": "Trot Z1 décroissant puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "4 × 10 min tempo : la séance tempo la plus longue du programme."
+      },
+      {
+        "id": "rw14c",
+        "name": "Run Seuil — Volume pic",
+        "type": "r-threshold",
+        "typeLabel": "60 min · Seuil avancé",
+        "dist": 60,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "12 min trot Z1, puis 3 min accélération vers Z3. Éducatifs : 4 × 30 m.", "tip": "" },
+          { "type": "interval", "dist": "5 × 5 min", "desc": "5 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 90 s trot Z1 entre reps.", "tip": "90 s de récup : tu ne récupères pas totalement entre les reps. La 5e rep à 4:05–4:10/km est le signal que tu peux tenir 4:16 sur 21 km." },
+          { "type": "cool", "dist": "12 min", "desc": "Trot Z1 décroissant 10 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "5 × 5 min seuil à 90 s de récup : séance seuil la plus exigeante de la phase semi."
+      },
+      {
+        "id": "rw14d",
+        "name": "Run Long Z2 + Blocs allure race",
+        "type": "r-endurance",
+        "typeLabel": "65 min · Long semi-spécifique",
+        "dist": 65,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "30 min", "desc": "30 min Z2 à 4:50–5:10/km. Construis l'endurance de base avant les blocs race.", "tip": "" },
+          { "type": "interval", "dist": "3 × 8 min", "desc": "3 blocs de 8 min à allure semi cible : 4:16/km. Récupération 3 min trot Z1 entre blocs.", "tip": "4:16/km pour la première fois : note la sensation. Ce doit être exigeant mais tenable — pas maximal." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
+        ],
+        "tip": "La sortie longue avec blocs allure race est la répétition générale du semi. 3 × 8 min à 4:16/km après 30 min de Z2 : si tu tiens, la 1h30 est réaliste."
+      },
+      {
+        "id": "bw14a",
+        "name": "Vélo — Maintenance légère",
+        "type": "b-endurance",
+        "typeLabel": "45 min · Z2 maintenance",
+        "dist": 45,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "Pédalage progressif Z1 → 135 W.", "tip": "" },
+          { "type": "main", "dist": "30 min", "desc": "30 min à 126–155 W (Z2 basse). Cadence 85–90 rpm.", "tip": "S14 : le vélo recule à 45 min. Les jambes sont prioritairement au service des 4 séances running." },
+          { "type": "cool", "dist": "5 min", "desc": "Pédalage <120 W.", "tip": "" }
+        ],
+        "tip": "Vélo en maintenance légère. Si les jambes sont lourdes, saute cette séance sans hésiter."
+      },
+      {
+        "id": "mw14a",
+        "name": "Renforcement — Maintenance peak",
+        "type": "strength",
+        "typeLabel": "35 min · Maintenance",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "5 min", "desc": "Mobilité légère : leg swings, cercles de hanches, rotations d'épaules.", "tip": "" },
+          { "type": "main", "dist": "2 circuits", "desc": "2 tours, 60 s repos entre exercices, charges modérées :\n1. Squat haltères — 2 × 10 reps\n2. Romanian deadlift — 2 × 8 reps\n3. Fente arrière — 2 × 8 reps / jambe\n4. Planche frontale — 2 × 30 s\n5. Pont fessier unilatéral — 2 × 10 reps / côté", "tip": "2 circuits en semaine peak. Dernière séance muscu du programme." },
+          { "type": "cool", "dist": "5 min", "desc": "Étirements : ischio-jambiers, psoas, pectoraux.", "tip": "" }
+        ],
+        "tip": "Dernière séance de musculation du programme complet."
+      }
+    ]
+  },
+  {
+    "weekNum": 15,
+    "phase": "Taper + Race — Semi-marathon 1h30",
+    "sessions": [
+      {
+        "id": "rw15a",
+        "name": "Run Z2 — Taper court",
+        "type": "r-endurance",
+        "typeLabel": "30 min · Z2 souple",
+        "dist": 30,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "6 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
+          { "type": "main", "dist": "19 min", "desc": "Course Z2 à 4:50–5:10/km. Volume minimum pour maintenir le stimulus aérobie.", "tip": "Si tu termines cette séance et que tu pourrais en faire le double, c'est parfait." },
+          { "type": "cool", "dist": "5 min", "desc": "Trot Z1, marche 2 min.", "tip": "" }
+        ],
+        "tip": "S15 = taper + race. Volume -50% vs S14. La forme monte cette semaine pendant que tu te reposes."
+      },
+      {
+        "id": "rw15b",
+        "name": "Run — Blocs allure race (confirmation)",
+        "type": "r-threshold",
+        "typeLabel": "35 min · Allure race",
+        "dist": 35,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "10 min", "desc": "8 min trot Z1, puis 2 min accélération progressive. 2 × 30 m strides.", "tip": "" },
+          { "type": "interval", "dist": "3 × 5 min", "desc": "3 répétitions de 5 min à allure race semi : 4:16/km. Récupération 2 min 30 trot Z1 entre reps.", "tip": "Ces 3 × 5 min à 4:16/km sont la confirmation finale. Si l'allure semble fluide, la 1h30 est dans tes moyens." },
+          { "type": "cool", "dist": "8 min", "desc": "Trot Z1 décroissant 6 min puis marche 2 min.", "tip": "" }
+        ],
+        "tip": "Dernière séance de qualité avant la race. Objectif : confirmer les sensations à 4:16/km, pas chercher une performance."
+      },
+      {
+        "id": "bw15a",
+        "name": "Vélo — Activation légère",
+        "type": "b-endurance",
+        "typeLabel": "30 min · Activation vélo",
+        "dist": 30,
+        "unit": "min",
+        "sets": [
+          { "type": "main", "dist": "30 min", "desc": "30 min à <140 W exclusivement. 2 × 20 s à 160–170 W (test que les jambes répondent), récupération 2 min Z1 entre les deux pics.", "tip": "Les 2 × 20 s sont un simple check de l'allumage musculaire — pas un effort." }
+        ],
+        "tip": "30 min de vélo léger. Cette séance est optionnelle si les jambes sont déjà légères."
+      },
+      {
+        "id": "rw15c",
+        "name": "Run — Activation J-1",
+        "type": "r-recovery",
+        "typeLabel": "20 min · Activation J-1",
+        "dist": 20,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "8 min", "desc": "Trot très léger Z1 à >5:30/km. Respiration nasale.", "tip": "" },
+          { "type": "main", "dist": "8 min", "desc": "Trot Z1–Z2 très confortable. 3 × 20 s d'accélérations progressives vers ~4:16/km. Récupération 90 s marche entre chaque.", "tip": "3 accélérations de 20 s : réveiller le système neuromusculaire, pas l'épuiser." },
+          { "type": "cool", "dist": "4 min", "desc": "Marche 4 min, respiration nasale.", "tip": "" }
+        ],
+        "tip": "J-1 : 20 min uniquement. Ce soir : dîner glucidique, coucher tôt, visualisation du plan de course."
+      },
+      {
+        "id": "mw15a",
+        "name": "Renforcement — Activation musculaire",
+        "type": "strength",
+        "typeLabel": "20 min · Activation légère",
+        "dist": 20,
+        "unit": "min",
+        "sets": [
+          { "type": "main", "dist": "1 circuit", "desc": "1 tour unique, charges légères :\n1. Squat haltères — 1 × 10 reps\n2. Fente arrière — 1 × 8 reps / jambe\n3. Planche frontale — 1 × 30 s\n4. Pont fessier bilatéral — 1 × 15 reps\n5. Élévations de mollets — 1 × 15 reps", "tip": "1 tour, rien de plus. L'objectif unique est de réactiver les fibres musculaires sans aucune fatigue." }
+        ],
+        "tip": "Activation musculaire préventive J-3 ou J-4. Optionnelle si la fatigue est perceptible."
+      },
+      {
+        "id": "rw15d",
+        "name": "RACE — Semi-marathon 1h30",
+        "type": "r-endurance",
+        "typeLabel": "Race · Semi-marathon",
+        "dist": 90,
+        "unit": "min",
+        "sets": [
+          { "type": "warm", "dist": "15 min", "desc": "15 min avant le départ : 8 min trot léger Z1, mobilité dynamique, 3 × 50 m accélérations progressives vers l'allure race.", "tip": "" },
+          { "type": "main", "dist": "Km 0–5", "desc": "Km 0–5 : allure 4:20–4:22/km. Conservateur volontairement même si tu te sens très bien. L'adrénaline fausse la perception.", "tip": "Commence à 4:22/km même si tu veux aller plus vite." },
+          { "type": "main", "dist": "Km 5–15", "desc": "Km 5–15 : allure de croisière 4:15–4:16/km. Régularité absolue. Nutrition : gel ou boisson aux km 7 et 14 si disponible.", "tip": "De km 5 à km 15 tu dois avoir l'impression de courir à effort régulier et contrôlé." },
+          { "type": "main", "dist": "Km 15–21.1", "desc": "Km 15–18 : maintien à 4:16/km. Km 18–21.1 : si les jambes répondent, passe à 4:10–4:12/km. Km 20 : tout ce qui reste.", "tip": "Le dernier kilomètre : donne tout ce qu'il reste. 12 semaines de travail se jouent sur les 5 derniers km." },
+          { "type": "cool", "dist": "Post-race", "desc": "Post-course : marche 10 min minimum. Hydratation immédiate. Alimentation solide dans les 30 min.", "tip": "" }
+        ],
+        "tip": "15 semaines de travail mènent à ce départ. Plan de course : 4:22 les 5 premiers km, 4:16 jusqu'au km 18, tout ce qu'il reste jusqu'à l'arrivée. La 1h30 est dans tes jambes."
+      }
+    ]
+  }
 ];
 // ═══════════════════════════════════════════════════
 // STATE
@@ -2465,10 +2735,11 @@ let currentWeekView = null; // null = auto (active week)
 const TOTAL_WEEKS = 15;
 
 const DISCIPLINE_CONFIG = {
-  swim: { label: 'Natation', emoji: '🏊', color: 'swim', accent: '#38bdf8', defaultUnit: 'm' },
-  bike: { label: 'Vélo', emoji: '🚴', color: 'bike', accent: '#facc15', defaultUnit: 'min' },
-  run:  { label: 'Running', emoji: '🏃', color: 'run',  accent: '#a3e635', defaultUnit: 'km' },
-  str:  { label: 'Muscu', emoji: '💪', color: 'str',  accent: '#c084fc', defaultUnit: '' },
+  swim:  { label: 'Natation', emoji: '🏊', color: 'swim',  accent: '#38bdf8', defaultUnit: 'min' },
+  bike:  { label: 'Vélo',     emoji: '🚴', color: 'bike',  accent: '#facc15', defaultUnit: 'min' },
+  run:   { label: 'Running',  emoji: '🏃', color: 'run',   accent: '#a3e635', defaultUnit: 'min' },
+  str:   { label: 'Muscu',    emoji: '💪', color: 'str',   accent: '#c084fc', defaultUnit: ''    },
+  brick: { label: 'Brick',    emoji: '🧱', color: 'brick', accent: '#fb923c', defaultUnit: 'min' },
 };
 
 const WEEK_PHASES = [
@@ -2601,14 +2872,14 @@ function buildLoadChart() {
   const PHASE_COLORS = { 1: '#38bdf8', 2: '#facc15', 3: '#fb923c', 4: '#4ade80' };
   const activeWeek = getWeekActiveNum();
 
-  const weeks = semiRunPlan.map(w => {
-    const km = w.sessions.reduce((a, s) => a + (s.dist || 0), 0);
+  const weeks = weeklyPlan.map(w => {
+    const totalMin = w.sessions.reduce((a, s) => a + (s.dist || 0), 0);
     const phase = getWeekPhase(w.weekNum).phase;
     const allDone = w.sessions.every(s => completed[s.id] || skipped[s.id]);
-    return { num: w.weekNum, km, phase, allDone, active: w.weekNum === activeWeek };
+    return { num: w.weekNum, totalMin, phase, allDone, active: w.weekNum === activeWeek };
   });
 
-  const maxKm   = Math.max(...weeks.map(w => w.km));
+  const maxVal  = Math.max(...weeks.map(w => w.totalMin));
   const W       = svg.getBoundingClientRect().width || svg.parentElement.clientWidth || 600;
   const H       = 130;
   const padL    = 4, padR = 4, padT = 18, padB = 22;
@@ -2622,7 +2893,7 @@ function buildLoadChart() {
 
   weeks.forEach((w, i) => {
     const x      = padL + i * step;
-    const barH   = Math.max(2, Math.round((w.km / maxKm) * chartH));
+    const barH   = Math.max(2, Math.round((w.totalMin / maxVal) * chartH));
     const y      = padT + chartH - barH;
     const color  = PHASE_COLORS[w.phase];
     const alpha  = w.allDone ? '0.35' : '1';
@@ -2630,7 +2901,7 @@ function buildLoadChart() {
     // Bar
     out += `<rect x="${x.toFixed(1)}" y="${y}" width="${barW}" height="${barH}"
       fill="${color}" opacity="${alpha}" rx="2" style="cursor:pointer"
-      onclick="buildWeekView(${w.num})"><title>S${w.num} — ${w.km} km run</title></rect>`;
+      onclick="buildWeekView(${w.num})"><title>S${w.num} — ${w.totalMin} min total</title></rect>`;
 
     // Active week: dot above bar
     if (w.active) {
@@ -2638,11 +2909,11 @@ function buildLoadChart() {
       out += `<circle cx="${cx}" cy="${y - 6}" r="3" fill="${color}"/>`;
     }
 
-    // km label above bar
+    // min label above bar
     const labelY = Math.max(padT - 2, y - 3);
     out += `<text x="${(x + barW / 2).toFixed(1)}" y="${labelY}"
       text-anchor="middle" font-family="JetBrains Mono,monospace"
-      font-size="7" fill="${color}" opacity="${alpha}">${w.km}</text>`;
+      font-size="7" fill="${color}" opacity="${alpha}">${w.totalMin}</text>`;
 
     // Week label below
     const wColor = w.active ? color : '#3a5570';
@@ -2673,20 +2944,14 @@ function enableProgramEndEdit() {
 }
 
 function getWeekSessions(weekNum) {
-  const cycleNum = ((weekNum - 1) % 3) + 1;
-  const swimWeek     = swimPlan.find(w => w.weekNum === weekNum);
-  const bikeWeek     = bikePlan.find(w => w.weekNum === weekNum);
-  const strengthWeek = strengthPlan.find(w => w.weekNum === cycleNum);
-  const runWeek      = semiRunPlan.find(w => w.weekNum === weekNum);
+  const week = weeklyPlan.find(w => w.weekNum === weekNum);
+  if (!week) return { swim: [], bike: [], run: [], str: [], brick: [] };
   return {
-    swim: swimWeek     ? swimWeek.sessions     : [],
-    bike: bikeWeek     ? bikeWeek.sessions     : [],
-    run:  runWeek      ? runWeek.sessions      : [],
-    // Les IDs muscu sont qualifiés par semaine réelle pour éviter les collisions entre cycles.
-    // Ex : tmw1a_w1 (S1), tmw1a_w4 (S4), tmw1a_w7 (S7)...
-    str:  strengthWeek
-      ? strengthWeek.sessions.map(s => ({ ...s, id: `${s.id}_w${weekNum}` }))
-      : [],
+    swim:  week.sessions.filter(s => s.id.startsWith('sw')),
+    bike:  week.sessions.filter(s => s.id.startsWith('bw')),
+    run:   week.sessions.filter(s => s.id.startsWith('rw')),
+    str:   week.sessions.filter(s => s.id.startsWith('mw')),
+    brick: week.sessions.filter(s => s.id.startsWith('brw')),
   };
 }
 
@@ -2821,10 +3086,11 @@ function buildWeekView(weekNum) {
   const allSessions = activeSports.flatMap(([, sessions]) => sessions);
   const doneCount = allSessions.filter(s => completed[s.id]).length;
   const skipCount = allSessions.filter(s => skipped[s.id]).length;
-  const totalVelo = (sessionsBySport.bike || []).reduce((a,s) => a + s.dist, 0);
-  const totalKmRun = (sessionsBySport.run || []).reduce((a,s) => a + s.dist, 0);
-  const totalSwimM = (sessionsBySport.swim || []).reduce((a,s) => a + s.dist, 0);
-  const totalStrength = (sessionsBySport.str || []).length;
+  const totalMinSwim  = (sessionsBySport.swim  || []).reduce((a,s) => a + (s.dist||0), 0);
+  const totalMinBike  = (sessionsBySport.bike  || []).reduce((a,s) => a + (s.dist||0), 0);
+  const totalMinRun   = (sessionsBySport.run   || []).reduce((a,s) => a + (s.dist||0), 0);
+  const totalMinBrick = (sessionsBySport.brick || []).reduce((a,s) => a + (s.dist||0), 0);
+  const totalStrength = (sessionsBySport.str   || []).length;
   const isActive = weekNum === getWeekActiveNum();
   const weekDateRange = getWeekDateRange(weekNum);
   const phase = getWeekPhase(weekNum);
@@ -2847,9 +3113,10 @@ function buildWeekView(weekNum) {
   summary.className = 'week-summary-bar';
   summary.innerHTML = `
 	    <div class="wsb-item"><div class="wsb-val">${doneCount}/${allSessions.length}</div><div class="wsb-lbl">Séances</div></div>
-	    <div class="wsb-item"><div class="wsb-val" style="color:#38bdf8">${(totalSwimM/1000).toFixed(1)}km</div><div class="wsb-lbl">🏊 Natation</div></div>
-	    <div class="wsb-item"><div class="wsb-val" style="color:#facc15">${totalVelo}min</div><div class="wsb-lbl">🚴 Vélo</div></div>
-	    <div class="wsb-item"><div class="wsb-val" style="color:#a3e635">${totalKmRun}km</div><div class="wsb-lbl">🏃 Running</div></div>
+	    <div class="wsb-item"><div class="wsb-val" style="color:#38bdf8">${totalMinSwim}min</div><div class="wsb-lbl">🏊 Natation</div></div>
+	    <div class="wsb-item"><div class="wsb-val" style="color:#facc15">${totalMinBike}min</div><div class="wsb-lbl">🚴 Vélo</div></div>
+	    <div class="wsb-item"><div class="wsb-val" style="color:#a3e635">${totalMinRun}min</div><div class="wsb-lbl">🏃 Running</div></div>
+	    ${totalMinBrick ? `<div class="wsb-item"><div class="wsb-val" style="color:#fb923c">${totalMinBrick}min</div><div class="wsb-lbl">🧱 Brick</div></div>` : ''}
 	    ${totalStrength ? `<div class="wsb-item"><div class="wsb-val" style="color:#c084fc">${totalStrength}</div><div class="wsb-lbl">💪 Muscu</div></div>` : ''}
 	  `;
   container.appendChild(summary);
@@ -3218,74 +3485,40 @@ function showToast(state) {
 }
 
 function updateStats() {
-  let done = 0, total = 0, kmDone = 0;
+  let done = 0, total = 0;
   const weeksActive = new Set();
   let skippedCount = 0;
+  let minSwim = 0, minBike = 0, minRun = 0;
 
-  // Natation
-  swimPlan.forEach(w => {
+  weeklyPlan.forEach(w => {
     w.sessions.forEach(s => {
       total++;
-      if (completed[s.id]) { done++; kmDone += s.dist; weeksActive.add(w.weekNum); }
+      if (completed[s.id]) {
+        done++;
+        weeksActive.add(w.weekNum);
+        if (s.id.startsWith('sw'))       minSwim += (s.dist || 0);
+        else if (s.id.startsWith('bw'))  minBike += (s.dist || 0);
+        else if (s.id.startsWith('rw'))  minRun  += (s.dist || 0);
+      }
       if (skipped[s.id]) skippedCount++;
     });
   });
-
-  // Vélo
-  bikePlan.forEach(w => {
-    w.sessions.forEach(s => {
-      total++;
-      if (completed[s.id]) { done++; weeksActive.add(w.weekNum); }
-      if (skipped[s.id]) skippedCount++;
-    });
-  });
-
-  // Running
-  semiRunPlan.forEach(w => {
-    w.sessions.forEach(s => {
-      total++;
-      if (completed[s.id]) { done++; weeksActive.add(w.weekNum); }
-      if (skipped[s.id]) skippedCount++;
-    });
-  });
-
-  // Muscu — itère sur les 15 semaines avec les IDs qualifiés (_wN),
-  // sinon seuls 5 IDs uniques auraient été comptés au lieu des ~25 séances réelles.
-  for (let wNum = 1; wNum <= TOTAL_WEEKS; wNum++) {
-    getWeekSessions(wNum).str.forEach(s => {
-      total++;
-      if (completed[s.id]) { done++; weeksActive.add(wNum); }
-      if (skipped[s.id]) skippedCount++;
-    });
-  }
 
   const skippedEl = document.getElementById('statSkipped');
   if (skippedEl) skippedEl.textContent = skippedCount;
 
-  // Per-discipline km/min
-  let kmSwim = 0, minBike = 0, kmRun = 0;
-  swimPlan.forEach(w => {
-    w.sessions.forEach(s => { if (completed[s.id]) kmSwim += s.dist; });
-  });
-  bikePlan.forEach(w => {
-    w.sessions.forEach(s => { if (completed[s.id]) minBike += s.dist; });
-  });
-  semiRunPlan.forEach(w => {
-    w.sessions.forEach(s => { if (completed[s.id]) kmRun += s.dist; });
-  });
-
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  setEl('statDone', done);
-  setEl('statTotal', total);
-  setEl('statWeek', weeksActive.size);
-  setEl('statKmSwim', (kmSwim / 1000).toFixed(1));
+  setEl('statDone',    done);
+  setEl('statTotal',   total);
+  setEl('statWeek',    weeksActive.size);
+  setEl('statKmSwim',  minSwim);
   setEl('statMinBike', minBike);
-  setEl('statKmRun', kmRun);
+  setEl('statKmRun',   minRun);
 
-  const pct = Math.round((done / total) * 100);
-  const bar = document.getElementById('globalBar');
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const bar   = document.getElementById('globalBar');
   const pctEl = document.getElementById('globalPct');
-  if (bar) bar.style.width = pct + '%';
+  if (bar)   bar.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
 }
 
