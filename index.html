@@ -1212,6 +1212,18 @@ body {
   font-family: 'DM Sans', sans-serif; font-size: 11px;
   cursor: pointer; text-decoration: underline; color: #5a7a99;
 }
+
+/* ─── REMAINING SESSIONS PANEL (N2) ─── */
+#remaining-sessions-panel { margin-bottom: 16px; }
+.rsw-panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.rsw-title { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.rsw-count { background: var(--border); color: var(--muted); border-radius: 10px; padding: 1px 7px; font-size: 10px; }
+.rsw-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); }
+.rsw-disc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.rsw-session-name { flex: 1; font-size: 13px; font-weight: 600; line-height: 1.3; }
+.rsw-done-btn { min-width: 56px; min-height: 56px; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--green); background: transparent; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+.rsw-done-btn:hover, .rsw-done-btn:active { background: var(--green); color: #051008; }
+.rsw-empty { font-size: 14px; font-weight: 600; color: var(--green); text-align: center; padding: 12px 0 4px; }
 </style>
 </head>
 <body>
@@ -1235,6 +1247,8 @@ body {
 </header>
 
 <div class="container">
+
+  <div id="remaining-sessions-panel"></div>
 
   <!-- STATS -->
   <div class="stats-bar">
@@ -3076,6 +3090,53 @@ function buildWeekView(weekNum) {
   });
 
   container.appendChild(grid);
+  buildRemainingSessionsPanel();
+}
+
+function buildRemainingSessionsPanel() {
+  const panel = document.getElementById('remaining-sessions-panel');
+  if (!panel) return;
+
+  const activeWeek = getCalendarActiveWeekNum();
+  const sessionsBySport = getWeekSessions(activeWeek);
+
+  const remaining = [];
+  Object.entries(sessionsBySport).forEach(([disciplineKey, sessions]) => {
+    sessions.forEach(s => {
+      if (!completed[s.id] && !skipped[s.id]) {
+        remaining.push({ session: s, disciplineKey });
+      }
+    });
+  });
+
+  if (remaining.length === 0) {
+    panel.innerHTML = `
+      <div class="rsw-panel">
+        <div class="rsw-title">À faire cette semaine</div>
+        <div class="rsw-empty">Semaine complète ✓</div>
+      </div>
+    `;
+    return;
+  }
+
+  const rows = remaining.map(({ session, disciplineKey }) => {
+    const config = DISCIPLINE_CONFIG[disciplineKey];
+    return `
+      <div class="rsw-row">
+        <span class="rsw-disc-dot" style="background:${config.accent}"></span>
+        <span class="rsw-session-name">${getSessionDisplayName(session)}</span>
+        <span class="wsc-badge ${disciplineKey}">${getDistLabel(session, disciplineKey)}</span>
+        <button class="rsw-done-btn" onclick="if(navigator.vibrate)navigator.vibrate(40);wvToggleDone('${session.id}')">✓ Fait</button>
+      </div>
+    `;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="rsw-panel">
+      <div class="rsw-title">À faire cette semaine <span class="rsw-count">${remaining.length}</span></div>
+      ${rows}
+    </div>
+  `;
 }
 
 function wvToggleDone(id) {
