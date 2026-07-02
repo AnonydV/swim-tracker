@@ -3,8 +3,6 @@ const SHELL = [
   '/swim-tracker/',
   '/swim-tracker/index.html',
   '/swim-tracker/manifest.json',
-  '/swim-tracker/icon.svg',
-  '/swim-tracker/icon-maskable.svg',
 ];
 
 self.addEventListener('install', e => {
