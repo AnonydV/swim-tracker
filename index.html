@@ -1222,6 +1222,83 @@ body {
   cursor: pointer; text-decoration: underline; color: #5a7a99;
 }
 
+/* ─── WEEKLY RECAP SHEET ─── */
+#weekly-recap-backdrop {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.72); z-index: 799;
+}
+#weekly-recap-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #07090f;
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid #1c2d44;
+  max-height: 52vh;
+  overflow: hidden;
+  z-index: 800;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+#weekly-recap-sheet.open { transform: translateY(0); }
+.recap-handle {
+  width: 36px; height: 4px; background: #1c2d44;
+  border-radius: 99px; margin: 10px auto 0; cursor: grab;
+}
+.recap-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 8px;
+}
+.recap-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 2px; color: #e2eaf4;
+}
+.recap-close-btn {
+  min-width: 48px; min-height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: #5a7a99; font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; flex-shrink: 0;
+}
+.recap-body {
+  padding: 8px 16px 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: calc(52vh - 70px);
+}
+.recap-empty {
+  text-align: center; padding: 24px 0;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: #5a7a99; font-style: italic;
+}
+.recap-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.recap-cell {
+  background: #111827; border: 1px solid #1c2d44;
+  border-radius: 10px; padding: 14px 12px;
+}
+.recap-cell-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; color: #e2eaf4; line-height: 1;
+}
+.recap-cell-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: #5a7a99;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-top: 4px;
+}
+.recap-min-row {
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  padding: 3px 0;
+}
+.recap-min-val {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: #e2eaf4; white-space: nowrap;
+}
+
 /* ─── REMAINING SESSIONS PANEL (N2) ─── */
 #remaining-sessions-panel { margin-bottom: 16px; }
 .rsw-panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
@@ -2643,6 +2720,7 @@ const STORE = {
   perfResults: 'hi_tri_perf_results_v1',
   programEnd:  'hi_tri_program_end',
   legacyStart: 'hi_tri_program_start',
+  weeklyRecapShown: 'hi_tri_weekly_recap_shown_w',
 };
 
 function loadStoredState(key) {
@@ -4018,6 +4096,200 @@ function buildPerfResultsRowHtml(session, disciplineKey) {
 }
 
 // ═══════════════════════════════════════════════════
+// WEEKLY RECAP — Bilan de fin de semaine
+// ═══════════════════════════════════════════════════
+
+function getWeekSummary(weekNum) {
+  const week = weeklyPlan.find(w => w.weekNum === weekNum);
+  if (!week) return { done: 0, total: 0, minutesByDiscipline: { swim: 0, bike: 0, run: 0, str: 0, brick: 0 }, avgRpe: null, hardestSession: null };
+
+  const sessions = week.sessions;
+  const total = sessions.length;
+  let done = 0;
+  const minutesByDiscipline = { swim: 0, bike: 0, run: 0, str: 0, brick: 0 };
+  let rpeSum = 0, rpeCount = 0;
+  let hardestSession = null, hardestRpe = 0;
+
+  sessions.forEach(s => {
+    if (completed[s.id]) {
+      done++;
+      const disc = getDiscipline(s.id);
+      if (disc && disc in minutesByDiscipline) {
+        minutesByDiscipline[disc] += (s.dist || 0);
+      }
+      const perf = perfResults[s.id];
+      if (perf && perf.rpe) {
+        rpeSum += perf.rpe;
+        rpeCount++;
+        if (perf.rpe > hardestRpe) {
+          hardestRpe = perf.rpe;
+          hardestSession = { name: s.name, rpe: perf.rpe };
+        }
+      }
+    }
+  });
+
+  return {
+    done,
+    total,
+    minutesByDiscipline,
+    avgRpe: rpeCount > 0 ? Math.round((rpeSum / rpeCount) * 10) / 10 : null,
+    hardestSession
+  };
+}
+
+function closeWeeklyRecap() {
+  const sheet    = document.getElementById('weekly-recap-sheet');
+  const backdrop = document.getElementById('weekly-recap-backdrop');
+  if (!sheet) return;
+  sheet.style.transition = '';
+  sheet.style.transform  = '';
+  requestAnimationFrame(() => {
+    sheet.classList.remove('open');
+    setTimeout(() => {
+      sheet.style.display = 'none';
+      if (backdrop) backdrop.style.display = 'none';
+    }, 350);
+  });
+}
+
+function buildWeeklyRecap() {
+  const calendarWeek = getCalendarActiveWeekNum();
+
+  function isWeekFullyResolved(wn) {
+    const w = weeklyPlan.find(x => x.weekNum === wn);
+    if (!w || w.sessions.length === 0) return false;
+    return w.sessions.every(s => completed[s.id] || skipped[s.id]);
+  }
+
+  let targetWeek = null;
+
+  // Priorité 1 : semaine précédente (passée calendairement)
+  if (calendarWeek > 1) {
+    const prevWeek = calendarWeek - 1;
+    if (!localStorage.getItem(STORE.weeklyRecapShown + prevWeek)) {
+      targetWeek = prevWeek;
+    }
+  }
+
+  // Priorité 2 : semaine active si toutes ses séances sont faites ou skippées
+  if (targetWeek === null && isWeekFullyResolved(calendarWeek)) {
+    if (!localStorage.getItem(STORE.weeklyRecapShown + calendarWeek)) {
+      targetWeek = calendarWeek;
+    }
+  }
+
+  if (targetWeek === null) return;
+
+  // Marquer comme vu immédiatement
+  localStorage.setItem(STORE.weeklyRecapShown + targetWeek, '1');
+
+  const summary = getWeekSummary(targetWeek);
+
+  const titleEl = document.getElementById('recapWeekTitle');
+  if (titleEl) titleEl.textContent = 'BILAN — SEMAINE ' + targetWeek;
+
+  const emptyEl = document.getElementById('recapEmpty');
+  const gridEl  = document.getElementById('recapGrid');
+
+  if (summary.done === 0) {
+    if (emptyEl) emptyEl.style.display = '';
+    if (gridEl)  gridEl.style.display  = 'none';
+  } else {
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (gridEl)  gridEl.style.display  = 'grid';
+
+    const cellDone = document.getElementById('recapCellDone');
+    if (cellDone) cellDone.innerHTML =
+      '<div class="recap-cell-value">' + summary.done + '/' + summary.total + '</div>' +
+      '<div class="recap-cell-label">Séances faites</div>';
+
+    const cellMins = document.getElementById('recapCellMins');
+    if (cellMins) {
+      const rows = Object.entries(summary.minutesByDiscipline)
+        .filter(([, mins]) => mins > 0)
+        .map(([disc, mins]) => {
+          const cfg = DISCIPLINE_CONFIG[disc];
+          return '<div class="recap-min-row">' +
+            '<span style="color:' + cfg.accent + '">' + cfg.emoji + ' ' + cfg.label + '</span>' +
+            '<span class="recap-min-val">' + mins + ' min</span>' +
+            '</div>';
+        }).join('');
+      cellMins.innerHTML = rows ||
+        '<div class="recap-cell-label" style="padding-top:4px">—</div>';
+    }
+
+    const cellRpe = document.getElementById('recapCellRpe');
+    if (cellRpe) {
+      if (summary.avgRpe !== null) {
+        const rpeColor = (RPE_COLORS[Math.round(summary.avgRpe)] || RPE_COLORS[5]).bg;
+        cellRpe.innerHTML =
+          '<div class="recap-cell-value" style="color:' + rpeColor + '">' + summary.avgRpe + '</div>' +
+          '<div class="recap-cell-label">RPE moyen</div>';
+      } else {
+        cellRpe.innerHTML =
+          '<div class="recap-cell-value">—</div>' +
+          '<div class="recap-cell-label">RPE moyen</div>';
+      }
+    }
+
+    const cellHard = document.getElementById('recapCellHard');
+    if (cellHard) {
+      if (summary.hardestSession) {
+        const rpeColor = (RPE_COLORS[summary.hardestSession.rpe] || RPE_COLORS[5]).bg;
+        cellHard.innerHTML =
+          '<div class="recap-cell-value" style="color:' + rpeColor + '">RPE ' + summary.hardestSession.rpe + '</div>' +
+          '<div class="recap-cell-label">' + summary.hardestSession.name + '</div>';
+      } else {
+        cellHard.innerHTML =
+          '<div class="recap-cell-value">—</div>' +
+          '<div class="recap-cell-label">Séance la plus dure</div>';
+      }
+    }
+  }
+
+  const backdrop = document.getElementById('weekly-recap-backdrop');
+  const sheet    = document.getElementById('weekly-recap-sheet');
+  if (backdrop) backdrop.style.display = 'block';
+  if (sheet) {
+    sheet.style.display = 'block';
+    requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('open')));
+  }
+}
+
+function initWeeklyRecapSwipe() {
+  const handle = document.querySelector('#weekly-recap-sheet .recap-handle');
+  const sheet  = document.getElementById('weekly-recap-sheet');
+  if (!handle || !sheet) return;
+
+  let startY = 0, currentDelta = 0;
+
+  handle.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    currentDelta = 0;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', e => {
+    const delta = e.touches[0].clientY - startY;
+    if (delta > 0) {
+      currentDelta = delta;
+      sheet.style.transform = 'translateY(' + delta + 'px)';
+    }
+  }, { passive: true });
+
+  handle.addEventListener('touchend', () => {
+    sheet.style.transition = '';
+    if (currentDelta > 80) {
+      closeWeeklyRecap();
+    } else {
+      sheet.style.transform = '';
+    }
+    currentDelta = 0;
+  });
+}
+
+// ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
 
@@ -4052,11 +4324,33 @@ document.body.insertAdjacentHTML('beforeend', `
 </div>
 `);
 
+document.body.insertAdjacentHTML('beforeend', `
+<div id="weekly-recap-backdrop" style="display:none" onclick="closeWeeklyRecap()"></div>
+<div id="weekly-recap-sheet" style="display:none">
+  <div class="recap-handle"></div>
+  <div class="recap-header">
+    <span class="recap-title" id="recapWeekTitle">BILAN SEMAINE</span>
+    <button class="recap-close-btn" onclick="closeWeeklyRecap()" aria-label="Fermer">&#x2715;</button>
+  </div>
+  <div class="recap-body">
+    <div class="recap-empty" id="recapEmpty" style="display:none">Aucune séance cette semaine</div>
+    <div class="recap-grid" id="recapGrid" style="display:none">
+      <div class="recap-cell" id="recapCellDone"></div>
+      <div class="recap-cell recap-cell--mins" id="recapCellMins"></div>
+      <div class="recap-cell" id="recapCellRpe"></div>
+      <div class="recap-cell" id="recapCellHard"></div>
+    </div>
+  </div>
+</div>
+`);
+initWeeklyRecapSwipe();
+
 renderProgramEndControl();
 buildWeekView(null);
 updateStats();
 validatePlan();
 buildLoadChart();
+buildWeeklyRecap();
 
 if ('serviceWorker' in navigator) {
   // Désinstaller les anciens SW cassés avant d'enregistrer le nouveau
