@@ -456,11 +456,10 @@ body {
   flex: 1;
   min-width: 0;
 }
-.set-desc {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-}
+.set-desc { font-size: 13px; font-weight: 500; color: var(--text); }
+.set-desc-intro { font-size: 12px; color: var(--muted); margin-bottom: 6px; line-height: 1.5; }
+.set-exercise-list { display: flex; flex-direction: column; gap: 4px; }
+.set-exercise-item { font-size: 12px; line-height: 1.4; padding-left: 8px; border-left: 2px solid var(--border); color: var(--text); }
 .set-tip {
   font-size: 11.5px;
   color: var(--muted);
@@ -2939,6 +2938,23 @@ function getSessionNote(id) {
   return typeof sessionNotes[id] === 'string' ? sessionNotes[id] : '';
 }
 
+function formatSetDesc(desc) {
+  const lines = desc.split('\n');
+  const introLines = [];
+  const exerciseLines = [];
+  let inExercises = false;
+  for (const line of lines) {
+    if (/^\d+\./.test(line.trim())) { inExercises = true; exerciseLines.push(line.trim()); }
+    else if (inExercises) { exerciseLines.push(line.trim()); }
+    else { introLines.push(line); }
+  }
+  const introHtml = introLines.length ? `<div class="set-desc-intro">${introLines.join('<br>')}</div>` : '';
+  const listHtml = exerciseLines.length
+    ? `<div class="set-exercise-list">${exerciseLines.map(l => `<span class="set-exercise-item">${l}</span>`).join('')}</div>`
+    : '';
+  return introHtml + listHtml || esc(desc);
+}
+
 function buildSessionSetsHtml(session, disciplineKey) {
   const config = DISCIPLINE_CONFIG[disciplineKey] || DISCIPLINE_CONFIG.swim;
   return session.sets.map(set => {
@@ -2950,7 +2966,7 @@ function buildSessionSetsHtml(session, disciplineKey) {
       <div class="set-row ${set.type}">
         <div class="set-dist"${colorStyle}>${set.dist}${nageLabel}</div>
         <div class="set-body">
-          <div class="set-desc">${set.desc}</div>
+          <div class="set-desc">${formatSetDesc(set.desc)}</div>
           ${set.tip ? `<div class="set-tip">${set.tip}</div>` : ''}
         </div>
       </div>
