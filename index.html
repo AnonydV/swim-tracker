@@ -4059,6 +4059,11 @@ validatePlan();
 buildLoadChart();
 
 if ('serviceWorker' in navigator) {
+  // Désinstaller les anciens SW cassés avant d'enregistrer le nouveau
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    const stale = regs.filter(r => !r.active || r.active.scriptURL.includes('sw.js') === false);
+    stale.forEach(r => r.unregister());
+  });
   navigator.serviceWorker.register('./sw.js')
     .catch(err => console.warn('SW non disponible :', err.message));
 }
