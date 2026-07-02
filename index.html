@@ -659,8 +659,10 @@ body {
   border-radius: 99px;
   transition: transform 0.35s cubic-bezier(.4,0,.2,1);
   z-index: 999;
-  white-space: nowrap;
+  white-space: normal;
   pointer-events: none;
+  max-width: calc(100vw - 32px);
+  text-align: center;
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
@@ -816,7 +818,8 @@ body {
 .week-nav-btn {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  padding: 8px 16px;
+  padding: 12px 20px;
+  min-height: 48px;
   border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--card);
@@ -826,6 +829,7 @@ body {
 }
 .week-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
 .week-nav-btn:disabled { opacity: 0.3; cursor: default; }
+.wv-today-btn { font-size: 12px; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.08); color: var(--fg); border: none; cursor: pointer; }
 .week-nav-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 22px;
@@ -1232,6 +1236,8 @@ body {
 
 <div class="container">
 
+  <div id="plan"></div>
+
   <!-- STATS -->
   <div class="stats-bar">
     <div class="stat-box"><div class="val" id="statDone">0</div><div class="lbl">Séances faites</div></div>
@@ -1275,7 +1281,6 @@ body {
     <svg id="load-chart-svg" width="100%" height="130" style="display:block; overflow:visible"></svg>
   </div>
 
-  <div id="plan"></div>
 </div>
 
 <script>
@@ -2664,6 +2669,24 @@ const weeklyPlan = [
     ]
   }
 ];
+
+function validatePlan() {
+  const validPrefixes = ['sw', 'brw', 'bw', 'rw', 'mw'];
+  const seenIds = new Set();
+  const requiredFields = ['id', 'name', 'type', 'dist', 'sets'];
+  weeklyPlan.forEach(w => {
+    w.sessions.forEach(s => {
+      if (seenIds.has(s.id)) console.warn(`[validatePlan] ID dupliqué : ${s.id}`);
+      seenIds.add(s.id);
+      if (!validPrefixes.some(p => s.id.startsWith(p)))
+        console.warn(`[validatePlan] Préfixe inconnu : ${s.id}`);
+      requiredFields.forEach(f => {
+        if (s[f] === undefined) console.warn(`[validatePlan] Champ manquant "${f}" sur ${s.id}`);
+      });
+    });
+  });
+}
+
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
@@ -2714,12 +2737,18 @@ let currentWeekView = null; // null = auto (active week)
 const TOTAL_WEEKS = 15;
 
 const DISCIPLINE_CONFIG = {
-  swim:  { label: 'Natation', emoji: '🏊', color: 'swim',  accent: '#38bdf8', defaultUnit: 'min' },
-  bike:  { label: 'Vélo',     emoji: '🚴', color: 'bike',  accent: '#facc15', defaultUnit: 'min' },
-  run:   { label: 'Running',  emoji: '🏃', color: 'run',   accent: '#a3e635', defaultUnit: 'min' },
-  str:   { label: 'Muscu',    emoji: '💪', color: 'str',   accent: '#c084fc', defaultUnit: ''    },
-  brick: { label: 'Brick',    emoji: '🧱', color: 'brick', accent: '#fb923c', defaultUnit: 'min' },
+  swim:  { label: 'Natation', emoji: '🏊', color: 'swim',  accent: '#38bdf8', defaultUnit: 'min', prefix: 'sw'  },
+  bike:  { label: 'Vélo',     emoji: '🚴', color: 'bike',  accent: '#facc15', defaultUnit: 'min', prefix: 'bw'  },
+  run:   { label: 'Running',  emoji: '🏃', color: 'run',   accent: '#a3e635', defaultUnit: 'min', prefix: 'rw'  },
+  str:   { label: 'Muscu',    emoji: '💪', color: 'str',   accent: '#c084fc', defaultUnit: '',    prefix: 'mw'  },
+  brick: { label: 'Brick',    emoji: '🧱', color: 'brick', accent: '#fb923c', defaultUnit: 'min', prefix: 'brw' },
 };
+
+function getDiscipline(sessionId) {
+  // brw testé avant bw pour éviter le faux positif
+  const sorted = Object.entries(DISCIPLINE_CONFIG).sort((a, b) => b[1].prefix.length - a[1].prefix.length);
+  return sorted.find(([, cfg]) => sessionId.startsWith(cfg.prefix))?.[0] ?? null;
+}
 
 const WEEK_PHASES = [
   { phase: 1, name: 'BASE AÉROBIE', weeks: [1,2,3,4,5] },
@@ -2838,7 +2867,7 @@ function renderProgramEndControl(editing = false) {
 
 function refreshCalendarViews() {
   renderProgramEndControl();
-  currentWeekView = getWeekActiveNum();
+  currentWeekView = getCalendarActiveWeekNum();
   buildWeekView(currentWeekView);
   updateStats();
   buildLoadChart();
@@ -2849,7 +2878,7 @@ function buildLoadChart() {
   if (!svg) return;
 
   const PHASE_COLORS = { 1: '#38bdf8', 2: '#facc15', 3: '#fb923c', 4: '#4ade80' };
-  const activeWeek = getWeekActiveNum();
+  const activeWeek = getCalendarActiveWeekNum();
 
   const weeks = weeklyPlan.map(w => {
     const totalMin = w.sessions.reduce((a, s) => a + (s.dist || 0), 0);
@@ -2925,13 +2954,12 @@ function enableProgramEndEdit() {
 function getWeekSessions(weekNum) {
   const week = weeklyPlan.find(w => w.weekNum === weekNum);
   if (!week) return { swim: [], bike: [], run: [], str: [], brick: [] };
-  return {
-    swim:  week.sessions.filter(s => s.id.startsWith('sw')),
-    bike:  week.sessions.filter(s => s.id.startsWith('bw')),
-    run:   week.sessions.filter(s => s.id.startsWith('rw')),
-    str:   week.sessions.filter(s => s.id.startsWith('mw')),
-    brick: week.sessions.filter(s => s.id.startsWith('brw')),
-  };
+  const result = { swim: [], bike: [], run: [], str: [], brick: [] };
+  week.sessions.forEach(s => {
+    const disc = getDiscipline(s.id);
+    if (disc && result[disc]) result[disc].push(s);
+  });
+  return result;
 }
 
 function getWeekPhase(weekNum) {
@@ -3048,12 +3076,8 @@ function buildSessionCard(session, disciplineKey) {
   `;
 }
 
-function getWeekActiveNum() {
-  return getCalendarActiveWeekNum();
-}
-
 function buildWeekView(weekNum) {
-  if (weekNum === null) weekNum = getWeekActiveNum();
+  if (weekNum === null) weekNum = getCalendarActiveWeekNum();
   currentWeekView = weekNum;
 
   const container = document.getElementById('plan');
@@ -3070,7 +3094,7 @@ function buildWeekView(weekNum) {
   const totalMinRun   = (sessionsBySport.run   || []).reduce((a,s) => a + (s.dist||0), 0);
   const totalMinBrick = (sessionsBySport.brick || []).reduce((a,s) => a + (s.dist||0), 0);
   const totalStrength = (sessionsBySport.str   || []).length;
-  const isActive = weekNum === getWeekActiveNum();
+  const isActive = weekNum === getCalendarActiveWeekNum();
   const weekDateRange = getWeekDateRange(weekNum);
   const phase = getWeekPhase(weekNum);
 
@@ -3082,6 +3106,7 @@ function buildWeekView(weekNum) {
 	    <div class="week-nav-title">
 	      SEMAINE ${getWeekLabel(weekNum)}
 	      <span>${phase.name} · ${weekDateRange}${isActive ? ' · 📍 CETTE SEMAINE' : ''}</span>
+	      ${weekNum !== getCalendarActiveWeekNum() ? `<button class="wv-today-btn" onclick="buildWeekView(getCalendarActiveWeekNum())">↩ Semaine active</button>` : ''}
 	    </div>
 	    <button class="week-nav-btn" onclick="buildWeekView(${weekNum + 1})" ${weekNum >= TOTAL_WEEKS ? 'disabled' : ''}>${weekNum < TOTAL_WEEKS ? 'S' + getWeekLabel(weekNum + 1) : 'Fin'} →</button>
 	  `;
@@ -3400,6 +3425,10 @@ function importData(event) {
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
+      if (!data.version || data.version !== 1) {
+        showToast('import-version');
+        return;
+      }
       if (!data.completed || typeof data.completed !== 'object' || Array.isArray(data.completed) ||
           !data.skipped   || typeof data.skipped   !== 'object' || Array.isArray(data.skipped))
         throw new Error('Format invalide');
@@ -3457,9 +3486,10 @@ function showToast(state) {
   else if (state === 'notes-error')  { t.textContent = 'Copie impossible';           t.style.background = 'var(--orange)'; }
   else if (state === 'import-ok')     { t.textContent = '✓ Données restaurées';        t.style.background = 'var(--green)'; }
   else if (state === 'import-error')  { t.textContent = '✗ Fichier invalide';          t.style.background = 'var(--red)'; }
+  else if (state === 'import-version') { t.textContent = '⚠️ Format inconnu';           t.style.background = 'var(--orange)'; }
   else if (state === 'result-saved')  { t.textContent = '⏱ Résultat enregistré';      t.style.background = 'var(--green)'; }
   else if (state === 'perf-saved')   { t.textContent = '✓ Résultats enregistrés';    t.style.background = 'var(--green)'; }
-  else if (state === 'perf-skipped') { t.textContent = 'Séance validée — Ajoute tes résultats via ✏'; t.style.background = 'var(--muted)'; }
+  else if (state === 'perf-skipped') { t.textContent = 'Séance validée ✏ résultats à saisir'; t.style.background = 'var(--muted)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
@@ -3477,10 +3507,11 @@ function updateStats() {
       if (completed[s.id]) {
         done++;
         weeksActive.add(w.weekNum);
-        if (s.id.startsWith('sw'))        minSwim += (s.dist || 0);
-        else if (s.id.startsWith('brw')) { minBike += (s.dist || 0); minRun += (s.dist || 0); }
-        else if (s.id.startsWith('bw'))  minBike += (s.dist || 0);
-        else if (s.id.startsWith('rw'))  minRun  += (s.dist || 0);
+        const disc = getDiscipline(s.id);
+        if (disc === 'swim')       minSwim += (s.dist || 0);
+        else if (disc === 'brick') { minBike += (s.dist || 0); minRun += (s.dist || 0); }
+        else if (disc === 'bike')  minBike += (s.dist || 0);
+        else if (disc === 'run')   minRun  += (s.dist || 0);
       }
       if (skipped[s.id]) skippedCount++;
     });
@@ -3509,14 +3540,8 @@ function updateStats() {
 // PROGRESSION — scroll sur la première semaine incomplète
 // ═══════════════════════════════════════════════════
 
-function getActiveWeekNum() {
-  // La semaine active vient du calendrier réel, pas de l'avancement des cases cochées.
-  // Les états completed/skipped restent réservés aux stats, barres et pastilles.
-  return getCalendarActiveWeekNum();
-}
-
 function scrollToActiveWeek() {
-  const weekNum = getActiveWeekNum();
+  const weekNum = getCalendarActiveWeekNum();
   const block = document.getElementById(`week-${weekNum}`);
   if (!block) return;
   openWeekElement(block);
@@ -3528,7 +3553,7 @@ function scrollToActiveWeek() {
 }
 
 function addActiveWeekIndicator() {
-  const weekNum = getActiveWeekNum();
+  const weekNum = getCalendarActiveWeekNum();
   const header = document.querySelector(`#week-${weekNum} .week-header`);
   if (!header) return;
   const badge = document.createElement('span');
@@ -4021,6 +4046,7 @@ document.body.insertAdjacentHTML('beforeend', `
 renderProgramEndControl();
 buildWeekView(null);
 updateStats();
+validatePlan();
 buildLoadChart();
 
 if ('serviceWorker' in navigator) {
