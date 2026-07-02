@@ -3126,7 +3126,7 @@ function buildRemainingSessionsPanel() {
         <span class="rsw-disc-dot" style="background:${config.accent}"></span>
         <span class="rsw-session-name">${getSessionDisplayName(session)}</span>
         <span class="wsc-badge ${disciplineKey}">${getDistLabel(session, disciplineKey)}</span>
-        <button class="rsw-done-btn" onclick="if(navigator.vibrate)navigator.vibrate(40);wvToggleDone('${session.id}')">✓ Fait</button>
+        <button class="rsw-done-btn" onclick="currentWeekView=getCalendarActiveWeekNum();if(navigator.vibrate)navigator.vibrate(40);wvToggleDone('${session.id}')">✓ Fait</button>
       </div>
     `;
   }).join('');
