@@ -1268,7 +1268,7 @@ body {
   <!-- LOAD CHART -->
   <div class="load-chart-panel">
     <div class="load-chart-header">
-      <span class="load-chart-title">Charge Run — 15 semaines</span>
+      <span class="load-chart-title">Charge Run — 14 semaines</span>
       <div class="load-chart-legend">
         <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#38bdf8"></div>Base</div>
         <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#facc15"></div>Construction</div>
@@ -1285,12 +1285,12 @@ body {
 
 <script>
 // ═══════════════════════════════════════════════════
-// DATA — Plan d'entraînement unifié 15 semaines
+// DATA — Plan d'entraînement unifié 14 semaines
 // ═══════════════════════════════════════════════════
 const weeklyPlan = [
   {
     "weekNum": 1,
-    "phase": "Base aérobie — Reprise",
+    "phase": "base",
     "sessions": [
       {
         "id": "rw1a",
@@ -1370,7 +1370,7 @@ const weeklyPlan = [
   },
   {
     "weekNum": 2,
-    "phase": "Base aérobie — Construction",
+    "phase": "base",
     "sessions": [
       {
         "id": "rw2a",
@@ -1449,88 +1449,10 @@ const weeklyPlan = [
   },
   {
     "weekNum": 3,
-    "phase": "Base aérobie — Récupération",
+    "phase": "construction",
     "sessions": [
       {
         "id": "rw3a",
-        "name": "Footing Z2 — Allégé",
-        "type": "r-endurance",
-        "typeLabel": "40 min · Z2 souple",
-        "dist": 40,
-        "unit": "min",
-        "sets": [
-          { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:30/km.", "tip": "" },
-          { "type": "main", "dist": "27 min", "desc": "Course Z2 à 4:50–5:10/km, perception d'effort très basse. Si tu es fatigué, reste à 5:10/km ou plus. Ne cherche pas à profiter de la semaine légère pour aller plus vite.", "tip": "Cette semaine, l'adaptation se fait pendant la récupération, pas pendant l'entraînement. Résiste à l'envie de forcer." },
-          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min, respiration nasale.", "tip": "" }
-        ],
-        "tip": "S3 = récupération intentionnelle. Volume réduit. C'est pendant ces semaines que le corps intègre les adaptations des 2 semaines précédentes."
-      },
-      {
-        "id": "rw3b",
-        "name": "Run — Strides et mobilité",
-        "type": "r-recovery",
-        "typeLabel": "35 min · Récup + strides",
-        "dist": 35,
-        "unit": "min",
-        "sets": [
-          { "type": "warm", "dist": "10 min", "desc": "Trot très léger Z1 à >5:30/km.", "tip": "" },
-          { "type": "main", "dist": "15 min", "desc": "Course Z1–Z2 basse à 5:10–5:30/km, sensation quasi nulle d'effort.", "tip": "" },
-          { "type": "interval", "dist": "4 × 20 s", "desc": "4 strides de 20 s à ~3:50/km, récupération 90 s marche/trot. Foulée légère, appui avant, jambe décontractée.", "tip": "Strides en semaine de récup : garder la vivacité neuromusculaire uniquement. Pas d'effort maximal." },
-          { "type": "cool", "dist": "5 min", "desc": "Marche 5 min + étirements mollets et fléchisseurs de hanche sur place.", "tip": "" }
-        ],
-        "tip": "35 min légères avec strides : suffisant pour maintenir le stimulus neuromusculaire sans accumuler de fatigue supplémentaire."
-      },
-      {
-        "id": "sw3a",
-        "name": "Natation — Technique légère",
-        "type": "s-technique",
-        "typeLabel": "35 min · Technique souple",
-        "dist": 35,
-        "unit": "min",
-        "sets": [
-          { "type": "warm", "dist": "200 m", "desc": "200 m crawl très souple.", "tip": "" },
-          { "type": "main", "dist": "4 × 50 m", "desc": "4 × 50 m : alterner catch-up drill (25 m) et nage libre intégrée (25 m). Récupération 30 s. Qualité de sensation uniquement.", "tip": "Si tu es fatigué, fais 3 répétitions au lieu de 4. L'objectif est de rester en eau sans accumuler de charge." },
-          { "type": "main", "dist": "200 m", "desc": "200 m crawl continu très confortable.", "tip": "" },
-          { "type": "cool", "dist": "100 m", "desc": "100 m brasse récupération.", "tip": "" }
-        ],
-        "tip": "Séance courte et propre. Profites-en pour travailler une sensation unique : position de la tête ou entrée de main — une seule chose à la fois."
-      },
-      {
-        "id": "sw3b",
-        "name": "Natation — Endurance légère",
-        "type": "s-endurance",
-        "typeLabel": "35 min · Endurance souple",
-        "dist": 35,
-        "unit": "min",
-        "sets": [
-          { "type": "warm", "dist": "150 m", "desc": "150 m crawl progressif.", "tip": "" },
-          { "type": "main", "dist": "600 m", "desc": "600 m crawl à allure très confortable, en dessous de ton rythme habituel. Si tu sens de la fatigue, insère 25 m brasse toutes les 150 m.", "tip": "600 m vs 800 m en S2 : volume réduit intentionnellement. 600 m bien nagés valent mieux que 800 m en mode survie." },
-          { "type": "cool", "dist": "100 m", "desc": "100 m brasse douce.", "tip": "" }
-        ],
-        "tip": "600 m faciles pour maintenir la sensation aquatique sans sur-solliciter. Ton objectif de 1h30 se construit aussi dans les semaines légères."
-      },
-      {
-        "id": "mw3a",
-        "name": "Renforcement — Volume réduit",
-        "type": "strength",
-        "typeLabel": "35 min · Force légère",
-        "dist": 35,
-        "unit": "min",
-        "sets": [
-          { "type": "warm", "dist": "5 min", "desc": "Mobilité légère : rotations d'épaules, cercles de hanches, leg swings.", "tip": "" },
-          { "type": "main", "dist": "2 circuits", "desc": "2 tours (au lieu de 3), 60 s repos entre exercices, charges allégées -15% vs S2 :\n1. Squat haltères — 2 × 10 reps\n2. Romanian deadlift — 2 × 10 reps\n3. Pompes — 2 × 8 reps\n4. Planche frontale — 2 × 30 s\n5. Dead bug — 2 × 6 reps / côté", "tip": "L'objectif est de maintenir le patron moteur, pas de progresser. Charges allégées, pas de challenge." },
-          { "type": "cool", "dist": "5 min", "desc": "Étirements statiques : quadriceps, ischio-jambiers, pectoraux.", "tip": "" }
-        ],
-        "tip": "Si la fatigue générale est forte (sommeil perturbé, jambes lourdes), tu peux remplacer cette séance par 30 min de marche + étirements. La récupération systémique prime."
-      }
-    ]
-  },
-  {
-    "weekNum": 4,
-    "phase": "Construction — Ajout vélo",
-    "sessions": [
-      {
-        "id": "rw4a",
         "name": "Footing Z2 — Volume croissant",
         "type": "r-endurance",
         "typeLabel": "55 min · Z2",
@@ -1544,7 +1466,7 @@ const weeklyPlan = [
         "tip": "S4 marque le début de la phase Construction. Le volume run monte. Garde la discipline sur l'allure Z2 — c'est ton capital pour les semaines de seuil qui arrivent."
       },
       {
-        "id": "rw4b",
+        "id": "rw3b",
         "name": "Run Tempo — Progression",
         "type": "r-tempo",
         "typeLabel": "55 min · Tempo",
@@ -1558,7 +1480,7 @@ const weeklyPlan = [
         "tip": "3 × 10 min tempo : séance clé de la semaine. Cette allure 4:20–4:30 va devenir ta zone de confort d'ici S10. Pour l'instant, ça doit piquer en fin de bloc — c'est bon signe."
       },
       {
-        "id": "sw4a",
+        "id": "sw3a",
         "name": "Natation — Technique et transfert",
         "type": "s-technique",
         "typeLabel": "45 min · Technique",
@@ -1573,7 +1495,7 @@ const weeklyPlan = [
         "tip": "Le 75 m drill+nage est un format clé pour transférer la technique à la nage réelle. Ne saute pas la transition — c'est là que l'intégration se fait."
       },
       {
-        "id": "sw4b",
+        "id": "sw3b",
         "name": "Natation — Cap 1000 m",
         "type": "s-endurance",
         "typeLabel": "55 min · Endurance",
@@ -1588,7 +1510,7 @@ const weeklyPlan = [
         "tip": "Note le temps de ton 1000 m. C'est ton premier chrono de référence en natation pour mesurer la progression jusqu'au triathlon L."
       },
       {
-        "id": "bw4a",
+        "id": "bw3a",
         "name": "Vélo — Endurance Z2 (reprise)",
         "type": "b-endurance",
         "typeLabel": "70 min · Z2 vélo",
@@ -1602,7 +1524,7 @@ const weeklyPlan = [
         "tip": "Premier bloc vélo du programme. Objectif : retrouver les sensations, calibrer les zones. Pas de performance à chercher ici."
       },
       {
-        "id": "mw4a",
+        "id": "mw3a",
         "name": "Renforcement — Force propulsive",
         "type": "strength",
         "typeLabel": "40 min · Force fonctionnelle",
@@ -1618,11 +1540,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 5,
-    "phase": "Construction — Charge",
+    "weekNum": 4,
+    "phase": "construction",
     "sessions": [
       {
-        "id": "rw5a",
+        "id": "rw4a",
         "name": "Footing Z2 — Long",
         "type": "r-endurance",
         "typeLabel": "60 min · Z2",
@@ -1636,7 +1558,7 @@ const weeklyPlan = [
         "tip": "La sortie longue Z2 est non-négociable dans la phase de construction. C'est la base de ton endurance aérobie pour le triathlon L et le semi."
       },
       {
-        "id": "rw5b",
+        "id": "rw4b",
         "name": "Run Seuil — Introduction",
         "type": "r-threshold",
         "typeLabel": "60 min · Seuil",
@@ -1650,7 +1572,7 @@ const weeklyPlan = [
         "tip": "Première séance seuil du programme. 4 × 5 min est le volume d'entrée — il montera progressivement jusqu'en S9. Note tes impressions sur la tenue de l'allure."
       },
       {
-        "id": "sw5a",
+        "id": "sw4a",
         "name": "Natation — Technique avancée",
         "type": "s-technique",
         "typeLabel": "55 min · Technique",
@@ -1665,7 +1587,7 @@ const weeklyPlan = [
         "tip": "4 × 100 m drill+nage : la technique doit tenir sur 100 m. Si elle lâche à 75 m, c'est ton signal de travail prioritaire pour la suite."
       },
       {
-        "id": "sw5b",
+        "id": "sw4b",
         "name": "Natation — Volume + Intervalles",
         "type": "s-endurance",
         "typeLabel": "60 min · Endurance + vitesse",
@@ -1680,7 +1602,7 @@ const weeklyPlan = [
         "tip": "1200 m continus : cap intermédiaire important. En triathlon L tu nages 1900 m — t'approcher de ce volume en continu te prépare mentalement autant que physiquement."
       },
       {
-        "id": "bw5a",
+        "id": "bw4a",
         "name": "Vélo — Sweet Spot",
         "type": "b-sweetspot",
         "typeLabel": "80 min · Sweet spot",
@@ -1694,7 +1616,7 @@ const weeklyPlan = [
         "tip": "Première séance sweet spot. 2 × 20 min est le format classique pour développer l'économie vélo à haute intensité. La qualité de la 2e répétition est ton indicateur clé."
       },
       {
-        "id": "mw5a",
+        "id": "mw4a",
         "name": "Renforcement — Puissance et stabilité",
         "type": "strength",
         "typeLabel": "45 min · Force",
@@ -1710,11 +1632,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 6,
-    "phase": "Construction — Récupération",
+    "weekNum": 5,
+    "phase": "construction",
     "sessions": [
       {
-        "id": "rw6a",
+        "id": "rw5a",
         "name": "Run Récupération active",
         "type": "r-recovery",
         "typeLabel": "35 min · Récup",
@@ -1728,7 +1650,7 @@ const weeklyPlan = [
         "tip": "S6 = récupération obligatoire, volume -35% vs S5. Tu n'accumules rien cette semaine — tu intègres. C'est aussi une semaine d'entraînement."
       },
       {
-        "id": "rw6b",
+        "id": "rw5b",
         "name": "Footing Z2 court",
         "type": "r-endurance",
         "typeLabel": "40 min · Z2 léger",
@@ -1742,7 +1664,7 @@ const weeklyPlan = [
         "tip": "Cette séance doit te laisser frais à la fin. Si tu finis fatigué, tu es allé trop vite ou la récupération n'est pas complète — signale-le."
       },
       {
-        "id": "sw6a",
+        "id": "sw5a",
         "name": "Natation — Technique légère",
         "type": "s-technique",
         "typeLabel": "35 min · Technique souple",
@@ -1757,7 +1679,7 @@ const weeklyPlan = [
         "tip": "Séance courte et propre. Idéal pour ancrer les sensations techniques avant S7 qui relance la charge."
       },
       {
-        "id": "sw6b",
+        "id": "sw5b",
         "name": "Natation — Volume réduit",
         "type": "s-endurance",
         "typeLabel": "40 min · Endurance allégée",
@@ -1771,7 +1693,7 @@ const weeklyPlan = [
         "tip": "800 m faciles pour maintenir le stimulus aquatique sans charger le système. Après 2 semaines de construction, le corps a besoin de cette fenêtre d'adaptation."
       },
       {
-        "id": "bw6a",
+        "id": "bw5a",
         "name": "Vélo — Endurance légère",
         "type": "b-endurance",
         "typeLabel": "50 min · Z2 récup vélo",
@@ -1785,7 +1707,7 @@ const weeklyPlan = [
         "tip": "Séance vélo légère en récup. Cette séance doit se terminer sans fatigue. Si tu utilises un home-trainer, résistance minimum."
       },
       {
-        "id": "mw6a",
+        "id": "mw5a",
         "name": "Renforcement — Maintenance",
         "type": "strength",
         "typeLabel": "35 min · Force légère",
@@ -1801,11 +1723,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 7,
-    "phase": "Transition — Premier brick",
+    "weekNum": 6,
+    "phase": "specifique",
     "sessions": [
       {
-        "id": "rw7a",
+        "id": "rw6a",
         "name": "Footing Z2 — Consolidation",
         "type": "r-endurance",
         "typeLabel": "60 min · Z2",
@@ -1819,7 +1741,7 @@ const weeklyPlan = [
         "tip": "S7 marque l'entrée dans la phase Spécifique Triathlon (S8–S10). Le volume monte, le brick arrive. Cette sortie Z2 pose les fondations de la semaine."
       },
       {
-        "id": "rw7b",
+        "id": "rw6b",
         "name": "Run Seuil — Progression volume",
         "type": "r-threshold",
         "typeLabel": "60 min · Seuil",
@@ -1833,7 +1755,7 @@ const weeklyPlan = [
         "tip": "5 × 5 min seuil à 90 s de récup : c'est costaud pour S7. Si la récupération S6 était bonne, tu dois tenir. Bonne séance seuil ici = tu es sur la trajectoire pour le semi en 1h30."
       },
       {
-        "id": "sw7a",
+        "id": "sw6a",
         "name": "Natation — Endurance + Blocs vitesse",
         "type": "s-endurance",
         "typeLabel": "55 min · Endurance + intervalles",
@@ -1848,7 +1770,7 @@ const weeklyPlan = [
         "tip": "Format mixte endurance + intervalles : prépare le système à nager longtemps puis à accélérer. Utile en triathlon quand on ressort du peloton de nage."
       },
       {
-        "id": "sw7b",
+        "id": "sw6b",
         "name": "Natation — Long 1500 m",
         "type": "s-endurance",
         "typeLabel": "65 min · Endurance longue",
@@ -1862,7 +1784,7 @@ const weeklyPlan = [
         "tip": "1500 m continus : cap psychologique. Si tu tiens cette distance en technique correcte, la nage du triathlon L (1900 m) n'a rien d'insurmontable. Note tes impressions."
       },
       {
-        "id": "bw7a",
+        "id": "bw6a",
         "name": "Vélo — Sweet Spot long",
         "type": "b-sweetspot",
         "typeLabel": "85 min · Sweet spot",
@@ -1876,7 +1798,7 @@ const weeklyPlan = [
         "tip": "2 × 25 min sweet spot : progression logique depuis S5. Si tu tiens la puissance en fin de 2e bloc, tu es sur la bonne trajectoire pour la phase triathlon."
       },
       {
-        "id": "brw7a",
+        "id": "brw6a",
         "name": "Brick Vélo → Run — Premier enchaînement",
         "type": "brick",
         "typeLabel": "65 min · Brick",
@@ -1892,7 +1814,7 @@ const weeklyPlan = [
         "tip": "Premier brick du programme. Objectif unique : découvrir la sensation de la transition vélo→course et apprendre à gérer les premières minutes sur jambes fatiguées. La performance est secondaire."
       },
       {
-        "id": "mw7a",
+        "id": "mw6a",
         "name": "Renforcement — Dernière séance lourde",
         "type": "strength",
         "typeLabel": "40 min · Force fonctionnelle",
@@ -1908,11 +1830,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 8,
-    "phase": "Spécifique Triathlon — Peak",
+    "weekNum": 7,
+    "phase": "specifique",
     "sessions": [
       {
-        "id": "rw8a",
+        "id": "rw7a",
         "name": "Run Z2 — Long peak",
         "type": "r-endurance",
         "typeLabel": "70 min · Z2",
@@ -1926,7 +1848,7 @@ const weeklyPlan = [
         "tip": "Semaine pic du programme (~9h30). Gère ton énergie — le brick et le seuil sont les priorités absolues, le Z2 est le remplissage aérobie."
       },
       {
-        "id": "sw8a",
+        "id": "sw7a",
         "name": "Natation — Longue endurance",
         "type": "s-endurance",
         "typeLabel": "75 min · Endurance longue",
@@ -1941,7 +1863,7 @@ const weeklyPlan = [
         "tip": "1800 m continus : 95% de la distance race. Si tu tiens cette distance avec technique correcte, la nage du triathlon L est maîtrisée."
       },
       {
-        "id": "bw8a",
+        "id": "bw7a",
         "name": "Vélo — Long sweetspot",
         "type": "b-sweetspot",
         "typeLabel": "130 min · Sweetspot long",
@@ -1955,7 +1877,7 @@ const weeklyPlan = [
         "tip": "La séance vélo la plus exigeante du programme. Si la puissance chute sous 160 W au 3e bloc, réduis à 160 W et tiens — ne pas abandonner la séance."
       },
       {
-        "id": "rw8b",
+        "id": "rw7b",
         "name": "Run Seuil — Volume pic",
         "type": "r-threshold",
         "typeLabel": "70 min · Seuil avancé",
@@ -1969,7 +1891,7 @@ const weeklyPlan = [
         "tip": "6 × 5 min seuil : pic de volume en séance seuil sur tout le programme. La tenue de l'allure sur les 5e et 6e reps est ton meilleur indicateur de forme pour le semi en S15."
       },
       {
-        "id": "brw8a",
+        "id": "brw7a",
         "name": "Brick Long — Simulation race",
         "type": "brick",
         "typeLabel": "110 min · Brick long",
@@ -1985,7 +1907,7 @@ const weeklyPlan = [
         "tip": "Brick le plus long du programme. Si tu tiens 4:30–4:40/km sur ces 20 min après 80 min de sweetspot, tu es prêt pour la course."
       },
       {
-        "id": "sw8b",
+        "id": "sw7b",
         "name": "Natation — Vitesse et intervalles",
         "type": "s-endurance",
         "typeLabel": "65 min · Endurance + vitesse",
@@ -2000,7 +1922,7 @@ const weeklyPlan = [
         "tip": "2e séance natation de la semaine : moins de volume, plus de vitesse. Elle complète sw8a orientée endurance."
       },
       {
-        "id": "mw8a",
+        "id": "mw7a",
         "name": "Renforcement — Maintenance pic",
         "type": "strength",
         "typeLabel": "35 min · Maintenance",
@@ -2016,11 +1938,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 9,
-    "phase": "Spécifique Triathlon — Consolidation",
+    "weekNum": 8,
+    "phase": "specifique",
     "sessions": [
       {
-        "id": "rw9a",
+        "id": "rw8a",
         "name": "Run Z2 — Endurance",
         "type": "r-endurance",
         "typeLabel": "65 min · Z2",
@@ -2034,7 +1956,7 @@ const weeklyPlan = [
         "tip": "S9 à 7h45 vs S8 à 9h30 : réduction intentionnelle. Cette semaine prépare l'affûtage de S10 — conserve les réserves sur les séances Z2."
       },
       {
-        "id": "sw9a",
+        "id": "sw8a",
         "name": "Natation — Endurance longue",
         "type": "s-endurance",
         "typeLabel": "65 min · Endurance",
@@ -2049,7 +1971,7 @@ const weeklyPlan = [
         "tip": "Avec 1800 m en S8 et 1600 m ici, ton endurance en nage est solide pour les 1900 m de la course."
       },
       {
-        "id": "bw9a",
+        "id": "bw8a",
         "name": "Vélo — Sweetspot solide",
         "type": "b-sweetspot",
         "typeLabel": "100 min · Sweetspot",
@@ -2063,7 +1985,7 @@ const weeklyPlan = [
         "tip": "100 min vs 130 min en S8 : la réduction de volume en vue de l'affûtage commence. La qualité de l'effort reste identique."
       },
       {
-        "id": "rw9b",
+        "id": "rw8b",
         "name": "Run Seuil — Consolidation",
         "type": "r-threshold",
         "typeLabel": "65 min · Seuil",
@@ -2077,7 +1999,7 @@ const weeklyPlan = [
         "tip": "Dernière séance seuil lourde avant l'affûtage de S10. Conserve de la marge — ne pars pas sous 4:00/km même si tu te sens bien."
       },
       {
-        "id": "brw9a",
+        "id": "brw8a",
         "name": "Brick — Allure race confirmée",
         "type": "brick",
         "typeLabel": "85 min · Brick",
@@ -2093,7 +2015,7 @@ const weeklyPlan = [
         "tip": "Avant-dernier brick du cycle triathlon. La confirmation de l'allure 4:30–4:40/km sur jambes fatiguées est l'objectif principal."
       },
       {
-        "id": "sw9b",
+        "id": "sw8b",
         "name": "Natation — Technique et vitesse",
         "type": "s-technique",
         "typeLabel": "60 min · Technique + vitesse",
@@ -2108,7 +2030,7 @@ const weeklyPlan = [
         "tip": "Technique sous effort sur 100 m : si la technique tient sur les 6 × 50 m sans dégradation notable, l'intégration est réussie."
       },
       {
-        "id": "mw9a",
+        "id": "mw8a",
         "name": "Renforcement — Maintenance",
         "type": "strength",
         "typeLabel": "35 min · Maintenance",
@@ -2124,11 +2046,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 10,
-    "phase": "Affûtage Triathlon L",
+    "weekNum": 9,
+    "phase": "affutage",
     "sessions": [
       {
-        "id": "rw10a",
+        "id": "rw9a",
         "name": "Run Z2 — Affûtage",
         "type": "r-endurance",
         "typeLabel": "45 min · Z2 souple",
@@ -2142,7 +2064,7 @@ const weeklyPlan = [
         "tip": "S10 = affûtage pré-Triathlon L, volume -35% vs S8. La forme monte pendant les jours de repos relatif. Moins c'est mieux cette semaine."
       },
       {
-        "id": "sw10a",
+        "id": "sw9a",
         "name": "Natation — Technique légère",
         "type": "s-technique",
         "typeLabel": "40 min · Technique",
@@ -2157,7 +2079,7 @@ const weeklyPlan = [
         "tip": "En affûtage, la nage maintient les sensations aquatiques — aucune progression à chercher."
       },
       {
-        "id": "bw10a",
+        "id": "bw9a",
         "name": "Vélo — Activation race pace",
         "type": "b-sweetspot",
         "typeLabel": "70 min · Race activation",
@@ -2172,7 +2094,7 @@ const weeklyPlan = [
         "tip": "Cette séance touche l'allure race vélo (175–185 W) sur courtes durées. Objectif : ancrer la sensation de compétition avant J-7."
       },
       {
-        "id": "rw10b",
+        "id": "rw9b",
         "name": "Run — Blocs allure race HIM",
         "type": "r-threshold",
         "typeLabel": "55 min · Allure HIM run",
@@ -2186,7 +2108,7 @@ const weeklyPlan = [
         "tip": "Dernière séance d'intensité run avant la race. 4:30–4:40/km = allure HIM, pas allure seuil. Si ça semble fluide, tu es prêt."
       },
       {
-        "id": "brw10a",
+        "id": "brw9a",
         "name": "Brick — Dernière répétition pré-race",
         "type": "brick",
         "typeLabel": "65 min · Brick affûtage",
@@ -2202,7 +2124,7 @@ const weeklyPlan = [
         "tip": "Dernier brick du cycle. Court, ciblé, pour confirmer les sensations. Pas de record, pas d'exploit — juste la validation que le corps est prêt."
       },
       {
-        "id": "sw10b",
+        "id": "sw9b",
         "name": "Natation — Endurance légère",
         "type": "s-endurance",
         "typeLabel": "40 min · Endurance",
@@ -2217,7 +2139,7 @@ const weeklyPlan = [
         "tip": "Dernière séance endurance natation avant la race week. Si l'eau te semble facile, c'est le signal que la forme est là."
       },
       {
-        "id": "mw10a",
+        "id": "mw9a",
         "name": "Renforcement — Activation légère",
         "type": "strength",
         "typeLabel": "30 min · Activation",
@@ -2233,11 +2155,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 11,
-    "phase": "Race Week — Triathlon L",
+    "weekNum": 10,
+    "phase": "affutage",
     "sessions": [
       {
-        "id": "sw11a",
+        "id": "sw10a",
         "name": "Natation — Activation J-3",
         "type": "s-technique",
         "typeLabel": "30 min · Activation",
@@ -2252,7 +2174,7 @@ const weeklyPlan = [
         "tip": "Race week : la forme est là, elle ne peut plus être améliorée. Chaque séance ici sert uniquement à maintenir les sensations et la confiance. Zéro fatigue."
       },
       {
-        "id": "bw11a",
+        "id": "bw10a",
         "name": "Vélo — Activation J-2",
         "type": "b-endurance",
         "typeLabel": "35 min · Activation vélo",
@@ -2266,7 +2188,7 @@ const weeklyPlan = [
         "tip": "J-2 : séance courte pour garder les jambes actives. Après ça, repos jusqu'à la course. Hydratation et nutrition sont tes vraies priorités de J-2."
       },
       {
-        "id": "rw11a",
+        "id": "rw10a",
         "name": "Run — Activation J-1",
         "type": "r-recovery",
         "typeLabel": "20 min · Activation run",
@@ -2280,7 +2202,7 @@ const weeklyPlan = [
         "tip": "J-1 : 20 min uniquement. Si tu ressors avec des jambes légères, c'est parfait. Ce soir : dîner glucidique, coucher tôt, visualisation du plan de course."
       },
       {
-        "id": "rw11b",
+        "id": "rw10b",
         "name": "RACE — Triathlon L",
         "type": "brick",
         "typeLabel": "Race · Triathlon L",
@@ -2298,7 +2220,7 @@ const weeklyPlan = [
         "tip": "C'est la course. 11 semaines de travail mènent ici. Confiance dans le corps — il sait quoi faire."
       },
       {
-        "id": "rw11c",
+        "id": "rw10c",
         "name": "Run — Récupération J+1",
         "type": "r-recovery",
         "typeLabel": "25 min · Récup active",
@@ -2312,11 +2234,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 12,
-    "phase": "Récupération post-Triathlon L",
+    "weekNum": 11,
+    "phase": "affutage",
     "sessions": [
       {
-        "id": "rw12a",
+        "id": "rw11a",
         "name": "Run — Trot de récupération",
         "type": "r-recovery",
         "typeLabel": "25 min · Z1 récup",
@@ -2328,7 +2250,7 @@ const weeklyPlan = [
         "tip": "S12 = récupération non-négociable. Le corps vient de traverser 5h+ d'effort. Cette semaine, toute séance doit se terminer sans fatigue supplémentaire."
       },
       {
-        "id": "sw12a",
+        "id": "sw11a",
         "name": "Natation — Récup active",
         "type": "s-endurance",
         "typeLabel": "30 min · Récup",
@@ -2342,7 +2264,7 @@ const weeklyPlan = [
         "tip": "La natation est le meilleur sport de récupération actif. L'eau décharge les articulations."
       },
       {
-        "id": "bw12a",
+        "id": "bw11a",
         "name": "Vélo — Pédalage récup",
         "type": "b-endurance",
         "typeLabel": "35 min · Z1 vélo",
@@ -2354,7 +2276,7 @@ const weeklyPlan = [
         "tip": "35 min à Z1 strict : si la FC monte à 140 bpm, réduis la résistance. Cette séance est une promenade déguisée en sport."
       },
       {
-        "id": "rw12b",
+        "id": "rw11b",
         "name": "Run — Retour en douceur",
         "type": "r-recovery",
         "typeLabel": "30 min · Z1–Z2 léger",
@@ -2370,11 +2292,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 13,
-    "phase": "Spécifique Running Semi — Construction",
+    "weekNum": 12,
+    "phase": "affutage",
     "sessions": [
       {
-        "id": "rw13a",
+        "id": "rw12a",
         "name": "Footing Z2 — Reprise qualité",
         "type": "r-endurance",
         "typeLabel": "45 min · Z2",
@@ -2388,7 +2310,7 @@ const weeklyPlan = [
         "tip": "S13 marque le pivot vers le semi. Vélo et natation passent en mode maintenance."
       },
       {
-        "id": "sw13a",
+        "id": "sw12a",
         "name": "Natation — Maintenance",
         "type": "s-endurance",
         "typeLabel": "40 min · Maintenance",
@@ -2403,7 +2325,7 @@ const weeklyPlan = [
         "tip": "800 m + 4 × 25 m : format maintenance compact. La natation ne monte plus en volume jusqu'à la fin du programme."
       },
       {
-        "id": "bw13a",
+        "id": "bw12a",
         "name": "Vélo — Maintenance active",
         "type": "b-endurance",
         "typeLabel": "50 min · Z2 maintenance",
@@ -2417,7 +2339,7 @@ const weeklyPlan = [
         "tip": "Vélo en roue libre — Z2 basse, jambes légères."
       },
       {
-        "id": "rw13b",
+        "id": "rw12b",
         "name": "Run Tempo — Relance",
         "type": "r-tempo",
         "typeLabel": "50 min · Tempo",
@@ -2431,7 +2353,7 @@ const weeklyPlan = [
         "tip": "Retour au tempo après 2 semaines sans qualité running. Volume conservateur (3 × 10 min) — il montera en S14."
       },
       {
-        "id": "rw13c",
+        "id": "rw12c",
         "name": "Run Seuil — Reprise",
         "type": "r-threshold",
         "typeLabel": "50 min · Seuil",
@@ -2445,7 +2367,7 @@ const weeklyPlan = [
         "tip": "4 × 5 min avec 2 min de récup : reprise prudente du seuil."
       },
       {
-        "id": "rw13d",
+        "id": "rw12d",
         "name": "Run Long Z2",
         "type": "r-endurance",
         "typeLabel": "55 min · Z2 long",
@@ -2459,7 +2381,7 @@ const weeklyPlan = [
         "tip": "55 min de Z2 : la base du semi se construit ici. En S14, cette sortie longue inclura des blocs à allure race."
       },
       {
-        "id": "mw13a",
+        "id": "mw12a",
         "name": "Renforcement — Retour force",
         "type": "strength",
         "typeLabel": "35 min · Force fonctionnelle",
@@ -2475,11 +2397,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 14,
-    "phase": "Spécifique Running Semi — Peak",
+    "weekNum": 13,
+    "phase": "affutage",
     "sessions": [
       {
-        "id": "rw14a",
+        "id": "rw13a",
         "name": "Footing Z2 — Socle aérobie",
         "type": "r-endurance",
         "typeLabel": "45 min · Z2",
@@ -2493,7 +2415,7 @@ const weeklyPlan = [
         "tip": "Dernière semaine de charge complète avant le taper de S15."
       },
       {
-        "id": "sw14a",
+        "id": "sw13a",
         "name": "Natation — Maintenance légère",
         "type": "s-endurance",
         "typeLabel": "40 min · Maintenance",
@@ -2508,7 +2430,7 @@ const weeklyPlan = [
         "tip": "La natation ne monte plus. Séance rapide pour maintenir les sensations aquatiques."
       },
       {
-        "id": "rw14b",
+        "id": "rw13b",
         "name": "Run Tempo — Volume pic",
         "type": "r-tempo",
         "typeLabel": "60 min · Tempo long",
@@ -2522,7 +2444,7 @@ const weeklyPlan = [
         "tip": "4 × 10 min tempo : la séance tempo la plus longue du programme."
       },
       {
-        "id": "rw14c",
+        "id": "rw13c",
         "name": "Run Seuil — Volume pic",
         "type": "r-threshold",
         "typeLabel": "60 min · Seuil avancé",
@@ -2536,7 +2458,7 @@ const weeklyPlan = [
         "tip": "5 × 5 min seuil à 90 s de récup : séance seuil la plus exigeante de la phase semi."
       },
       {
-        "id": "rw14d",
+        "id": "rw13d",
         "name": "Run Long Z2 + Blocs allure race",
         "type": "r-endurance",
         "typeLabel": "65 min · Long semi-spécifique",
@@ -2551,7 +2473,7 @@ const weeklyPlan = [
         "tip": "La sortie longue avec blocs allure race est la répétition générale du semi. 3 × 8 min à 4:16/km après 30 min de Z2 : si tu tiens, la 1h30 est réaliste."
       },
       {
-        "id": "bw14a",
+        "id": "bw13a",
         "name": "Vélo — Maintenance légère",
         "type": "b-endurance",
         "typeLabel": "45 min · Z2 maintenance",
@@ -2565,7 +2487,7 @@ const weeklyPlan = [
         "tip": "Vélo en maintenance légère. Si les jambes sont lourdes, saute cette séance sans hésiter."
       },
       {
-        "id": "mw14a",
+        "id": "mw13a",
         "name": "Renforcement — Maintenance peak",
         "type": "strength",
         "typeLabel": "35 min · Maintenance",
@@ -2581,11 +2503,11 @@ const weeklyPlan = [
     ]
   },
   {
-    "weekNum": 15,
-    "phase": "Taper + Race — Semi-marathon 1h30",
+    "weekNum": 14,
+    "phase": "affutage",
     "sessions": [
       {
-        "id": "rw15a",
+        "id": "rw14a",
         "name": "Run Z2 — Taper court",
         "type": "r-endurance",
         "typeLabel": "30 min · Z2 souple",
@@ -2599,7 +2521,7 @@ const weeklyPlan = [
         "tip": "S15 = taper + race. Volume -50% vs S14. La forme monte cette semaine pendant que tu te reposes."
       },
       {
-        "id": "rw15b",
+        "id": "rw14b",
         "name": "Run — Blocs allure race (confirmation)",
         "type": "r-threshold",
         "typeLabel": "35 min · Allure race",
@@ -2613,7 +2535,7 @@ const weeklyPlan = [
         "tip": "Dernière séance de qualité avant la race. Objectif : confirmer les sensations à 4:16/km, pas chercher une performance."
       },
       {
-        "id": "bw15a",
+        "id": "bw14a",
         "name": "Vélo — Activation légère",
         "type": "b-endurance",
         "typeLabel": "30 min · Activation vélo",
@@ -2625,7 +2547,7 @@ const weeklyPlan = [
         "tip": "30 min de vélo léger. Cette séance est optionnelle si les jambes sont déjà légères."
       },
       {
-        "id": "rw15c",
+        "id": "rw14c",
         "name": "Run — Activation J-1",
         "type": "r-recovery",
         "typeLabel": "20 min · Activation J-1",
@@ -2639,7 +2561,7 @@ const weeklyPlan = [
         "tip": "J-1 : 20 min uniquement. Ce soir : dîner glucidique, coucher tôt, visualisation du plan de course."
       },
       {
-        "id": "mw15a",
+        "id": "mw14a",
         "name": "Renforcement — Activation musculaire",
         "type": "strength",
         "typeLabel": "20 min · Activation légère",
@@ -2651,7 +2573,7 @@ const weeklyPlan = [
         "tip": "Activation musculaire préventive J-3 ou J-4. Optionnelle si la fatigue est perceptible."
       },
       {
-        "id": "rw15d",
+        "id": "rw14d",
         "name": "RACE — Semi-marathon 1h30",
         "type": "r-endurance",
         "typeLabel": "Race · Semi-marathon",
@@ -2734,7 +2656,7 @@ function toggleSkip(id) {
 // ═══════════════════════════════════════════════════
 let currentSport = 'week';
 let currentWeekView = null; // null = auto (active week)
-const TOTAL_WEEKS = 15;
+const TOTAL_WEEKS = 14;
 
 const DISCIPLINE_CONFIG = {
   swim:  { label: 'Natation', emoji: '🏊', color: 'swim',  accent: '#38bdf8', defaultUnit: 'min', prefix: 'sw'  },
@@ -2751,10 +2673,10 @@ function getDiscipline(sessionId) {
 }
 
 const WEEK_PHASES = [
-  { phase: 1, name: 'BASE AÉROBIE', weeks: [1,2,3,4,5] },
-  { phase: 2, name: 'CONSTRUCTION', weeks: [6,7,8,9,10] },
-  { phase: 3, name: 'SPÉCIFIQUE', weeks: [11,12,13] },
-  { phase: 4, name: 'AFFÛTAGE', weeks: [14,15] },
+  { phase: 1, name: 'BASE AÉROBIE',  weeks: [1,2] },
+  { phase: 2, name: 'CONSTRUCTION',  weeks: [3,4,5] },
+  { phase: 3, name: 'SPÉCIFIQUE',    weeks: [6,7,8] },
+  { phase: 4, name: 'AFFÛTAGE',      weeks: [9,10,11,12,13,14] },
 ];
 
 function addDays(date, days) {
