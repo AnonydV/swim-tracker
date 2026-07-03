@@ -72,6 +72,13 @@ body {
   line-height: 1;
 }
 .logo-block h1 span { color: var(--accent); }
+.logo-block h1 .app-version {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--muted);
+  vertical-align: super;
+}
 .logo-block p {
   font-size: 12px;
   color: var(--muted);
@@ -1333,8 +1340,8 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span></h1>
-      <p>// TRANSITION TRIATHLON · 3 SEMAINES</p>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v3</small></h1>
+      <p>// Mon plan d'entrainement</p>
     </div>
     <div class="progress-global">
       <div class="progress-label">PROGRESSION GLOBALE</div>
