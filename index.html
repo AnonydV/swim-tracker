@@ -1433,6 +1433,92 @@ body {
 .rsw-done-btn { min-width: 56px; min-height: 56px; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--green); background: transparent; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
 .rsw-done-btn:hover, .rsw-done-btn:active { background: var(--green); color: #051008; }
 .rsw-empty { font-size: 14px; font-weight: 600; color: var(--green); text-align: center; padding: 12px 0 4px; }
+
+/* ─── SESSION HISTORY SHEET ─── */
+#session-history-backdrop {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.72); z-index: 902; touch-action: none;
+}
+#session-history-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #07090f;
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid #1c2d44;
+  max-height: 60vh;
+  z-index: 903;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+#session-history-sheet.open { transform: translateY(0); }
+.hist-sheet-handle {
+  width: 36px; height: 4px; background: #1c2d44;
+  border-radius: 99px; margin: 10px auto 0; cursor: grab; flex-shrink: 0;
+}
+.hist-sheet-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 12px 16px 8px; border-bottom: 1px solid #1c2d44; flex-shrink: 0;
+}
+.hist-sheet-title-block { flex: 1; min-width: 0; overflow: hidden; }
+.hist-sheet-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 2px; color: #e2eaf4;
+  display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hist-sheet-count {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: #5a7a99; letter-spacing: 0.5px; display: block; margin-top: 2px;
+}
+.hist-sheet-close-btn {
+  min-width: 48px; min-height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: #5a7a99; font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; flex-shrink: 0;
+}
+#session-history-body {
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 8px 16px 24px; flex: 1;
+}
+.hist-empty {
+  text-align: center; padding: 32px 0;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: #5a7a99; font-style: italic;
+}
+.hist-item {
+  padding: 12px 0; border-bottom: 1px solid #1c2d44;
+}
+.hist-item:last-child { border-bottom: none; }
+.hist-item-skipped { opacity: 0.4; }
+.hist-item-top {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;
+}
+.hist-item-week {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: #5a7a99; letter-spacing: 0.5px; flex-shrink: 0;
+}
+.hist-item-name {
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: #e2eaf4; font-weight: 500; flex: 1; min-width: 0;
+}
+.hist-skipped-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: #5a7a99; letter-spacing: 0.5px; flex-shrink: 0; font-style: italic;
+}
+.hist-item-bottom {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.hist-item-rpe {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 3px 8px; border-radius: 99px; height: 24px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  font-weight: 700; flex-shrink: 0; white-space: nowrap;
+}
+.hist-item-metric {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: #e2eaf4; font-weight: 600;
+}
 </style>
 </head>
 <body>
@@ -1442,7 +1528,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v5</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v6</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
     </div>
     <div class="progress-global">
@@ -2917,6 +3003,19 @@ function getDiscipline(sessionId) {
   return sorted.find(([, cfg]) => sessionId.startsWith(cfg.prefix))?.[0] ?? null;
 }
 
+const SESSION_TYPE_LABELS = {
+  'r-endurance': 'Endurance Z2 — Course',
+  'r-tempo':     'Tempo — Course',
+  'r-threshold': 'Seuil — Course',
+  'r-recovery':  'Récupération — Course',
+  's-technique': 'Technique — Natation',
+  's-endurance': 'Endurance — Natation',
+  'b-endurance': 'Endurance Z2 — Vélo',
+  'b-sweetspot': 'Sweet Spot — Vélo',
+  'brick':       'Brick',
+  'strength':    'Force & Renforcement',
+};
+
 const WEEK_PHASES = [
   { phase: 1, name: 'BASE AÉROBIE',  weeks: [1,2] },
   { phase: 2, name: 'CONSTRUCTION',  weeks: [3,4,5] },
@@ -3508,7 +3607,7 @@ function buildSessionCard(session, disciplineKey) {
       </div>
       <div class="wsc-meta">${session.typeLabel || ''}</div>
       ${isDone ? buildPerfResultsRowHtml(session, disciplineKey) : ''}
-      <div class="wsc-actions">${actionBtns}</div>
+      <div class="wsc-actions">${actionBtns}<button class="wsc-btn detail" onclick="event.stopPropagation(); openSessionHistorySheet('${session.id}')" aria-label="Historique de ce type de séance">Hist.</button></div>
       ${buildSessionDetailHtml(session, disciplineKey)}
     </div>
   `;
@@ -4678,6 +4777,180 @@ function getWeekSummary(weekNum) {
   };
 }
 
+// ═══════════════════════════════════════════════════
+// SESSION HISTORY SHEET — Historique par type de séance
+// ═══════════════════════════════════════════════════
+
+function getHistKeyMetric(disc, perf) {
+  if (!perf) return null;
+  if (disc === 'swim') {
+    if (perf.paceS  > 0) return secondsToMmss(perf.paceS)   + ' /100m';
+    if (perf.distM  > 0) return perf.distM + ' m';
+    return null;
+  }
+  if (disc === 'bike') {
+    if (perf.watts  > 0) return perf.watts + ' W';
+    return null;
+  }
+  if (disc === 'run') {
+    if (perf.paceKmS > 0) return secondsToMmss(perf.paceKmS) + ' /km';
+    if (perf.distKm  > 0) return perf.distKm + ' km';
+    return null;
+  }
+  if (disc === 'str') {
+    if (perf.chargesNote) {
+      const note = perf.chargesNote.trim();
+      return note.length > 42 ? note.slice(0, 39) + '…' : note;
+    }
+    return null;
+  }
+  return null; // brick : RPE seul, pas de métrique clé
+}
+
+function buildSessionHistoryContent(sessionId) {
+  // 1. Trouver le type de la séance cible
+  var targetType = null;
+  for (var wi = 0; wi < weeklyPlan.length; wi++) {
+    var ws = weeklyPlan[wi].sessions.find(function(sess) { return sess.id === sessionId; });
+    if (ws) { targetType = ws.type || null; break; }
+  }
+
+  var typeLabel = (targetType && SESSION_TYPE_LABELS[targetType])
+    ? SESSION_TYPE_LABELS[targetType]
+    : (targetType || 'Type inconnu');
+
+  // 2. Collecter toutes les séances du même type, complétées ou skippées
+  var matches = [];
+  for (var wi2 = 0; wi2 < weeklyPlan.length; wi2++) {
+    var week = weeklyPlan[wi2];
+    for (var si = 0; si < week.sessions.length; si++) {
+      var s = week.sessions[si];
+      if (targetType && s.type !== targetType) continue;
+      if (!targetType && s.id !== sessionId) continue; // fallback : séance seule
+      var isDone    = !!completed[s.id];
+      var isSkipped = !!skipped[s.id];
+      if (!isDone && !isSkipped) continue;
+      matches.push({ session: s, weekNum: week.weekNum, isDone: isDone, isSkipped: isSkipped });
+    }
+  }
+
+  // 3. Trier : semaine la plus récente en premier
+  matches.sort(function(a, b) { return b.weekNum - a.weekNum; });
+
+  if (matches.length === 0) {
+    return {
+      count: 0,
+      typeLabel: typeLabel,
+      html: '<p class="hist-empty">Aucune séance de ce type complétée pour l\'instant.</p>'
+    };
+  }
+
+  // 4. Construire les lignes HTML
+  var rows = matches.map(function(item) {
+    var s = item.session;
+    var disc = getDiscipline(s.id);
+    var perf = item.isDone ? (perfResults[s.id] || null) : null;
+    var rpeColor = (perf && perf.rpe)
+      ? (RPE_COLORS[perf.rpe] || { bg: '#5a7a99', txt: '#fff' })
+      : null;
+    var rpeBadge = rpeColor
+      ? '<span class="hist-item-rpe" style="background:' + rpeColor.bg + ';color:' + rpeColor.txt + '">RPE ' + perf.rpe + '</span>'
+      : '';
+    var metric = getHistKeyMetric(disc, perf);
+    var metricHtml = metric
+      ? '<span class="hist-item-metric">' + escapeHtml(metric) + '</span>'
+      : '';
+    var skippedClass = item.isSkipped ? ' hist-item-skipped' : '';
+    var skippedTag   = item.isSkipped ? '<span class="hist-skipped-tag">Passée</span>' : '';
+    var hasBottom    = rpeBadge || metricHtml;
+
+    return '<div class="hist-item' + skippedClass + '">'
+      + '<div class="hist-item-top">'
+      +   '<span class="hist-item-week">S' + item.weekNum + '</span>'
+      +   '<span class="hist-item-name">' + escapeHtml(s.name) + '</span>'
+      +   skippedTag
+      + '</div>'
+      + (hasBottom
+        ? '<div class="hist-item-bottom">' + rpeBadge + metricHtml + '</div>'
+        : '')
+      + '</div>';
+  }).join('');
+
+  return { count: matches.length, typeLabel: typeLabel, html: rows };
+}
+
+function openSessionHistorySheet(sessionId) {
+  var backdrop = document.getElementById('session-history-backdrop');
+  var sheet    = document.getElementById('session-history-sheet');
+  var body     = document.getElementById('session-history-body');
+  var titleEl  = document.getElementById('session-history-title');
+  var countEl  = document.getElementById('session-history-count');
+  if (!backdrop || !sheet || !body) return;
+
+  var result = buildSessionHistoryContent(sessionId);
+
+  if (titleEl) titleEl.textContent = result.typeLabel;
+  if (countEl) {
+    countEl.textContent = result.count > 0
+      ? result.count + ' séance' + (result.count > 1 ? 's' : '')
+      : '';
+  }
+  body.innerHTML = result.html;
+
+  backdrop.style.display = 'block';
+  sheet.style.display    = 'block';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { sheet.classList.add('open'); });
+  });
+}
+
+function closeSessionHistorySheet() {
+  var sheet    = document.getElementById('session-history-sheet');
+  var backdrop = document.getElementById('session-history-backdrop');
+  if (!sheet) return;
+  sheet.style.transition = '';
+  sheet.style.transform  = '';
+  requestAnimationFrame(function() {
+    sheet.classList.remove('open');
+    setTimeout(function() {
+      sheet.style.display = 'none';
+      if (backdrop) backdrop.style.display = 'none';
+    }, 350);
+  });
+}
+
+function initHistorySheetSwipe() {
+  var handle = document.querySelector('#session-history-sheet .hist-sheet-handle');
+  var sheet  = document.getElementById('session-history-sheet');
+  if (!handle || !sheet) return;
+
+  var startY = 0, currentDelta = 0;
+
+  handle.addEventListener('touchstart', function(e) {
+    startY = e.touches[0].clientY;
+    currentDelta = 0;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', function(e) {
+    var delta = e.touches[0].clientY - startY;
+    if (delta > 0) {
+      currentDelta = delta;
+      sheet.style.transform = 'translateY(' + delta + 'px)';
+    }
+  }, { passive: true });
+
+  handle.addEventListener('touchend', function() {
+    sheet.style.transition = '';
+    if (currentDelta > 80) {
+      closeSessionHistorySheet();
+    } else {
+      sheet.style.transform = '';
+    }
+    currentDelta = 0;
+  });
+}
+
 function closeWeeklyRecap() {
   const sheet    = document.getElementById('weekly-recap-sheet');
   const backdrop = document.getElementById('weekly-recap-backdrop');
@@ -4907,6 +5180,22 @@ document.body.insertAdjacentHTML('beforeend', `
   </div>
 </div>
 `);
+
+document.body.insertAdjacentHTML('beforeend', [
+  '<div id="session-history-backdrop" style="display:none" onclick="closeSessionHistorySheet()"></div>',
+  '<div id="session-history-sheet" style="display:none">',
+  '  <div class="hist-sheet-handle"></div>',
+  '  <div class="hist-sheet-header">',
+  '    <div class="hist-sheet-title-block">',
+  '      <span class="hist-sheet-title" id="session-history-title">Historique</span>',
+  '      <span class="hist-sheet-count" id="session-history-count"></span>',
+  '    </div>',
+  '    <button class="hist-sheet-close-btn" onclick="closeSessionHistorySheet()" aria-label="Fermer">&#x2715;</button>',
+  '  </div>',
+  '  <div id="session-history-body"></div>',
+  '</div>',
+].join(''));
+initHistorySheetSwipe();
 
 takeSnapshotIfNeeded();
 
