@@ -4912,6 +4912,8 @@ takeSnapshotIfNeeded();
 
 renderProgramEndControl();
 updateHeaderSubtitle();
+// Re-mesure du débordement une fois JetBrains Mono chargée (fonts async)
+document.fonts.ready.then(() => updateHeaderSubtitle());
 buildWeekView(null);
 updateStats();
 validatePlan();
