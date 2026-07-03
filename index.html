@@ -85,6 +85,8 @@ body {
   font-family: 'JetBrains Mono', monospace;
   letter-spacing: 1px;
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .progress-global {
   display: flex;
@@ -1440,8 +1442,8 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v4</small></h1>
-      <p>// Mon plan d'entrainement</p>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v5</small></h1>
+      <p id="header-subtitle">// Mon plan d'entrainement</p>
     </div>
     <div class="progress-global">
       <div class="progress-label">PROGRESSION GLOBALE</div>
@@ -3030,12 +3032,44 @@ function renderProgramEndControl(editing = false) {
   status.innerHTML = `Fin cible <span>${formatDateShort(programEnd)}</span> · début calculé ${formatDateShort(programStart)} · semaine calendaire <span>S${activeWeek}</span>`;
 }
 
+function updateHeaderSubtitle() {
+  const el = document.getElementById('header-subtitle');
+  if (!el) return;
+  const programEnd = getProgramEndDate();
+  if (!programEnd) {
+    el.textContent = '// Mon plan d\'entrainement';
+    return;
+  }
+  const programEndDay = new Date(programEnd.getFullYear(), programEnd.getMonth(), programEnd.getDate());
+  const diffDays = Math.round((programEndDay - startOfToday()) / 86_400_000);
+  const activeWeek = getCalendarActiveWeekNum();
+  const phase = getWeekPhase(activeWeek);
+
+  let full, compact;
+  if (diffDays < 0) {
+    el.textContent = '// COURSE TERMINÉE';
+    return;
+  } else if (diffDays === 0) {
+    full    = '// JOUR J · ' + phase.name + ' · SEMAINE ' + activeWeek + '/' + TOTAL_WEEKS;
+    compact = '// JOUR J · ' + phase.name + ' · S' + activeWeek + '/' + TOTAL_WEEKS;
+  } else {
+    full    = '// J-' + diffDays + ' · ' + phase.name + ' · SEMAINE ' + activeWeek + '/' + TOTAL_WEEKS;
+    compact = '// J-' + diffDays + ' · ' + phase.name + ' · S' + activeWeek + '/' + TOTAL_WEEKS;
+  }
+
+  el.textContent = full;
+  if (el.scrollWidth > el.clientWidth) {
+    el.textContent = compact;
+  }
+}
+
 function refreshCalendarViews() {
   renderProgramEndControl();
   currentWeekView = getCalendarActiveWeekNum();
   buildWeekView(currentWeekView);
   updateStats();
   buildLoadChart();
+  updateHeaderSubtitle();
 }
 
 // ═══════════════════════════════════════════════════
@@ -3501,6 +3535,8 @@ function buildWeekView(weekNum) {
   const isActive = weekNum === getCalendarActiveWeekNum();
   const weekDateRange = getWeekDateRange(weekNum);
   const phase = getWeekPhase(weekNum);
+  const phasePos   = phase.weeks.indexOf(weekNum) + 1;
+  const phaseTotal = phase.weeks.length;
 
   // Nav bar
   const nav = document.createElement('div');
@@ -3509,7 +3545,7 @@ function buildWeekView(weekNum) {
     <button class="week-nav-btn" onclick="buildWeekView(${weekNum - 1})" ${weekNum <= 1 ? 'disabled' : ''}>← ${weekNum > 1 ? 'S' + getWeekLabel(weekNum - 1) : 'Début'}</button>
 	    <div class="week-nav-title">
 	      SEMAINE ${getWeekLabel(weekNum)}
-	      <span>${phase.name} · ${weekDateRange}${isActive ? ' · 📍 CETTE SEMAINE' : ''}</span>
+	      <span>${phase.name} · semaine ${phasePos}/${phaseTotal} · ${weekDateRange}${isActive ? ' · 📍 CETTE SEMAINE' : ''}</span>
 	      ${weekNum !== getCalendarActiveWeekNum() ? `<button class="wv-today-btn" onclick="buildWeekView(getCalendarActiveWeekNum())">↩ Semaine active</button>` : ''}
 	    </div>
 	    <button class="week-nav-btn" onclick="buildWeekView(${weekNum + 1})" ${weekNum >= TOTAL_WEEKS ? 'disabled' : ''}>${weekNum < TOTAL_WEEKS ? 'S' + getWeekLabel(weekNum + 1) : 'Fin'} →</button>
@@ -4875,6 +4911,7 @@ document.body.insertAdjacentHTML('beforeend', `
 takeSnapshotIfNeeded();
 
 renderProgramEndControl();
+updateHeaderSubtitle();
 buildWeekView(null);
 updateStats();
 validatePlan();
