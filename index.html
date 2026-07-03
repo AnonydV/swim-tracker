@@ -618,6 +618,20 @@ body {
   flex-shrink: 0;
 }
 
+/* ─── PROGRESSION PANEL ─── */
+#prog-chips {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  flex-wrap: nowrap !important;
+  padding-bottom: 4px;
+}
+.prog-chip {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  min-height: 44px;
+  white-space: nowrap;
+}
 
 /* ─── STATS BAR ─── */
 .stats-bar {
@@ -1366,7 +1380,7 @@ body {
   </div>
 
   <!-- LOAD CHART -->
-  <div class="load-chart-panel">
+  <div id="load-chart-panel" class="load-chart-panel">
     <div class="load-chart-header">
       <span class="load-chart-title">Charge Run — 14 semaines</span>
       <div class="load-chart-legend">
@@ -1378,6 +1392,23 @@ body {
     </div>
     <svg id="load-chart-svg" width="100%" height="130" style="display:block; overflow:visible"></svg>
   </div>
+
+  <!-- PROGRESSION PANEL -->
+  <div id="progression-panel" class="load-chart-panel">
+    <div class="load-chart-header">
+      <span class="load-chart-title">Progression</span>
+      <div id="prog-chips" style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="prog-chip" data-disc="swim" onclick="buildProgressionPanel('swim')" style="background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Nat</button>
+        <button class="prog-chip" data-disc="bike" onclick="buildProgressionPanel('bike')" style="background:rgba(250,204,21,0.12);color:#facc15;border:1px solid rgba(250,204,21,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Vélo</button>
+        <button class="prog-chip" data-disc="run" onclick="buildProgressionPanel('run')" style="background:rgba(163,230,53,0.12);color:#a3e635;border:1px solid rgba(163,230,53,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Run</button>
+        <button class="prog-chip" data-disc="str" onclick="buildProgressionPanel('str')" style="background:rgba(192,132,252,0.12);color:#c084fc;border:1px solid rgba(192,132,252,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Muscu</button>
+      </div>
+    </div>
+    <div id="progression-chart-area" style="min-height:80px;display:flex;align-items:center;justify-content:center"></div>
+  </div>
+
+  <!-- Tooltip progression (commun à toutes les disciplines) -->
+  <div id="prog-tooltip" style="display:none;position:fixed;background:#131d2e;border:1px solid #1c2d44;border-radius:8px;padding:8px 12px;font-size:12px;color:#e2eaf4;font-family:'Outfit',sans-serif;z-index:300;pointer-events:none;max-width:220px;line-height:1.5"></div>
 
   <div id="plan"></div>
 
@@ -2898,6 +2929,201 @@ function refreshCalendarViews() {
   buildLoadChart();
 }
 
+// ═══════════════════════════════════════════════════
+// PROGRESSION — Helper SVG générique (N1 + N3)
+// ═══════════════════════════════════════════════════
+
+function buildLineChart(svgEl, points, opts) {
+  if (!points || points.length === 0) return;
+
+  const color     = opts.color || '#e2eaf4';
+  const dashed    = opts.dashed || false;
+  const showDots  = opts.showDots !== false;
+  const dotRadius = opts.dotRadius || 4;
+
+  // Stocker les données de points pour le listener de tap
+  svgEl.dataset.linePoints = JSON.stringify(points.map(p => ({
+    x: p.x, y: p.y, rawValue: p.rawValue, weekNum: p.weekNum, tooltipText: p.tooltipText
+  })));
+
+  // Ajouter le listener une seule fois
+  if (svgEl.dataset.hasLineChartListener !== '1') {
+    svgEl.dataset.hasLineChartListener = '1';
+    svgEl.addEventListener('click', function(event) {
+      if (!opts.onDotTap) return;
+      const t = event.target;
+      const idx = t.dataset && t.dataset.ptIdx !== undefined ? parseInt(t.dataset.ptIdx) : -1;
+      if (idx < 0) return;
+      const pts = JSON.parse(svgEl.dataset.linePoints || '[]');
+      if (pts[idx]) opts.onDotTap(pts[idx], event);
+    });
+    svgEl.addEventListener('touchstart', function(event) {
+      if (!opts.onDotTap) return;
+      const t = event.target;
+      const idx = t.dataset && t.dataset.ptIdx !== undefined ? parseInt(t.dataset.ptIdx) : -1;
+      if (idx < 0) return;
+      const pts = JSON.parse(svgEl.dataset.linePoints || '[]');
+      if (pts[idx]) opts.onDotTap(pts[idx], event);
+    }, { passive: true });
+  }
+
+  let out = '';
+
+  // Polyline (si plus d'un point)
+  if (points.length > 1) {
+    const coords = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const dashAttr = dashed ? ' stroke-dasharray="4 3"' : '';
+    out += `<polyline points="${coords}" stroke="${color}" stroke-width="2" fill="none"${dashAttr}/>`;
+  }
+
+  // Dots
+  if (showDots) {
+    points.forEach((p, i) => {
+      out += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${dotRadius}"
+        fill="${color}" style="cursor:pointer" data-pt-idx="${i}"/>`;
+    });
+  }
+
+  // Badge au dernier point
+  if (opts.badge && points.length > 0) {
+    const last = points[points.length - 1];
+    out += `<text x="${(last.x + 5).toFixed(1)}" y="${(last.y - 6).toFixed(1)}"
+      font-family="'Outfit',sans-serif" font-size="9" fill="${color}" opacity="0.8">${opts.badge.text}</text>`;
+  }
+
+  svgEl.insertAdjacentHTML('beforeend', out);
+}
+
+// ─── Helpers N1 ───
+
+function secondsToMmss(s) {
+  const m = Math.floor(s / 60);
+  const sec = String(s % 60).padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+function showProgTooltip(pt, event) {
+  const tip = document.getElementById('prog-tooltip');
+  if (!tip) return;
+  const x = (event.touches ? event.touches[0].clientX : event.clientX);
+  const y = (event.touches ? event.touches[0].clientY : event.clientY);
+  tip.textContent = `S${pt.weekNum} — ${pt.tooltipText}`;
+  tip.style.display = 'block';
+  tip.style.left = Math.min(x + 12, window.innerWidth - 240) + 'px';
+  tip.style.top  = Math.max(y - 44, 8) + 'px';
+}
+
+function hideProgTooltip() {
+  const tip = document.getElementById('prog-tooltip');
+  if (tip) tip.style.display = 'none';
+}
+
+function buildProgressionPanel(disc) {
+  // ─── 4a. Collecte des points de données ───
+  const dataPoints = [];
+
+  weeklyPlan.forEach(w => {
+    w.sessions.forEach(s => {
+      if (getDiscipline(s.id) !== disc) return;
+      if (!completed[s.id]) return;
+      const perf = perfResults[s.id];
+      if (!perf) return;
+
+      let metricValue;
+      if (disc === 'swim')      metricValue = (perf.paceS  > 0) ? perf.paceS  : undefined;
+      else if (disc === 'bike') metricValue = (perf.watts  > 0) ? perf.watts  : undefined;
+      else if (disc === 'run')  metricValue = (perf.paceKmS > 0) ? perf.paceKmS : undefined;
+      else if (disc === 'str')  metricValue = (perf.rpe    > 0) ? perf.rpe    : undefined;
+
+      if (metricValue == null || metricValue === undefined) return;
+      dataPoints.push({ sessionId: s.id, weekNum: w.weekNum, value: metricValue, perf });
+    });
+  });
+
+  // ─── 4b. Surbrillance chips ───
+  document.querySelectorAll('.prog-chip').forEach(btn => {
+    btn.style.opacity = btn.dataset.disc === disc ? '1' : '0.5';
+  });
+
+  const area = document.getElementById('progression-chart-area');
+  if (!area) return;
+
+  // ─── 4b. État vide ───
+  if (dataPoints.length === 0) {
+    area.style.display = 'flex';
+    area.innerHTML = `<span style="color:var(--muted);font-size:13px;font-family:'Outfit',sans-serif;">Aucune donnée — saisis tes performances après chaque séance</span>`;
+    return;
+  }
+
+  // ─── 4c. Calcul des coordonnées SVG ───
+  area.style.display = 'block';
+  const W = area.clientWidth || 340;
+  const H = 110;
+  const padL = 28, padR = 12, padT = 12, padB = 20;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  const values = dataPoints.map(p => p.value);
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const range = maxV - minV || 1;
+
+  const isPace = (disc === 'run' || disc === 'swim');
+
+  const svgPoints = dataPoints.map((p, i) => {
+    const xNorm = dataPoints.length > 1 ? i / (dataPoints.length - 1) : 0.5;
+    const x = padL + xNorm * chartW;
+    const yNorm = isPace
+      ? (p.value - minV) / range
+      : 1 - (p.value - minV) / range;
+    const y = padT + yNorm * chartH;
+    const tooltipText = formatMetricLabel(disc, p.value, p.perf);
+    return { x, y, rawValue: p.value, weekNum: p.weekNum, tooltipText };
+  });
+
+  // ─── 4d. Création du SVG ───
+  let svgEl = document.getElementById('prog-line-svg');
+  area.innerHTML = '';
+  svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svgEl.setAttribute('width', '100%');
+  svgEl.setAttribute('height', String(H));
+  svgEl.style.cssText = 'display:block;overflow:visible';
+  svgEl.id = 'prog-line-svg';
+  area.appendChild(svgEl);
+
+  const color = (DISCIPLINE_CONFIG[disc] && DISCIPLINE_CONFIG[disc].accent) || '#e2eaf4';
+
+  buildLineChart(svgEl, svgPoints, {
+    color,
+    dashed: false,
+    showDots: true,
+    dotRadius: 5,
+    onDotTap: function(pt, event) { showProgTooltip(pt, event); },
+    badge: null
+  });
+
+  // ─── 4d bis. Labels axe Y ───
+  // Pour isPace : minV (meilleure allure, plus petite) est en haut, maxV en bas
+  const labelTop    = isPace ? formatMetricLabel(disc, minV, {}) : formatMetricLabel(disc, maxV, {});
+  const labelBottom = isPace ? formatMetricLabel(disc, maxV, {}) : formatMetricLabel(disc, minV, {});
+  svgEl.insertAdjacentHTML('beforeend',
+    `<text x="${padL - 4}" y="${padT}" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8" fill="var(--muted)">${labelTop}</text>` +
+    `<text x="${padL - 4}" y="${padT + chartH}" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8" fill="var(--muted)">${labelBottom}</text>`
+  );
+}
+
+function formatMetricLabel(disc, value, perf) {
+  if (disc === 'swim') {
+    let label = secondsToMmss(value) + ' /100m';
+    if (perf && perf.pctBrasse != null) label += ' · ' + perf.pctBrasse + '% br.';
+    return label;
+  }
+  if (disc === 'bike') return value + ' W';
+  if (disc === 'run')  return secondsToMmss(value) + ' /km';
+  if (disc === 'str')  return 'RPE ' + value;
+  return String(value);
+}
+
 function buildLoadChart() {
   const svg = document.getElementById('load-chart-svg');
   if (!svg) return;
@@ -2956,7 +3182,32 @@ function buildLoadChart() {
       font-size="8" font-weight="${wWeight}" fill="${wColor}">S${w.num}</text>`;
   });
 
+  // 1. Écrire les barres planifiées
   svg.innerHTML = out;
+
+  // 2. Overlay charge vécue (N3)
+  const vecuLoads = weeklyPlan.map(w => getWeekSummary(w.weekNum).weeklyLoad);
+  const maxVecu = Math.max(...vecuLoads.filter(v => v > 0));
+  if (maxVecu > 0) {
+    const vecuPoints = [];
+    weeks.forEach((w, i) => {
+      if (vecuLoads[i] > 0) {
+        const cx = padL + i * step + barW / 2;
+        const cy = padT + chartH - Math.round((vecuLoads[i] / maxVecu) * chartH);
+        vecuPoints.push({ x: cx, y: cy, rawValue: vecuLoads[i], weekNum: w.num, tooltipText: `charge vécue ${vecuLoads[i]}` });
+      }
+    });
+    if (vecuPoints.length > 0) {
+      buildLineChart(svg, vecuPoints, {
+        color: '#e2eaf4',
+        dashed: true,
+        showDots: true,
+        dotRadius: 3,
+        onDotTap: null,
+        badge: { text: 'VÉCU' }
+      });
+    }
+  }
 }
 
 function saveProgramEndFromInput() {
@@ -4103,7 +4354,7 @@ function buildPerfResultsRowHtml(session, disciplineKey) {
 
 function getWeekSummary(weekNum) {
   const week = weeklyPlan.find(w => w.weekNum === weekNum);
-  if (!week) return { done: 0, total: 0, minutesByDiscipline: { swim: 0, bike: 0, run: 0, str: 0, brick: 0 }, avgRpe: null, hardestSession: null };
+  if (!week) return { done: 0, total: 0, minutesByDiscipline: { swim: 0, bike: 0, run: 0, str: 0, brick: 0 }, avgRpe: null, hardestSession: null, weeklyLoad: 0 };
 
   const sessions = week.sessions;
   const total = sessions.length;
@@ -4111,6 +4362,7 @@ function getWeekSummary(weekNum) {
   const minutesByDiscipline = { swim: 0, bike: 0, run: 0, str: 0, brick: 0 };
   let rpeSum = 0, rpeCount = 0;
   let hardestSession = null, hardestRpe = 0;
+  let weeklyLoad = 0;
 
   sessions.forEach(s => {
     if (completed[s.id]) {
@@ -4127,6 +4379,7 @@ function getWeekSummary(weekNum) {
           hardestRpe = perf.rpe;
           hardestSession = { name: s.name, rpe: perf.rpe };
         }
+        weeklyLoad += perf.rpe * (s.dist || 0);
       }
     }
   });
@@ -4136,7 +4389,8 @@ function getWeekSummary(weekNum) {
     total,
     minutesByDiscipline,
     avgRpe: rpeCount > 0 ? Math.round((rpeSum / rpeCount) * 10) / 10 : null,
-    hardestSession
+    hardestSession,
+    weeklyLoad
   };
 }
 
@@ -4353,6 +4607,11 @@ updateStats();
 validatePlan();
 buildLoadChart();
 buildWeeklyRecap();
+
+if (!document._progTooltipListenerAdded) {
+  document._progTooltipListenerAdded = true;
+  document.addEventListener('click', hideProgTooltip);
+}
 
 if ('serviceWorker' in navigator) {
   // Désinstaller les anciens SW cassés avant d'enregistrer le nouveau
