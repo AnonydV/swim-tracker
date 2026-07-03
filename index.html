@@ -837,6 +837,106 @@ body {
   }
 }
 
+/* ── SNAPSHOTS PANEL (bottom sheet) ── */
+#snapshots-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 200; touch-action: none;
+}
+#snapshots-panel {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card); border-top: 1px solid var(--border);
+  border-radius: 14px 14px 0 0; z-index: 201;
+  max-height: 70vh; display: flex; flex-direction: column;
+  transform: translateY(100%); transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+}
+#snapshots-panel.open { transform: translateY(0); }
+.snapshots-handle {
+  width: 36px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 10px auto 0;
+}
+.snapshots-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px; border-bottom: 1px solid var(--border);
+}
+.snapshots-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--muted2);
+}
+.snapshots-close-btn {
+  background: none; border: none; color: var(--muted);
+  font-size: 16px; cursor: pointer; padding: 4px 8px; line-height: 1;
+  min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+}
+.snapshots-body {
+  overflow-y: auto; padding: 12px 16px 24px; flex: 1;
+}
+.snapshot-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.snapshot-item:last-child { border-bottom: none; }
+.snapshot-info { display: flex; flex-direction: column; gap: 3px; }
+.snapshot-date {
+  font-size: 14px; color: var(--text); font-family: 'Outfit', sans-serif;
+}
+.snapshot-summary {
+  font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace;
+}
+.snapshot-restore-btn {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 8px 14px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg2);
+  color: var(--muted); white-space: nowrap;
+  min-height: 44px; min-width: 44px;
+}
+.snapshot-restore-btn:hover { border-color: var(--muted); color: var(--text); }
+.snapshots-empty {
+  text-align: center; color: var(--muted); font-size: 13px;
+  font-family: 'Outfit', sans-serif; padding: 24px 0;
+}
+
+/* ── SNAPSHOT CONFIRM MODAL ── */
+#snapshot-confirm-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  z-index: 300; touch-action: none;
+}
+#snapshot-confirm-modal {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; z-index: 301;
+  width: min(90vw, 360px); padding: 24px 20px 20px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.snapshot-modal-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text); font-weight: 600;
+}
+.snapshot-modal-body {
+  font-family: 'Outfit', sans-serif; font-size: 14px;
+  color: var(--muted); line-height: 1.5;
+}
+.snapshot-modal-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.snapshot-modal-cancel {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 10px 16px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg2);
+  color: var(--muted); min-height: 44px;
+}
+.snapshot-modal-confirm {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 10px 16px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--red); background: rgba(248,113,113,0.12);
+  color: var(--red); min-height: 44px;
+}
+.snapshot-modal-confirm:hover { background: rgba(248,113,113,0.22); }
+
 /* ─── VUE SEMAINE ─── */
 .week-view-nav {
   display: flex;
@@ -1340,7 +1440,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v3</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v4</small></h1>
       <p>// Mon plan d'entrainement</p>
     </div>
     <div class="progress-global">
@@ -1381,6 +1481,7 @@ body {
       <button id="programEndEditBtn" onclick="enableProgramEndEdit()" style="display:none">✏️ modifier la date de fin</button>
       <button onclick="copyAllSessionNotes()">📋 Copier toutes mes notes</button>
       <button onclick="exportData()">📤 Exporter</button>
+      <button onclick="openSnapshotsPanel()">🔒 Sauvegardes</button>
       <button onclick="triggerImport()">📥 Importer</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
     </div>
@@ -2761,6 +2862,7 @@ const STORE = {
   programEnd:  'hi_tri_program_end',
   legacyStart: 'hi_tri_program_start',
   weeklyRecapShown: 'hi_tri_weekly_recap_shown_w',
+  snapshots:        'hi_tri_snapshots',
 };
 
 function loadStoredState(key) {
@@ -3741,10 +3843,9 @@ function copyAllSessionNotes() {
     .catch(() => showToast('notes-error'));
 }
 
-function exportData() {
-  const data = {
-    version: 1,
-    exportedAt: new Date().toISOString(),
+function collectStateSnapshot() {
+  return {
+    version:     1,
     completed:   JSON.parse(localStorage.getItem(STORE.completed)   || '{}'),
     skipped:     JSON.parse(localStorage.getItem(STORE.skipped)     || '{}'),
     notes:       JSON.parse(localStorage.getItem(STORE.notes)       || '{}'),
@@ -3752,6 +3853,10 @@ function exportData() {
     perfResults: JSON.parse(localStorage.getItem(STORE.perfResults) || '{}'),
     programEnd:  localStorage.getItem(STORE.programEnd) || null,
   };
+}
+
+function exportData() {
+  const data = { ...collectStateSnapshot(), exportedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -3762,12 +3867,38 @@ function exportData() {
   URL.revokeObjectURL(url);
 }
 
+function takeSnapshot() {
+  let ring = [];
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]');
+    ring = Array.isArray(raw) ? raw : [];
+  } catch { ring = []; }
+  ring.unshift({ ts: Date.now(), data: collectStateSnapshot() });
+  if (ring.length > 3) ring = ring.slice(0, 3);
+  try {
+    localStorage.setItem(STORE.snapshots, JSON.stringify(ring));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') console.warn('[HIPLAN] Quota localStorage dépassé — snapshot ignoré');
+  }
+}
+
+function takeSnapshotIfNeeded() {
+  let ring = [];
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]');
+    ring = Array.isArray(raw) ? raw : [];
+  } catch { ring = []; }
+  if (ring.length > 0 && new Date(ring[0].ts).toDateString() === new Date().toDateString()) return;
+  takeSnapshot();
+}
+
 function triggerImport() {
   document.getElementById('importFileInput').value = '';
   document.getElementById('importFileInput').click();
 }
 
 function importData(event) {
+  takeSnapshot(); // protection avant écrasement
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -3799,6 +3930,112 @@ function importData(event) {
     }
   };
   reader.readAsText(file);
+}
+
+// ── SNAPSHOTS PANEL ──
+
+function formatSnapshotDate(ts) {
+  const d = new Date(ts);
+  const date = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return date + ' à ' + time;
+}
+
+function getSnapshotSummary(data) {
+  try {
+    const count = Object.keys(data.completed || {}).length;
+    return count + ' séance' + (count > 1 ? 's' : '') + ' faite' + (count > 1 ? 's' : '');
+  } catch {
+    return 'Données';
+  }
+}
+
+function openSnapshotsPanel() {
+  let ring = [];
+  try { ring = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]'); } catch { ring = []; }
+  if (!Array.isArray(ring)) ring = [];
+
+  const body = document.getElementById('snapshotsBody');
+  if (!ring.length) {
+    body.innerHTML = '<div class="snapshots-empty">Aucune sauvegarde disponible.</div>';
+  } else {
+    body.innerHTML = ring.map((snap, idx) => `
+      <div class="snapshot-item">
+        <div class="snapshot-info">
+          <div class="snapshot-date">${formatSnapshotDate(snap.ts)}</div>
+          <div class="snapshot-summary">${getSnapshotSummary(snap.data)}</div>
+        </div>
+        <button class="snapshot-restore-btn" onclick="openSnapshotModal(${idx})">Restaurer</button>
+      </div>
+    `).join('');
+  }
+
+  const backdrop = document.getElementById('snapshots-backdrop');
+  const panel    = document.getElementById('snapshots-panel');
+  backdrop.style.display = 'block';
+  panel.style.display    = 'flex';
+  requestAnimationFrame(() => panel.classList.add('open'));
+}
+
+function closeSnapshotsPanel() {
+  const panel    = document.getElementById('snapshots-panel');
+  const backdrop = document.getElementById('snapshots-backdrop');
+  panel.classList.remove('open');
+  setTimeout(() => {
+    panel.style.display    = 'none';
+    backdrop.style.display = 'none';
+  }, 300);
+}
+
+function openSnapshotModal(idx) {
+  let ring = [];
+  try { ring = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]'); } catch { ring = []; }
+  if (!Array.isArray(ring) || !ring[idx]) return;
+
+  const snap = ring[idx];
+  document.getElementById('snapshotModalBody').textContent =
+    'Remplacer les données actuelles par la sauvegarde du ' +
+    formatSnapshotDate(snap.ts) +
+    ' ? Les données actuelles seront d\'abord sauvegardées automatiquement.';
+
+  const btn = document.getElementById('snapshotConfirmBtn');
+  btn.onclick = () => restoreSnapshot(idx);
+
+  document.getElementById('snapshot-confirm-backdrop').style.display = 'block';
+  document.getElementById('snapshot-confirm-modal').style.display    = 'flex';
+}
+
+function closeSnapshotModal() {
+  document.getElementById('snapshot-confirm-backdrop').style.display = 'none';
+  document.getElementById('snapshot-confirm-modal').style.display    = 'none';
+}
+
+function restoreSnapshot(idx) {
+  let ring = [];
+  try { ring = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]'); } catch { ring = []; }
+  if (!Array.isArray(ring) || !ring[idx]) { closeSnapshotModal(); return; }
+
+  // Snapshot de sécurité de l'état courant avant écrasement
+  takeSnapshot();
+
+  const data = ring[idx].data;
+  try {
+    localStorage.setItem(STORE.completed,   JSON.stringify(data.completed   || {}));
+    localStorage.setItem(STORE.skipped,     JSON.stringify(data.skipped     || {}));
+    localStorage.setItem(STORE.notes,       JSON.stringify(data.notes       || {}));
+    localStorage.setItem(STORE.results,     JSON.stringify(data.results     || {}));
+    localStorage.setItem(STORE.perfResults, JSON.stringify(data.perfResults || {}));
+    if (data.programEnd) localStorage.setItem(STORE.programEnd, data.programEnd);
+  } catch (e) {
+    console.error('[HIPLAN] Erreur lors de la restauration du snapshot :', e);
+    closeSnapshotModal();
+    return;
+  }
+
+  closeSnapshotModal();
+  closeSnapshotsPanel();
+  showToast('snapshot-restored');
+  setTimeout(() => location.reload(), 1200);
 }
 
 function toggleWeek(num) {
@@ -3839,6 +4076,8 @@ function showToast(state) {
   else if (state === 'result-saved')  { t.textContent = '⏱ Résultat enregistré';      t.style.background = 'var(--green)'; }
   else if (state === 'perf-saved')   { t.textContent = '✓ Résultats enregistrés';    t.style.background = 'var(--green)'; }
   else if (state === 'perf-skipped') { t.textContent = 'Séance validée ✏ résultats à saisir'; t.style.background = 'var(--muted)'; }
+  else if (state === 'snapshot-restored') { t.textContent = 'Données restaurées depuis la sauvegarde'; t.style.background = 'var(--green)'; }
+  else if (state === 'snapshot-none')     { t.textContent = 'Aucune sauvegarde disponible'; t.style.background = 'var(--muted)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
@@ -4609,6 +4848,31 @@ document.body.insertAdjacentHTML('beforeend', `
 </div>
 `);
 initWeeklyRecapSwipe();
+
+document.body.insertAdjacentHTML('beforeend', `
+<div id="snapshots-backdrop" style="display:none" onclick="closeSnapshotsPanel()"></div>
+<div id="snapshots-panel" style="display:none">
+  <div class="snapshots-handle"></div>
+  <div class="snapshots-header">
+    <span class="snapshots-title">SAUVEGARDES AUTOMATIQUES</span>
+    <button class="snapshots-close-btn" onclick="closeSnapshotsPanel()" aria-label="Fermer">&#x2715;</button>
+  </div>
+  <div class="snapshots-body" id="snapshotsBody">
+    <!-- contenu généré dynamiquement -->
+  </div>
+</div>
+<div id="snapshot-confirm-backdrop" style="display:none"></div>
+<div id="snapshot-confirm-modal" style="display:none" role="dialog" aria-modal="true">
+  <div class="snapshot-modal-title">Restaurer cette sauvegarde ?</div>
+  <div class="snapshot-modal-body" id="snapshotModalBody"></div>
+  <div class="snapshot-modal-actions">
+    <button class="snapshot-modal-cancel" onclick="closeSnapshotModal()">Annuler</button>
+    <button class="snapshot-modal-confirm" id="snapshotConfirmBtn">Restaurer</button>
+  </div>
+</div>
+`);
+
+takeSnapshotIfNeeded();
 
 renderProgramEndControl();
 buildWeekView(null);
