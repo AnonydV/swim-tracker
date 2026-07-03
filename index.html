@@ -1405,10 +1405,10 @@ body {
     <div class="load-chart-header">
       <span class="load-chart-title">Progression</span>
       <div id="prog-chips" style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="prog-chip" data-disc="swim" onclick="buildProgressionPanel('swim')" style="background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Nat</button>
-        <button class="prog-chip" data-disc="bike" onclick="buildProgressionPanel('bike')" style="background:rgba(250,204,21,0.12);color:#facc15;border:1px solid rgba(250,204,21,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Vélo</button>
-        <button class="prog-chip" data-disc="run" onclick="buildProgressionPanel('run')" style="background:rgba(163,230,53,0.12);color:#a3e635;border:1px solid rgba(163,230,53,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Run</button>
-        <button class="prog-chip" data-disc="str" onclick="buildProgressionPanel('str')" style="background:rgba(192,132,252,0.12);color:#c084fc;border:1px solid rgba(192,132,252,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;min-height:32px">Muscu</button>
+        <button class="prog-chip" data-disc="swim" onclick="buildProgressionPanel('swim')" style="background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer">Nat</button>
+        <button class="prog-chip" data-disc="bike" onclick="buildProgressionPanel('bike')" style="background:rgba(250,204,21,0.12);color:#facc15;border:1px solid rgba(250,204,21,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer">Vélo</button>
+        <button class="prog-chip" data-disc="run" onclick="buildProgressionPanel('run')" style="background:rgba(163,230,53,0.12);color:#a3e635;border:1px solid rgba(163,230,53,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer">Run</button>
+        <button class="prog-chip" data-disc="str" onclick="buildProgressionPanel('str')" style="background:rgba(192,132,252,0.12);color:#c084fc;border:1px solid rgba(192,132,252,0.25);border-radius:20px;padding:4px 12px;font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer">Muscu</button>
       </div>
     </div>
     <div id="progression-chart-area" style="min-height:80px;display:flex;align-items:center;justify-content:center"></div>
@@ -2962,7 +2962,10 @@ function buildLineChart(svgEl, points, opts) {
       const idx = t.dataset && t.dataset.ptIdx !== undefined ? parseInt(t.dataset.ptIdx) : -1;
       if (idx < 0) return;
       const pts = JSON.parse(svgEl.dataset.linePoints || '[]');
-      if (pts[idx]) opts.onDotTap(pts[idx], event);
+      if (pts[idx]) {
+        opts.onDotTap(pts[idx], event);
+        event.stopPropagation();
+      }
     });
     svgEl.addEventListener('touchstart', function(event) {
       if (!opts.onDotTap) return;
@@ -3089,9 +3092,8 @@ function buildProgressionPanel(disc) {
   });
 
   // ─── 4d. Création du SVG ───
-  let svgEl = document.getElementById('prog-line-svg');
   area.innerHTML = '';
-  svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svgEl.setAttribute('width', '100%');
   svgEl.setAttribute('height', String(H));
   svgEl.style.cssText = 'display:block;overflow:visible';
