@@ -1528,7 +1528,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v8</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v9</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
     </div>
     <div class="progress-global">
@@ -1578,12 +1578,12 @@ body {
   <!-- LOAD CHART -->
   <div id="load-chart-panel" class="load-chart-panel">
     <div class="load-chart-header">
-      <span class="load-chart-title">Charge Run — 14 semaines</span>
+      <span class="load-chart-title">Charge Run — 10 semaines</span>
       <div class="load-chart-legend">
         <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#38bdf8"></div>Base</div>
         <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#facc15"></div>Construction</div>
         <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#fb923c"></div>Spécifique</div>
-        <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#4ade80"></div>Affûtage</div>
+        <div class="load-chart-legend-item"><div class="load-chart-legend-dot" style="background:#4ade80"></div>Récupération</div>
       </div>
     </div>
     <svg id="load-chart-svg" width="100%" height="130" style="display:block; overflow:visible"></svg>
@@ -1612,7 +1612,7 @@ body {
 
 <script>
 // ═══════════════════════════════════════════════════
-// DATA — Plan d'entraînement unifié 14 semaines
+// DATA — Plan d'entraînement unifié 10 semaines
 // ═══════════════════════════════════════════════════
 const weeklyPlan = [
   {
@@ -2360,7 +2360,7 @@ const weeklyPlan = [
         "tip": "C'est la course. 8 semaines de travail mènent ici. Plan de course : conservateur sur la nage et les 15 premiers km vélo, régulier sur le reste du vélo et les 18 premiers km run, tout ce qui reste sur les 3 derniers km. — Trois rappels nage pour ne pas les oublier sur la plage de départ : (1) immersion du visage + bulles lentes avant le coup de feu, (2) si le souffle s'emballe : 3 expirations forcées sous l'eau en continuant à nager, (3) sighting yeux à ras de l'eau toutes les 8 brassées. Confiance dans le corps — il sait quoi faire."
       },
       {
-        "id": "brw8a",
+        "id": "rw8c",
         "name": "Run — Récupération active J+1",
         "type": "r-recovery",
         "typeLabel": "25 min · Récup active",
@@ -2655,8 +2655,8 @@ function formatWeekDateRange(start, end) {
 function getWeekDateRangeDates(weekNum) {
   const programStart = getProgramStartDate();
   if (!programStart) return null;
-  // Convention calendrier : la date choisie est le dernier jour de la semaine 13.
-  // La semaine 1 commence donc 90 jours avant cette date, puis chaque semaine dure 7 jours.
+  // Convention calendrier : la date choisie est le dernier jour de la dernière semaine (TOTAL_WEEKS).
+  // La semaine 1 commence donc TOTAL_WEEKS*7-1 jours avant cette date, puis chaque semaine dure 7 jours.
   const start = addDays(programStart, (weekNum - 1) * 7);
   const end = addDays(start, 6);
   return { start, end };
