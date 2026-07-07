@@ -1519,6 +1519,46 @@ body {
   font-family: 'JetBrains Mono', monospace; font-size: 13px;
   color: #e2eaf4; font-weight: 600;
 }
+/* ─── RSW — LIGNE PROCHAIN ─── */
+.rsw-row-next {
+  background: rgba(56,189,248,0.07);
+  border-radius: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+  margin-left: -6px;
+  margin-right: -6px;
+}
+.rsw-badge-next {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  background: rgba(56,189,248,0.15);
+  border-radius: 99px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rsw-next-btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(56,189,248,0.45);
+  background: transparent;
+  color: #38bdf8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.rsw-next-btn:hover,
+.rsw-next-btn:active { background: rgba(56,189,248,0.15); }
 </style>
 </head>
 <body>
@@ -1528,7 +1568,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v11</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v12</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
     </div>
     <div class="progress-global">
@@ -2400,12 +2440,15 @@ const STORE = {
   snapshots:        'hi_tri_snapshots',
 };
 
+let _corruptionDetected = false;
+
 function loadStoredState(key) {
   try {
     const value = JSON.parse(localStorage.getItem(key) || '{}');
     return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
   } catch {
     localStorage.removeItem(key);
+    _corruptionDetected = true;
     return {};
   }
 }
@@ -2416,12 +2459,26 @@ let sessionNotes = loadStoredState(STORE.notes);
 let sessionResults = loadStoredState(STORE.results);
 let perfResults  = loadStoredState(STORE.perfResults);
 
+function safeWrite(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (e && e.name === 'QuotaExceededError') {
+      showToast('storage-quota');
+    } else {
+      console.warn('[HIPLAN] localStorage.setItem échoué :', key, e);
+    }
+    return false;
+  }
+}
+
 function save() {
-  localStorage.setItem(STORE.completed,   JSON.stringify(completed));
-  localStorage.setItem(STORE.skipped,     JSON.stringify(skipped));
-  localStorage.setItem(STORE.notes,       JSON.stringify(sessionNotes));
-  localStorage.setItem(STORE.results,     JSON.stringify(sessionResults));
-  localStorage.setItem(STORE.perfResults, JSON.stringify(perfResults));
+  safeWrite(STORE.completed,   JSON.stringify(completed));
+  safeWrite(STORE.skipped,     JSON.stringify(skipped));
+  safeWrite(STORE.notes,       JSON.stringify(sessionNotes));
+  safeWrite(STORE.results,     JSON.stringify(sessionResults));
+  safeWrite(STORE.perfResults, JSON.stringify(perfResults));
 }
 
 
@@ -2435,6 +2492,7 @@ function toggleSkip(id) {
 let currentSport = 'week';
 let currentWeekView = null; // null = auto (active week)
 const TOTAL_WEEKS = 10;
+const RACE_WEEK = 7; // Semaine de la course (Vichy 70.3) dans le plan
 
 const DISCIPLINE_CONFIG = {
   swim:  { label: 'Natation', emoji: '🏊', color: 'swim',  accent: '#38bdf8', defaultUnit: 'min', prefix: 'sw'  },
@@ -2499,6 +2557,15 @@ function getProgramEndDate() {
   const migratedEnd = addDays(legacyStart, (TOTAL_WEEKS * 7) - 1);
   localStorage.setItem(STORE.programEnd, toIsoLocalDate(migratedEnd));
   return migratedEnd;
+}
+
+function getRaceDate() {
+  const programEnd = getProgramEndDate();
+  if (!programEnd) return null;
+  // La course est le dernier jour de RACE_WEEK.
+  // programEnd est le dernier jour de TOTAL_WEEKS.
+  // Offset = (TOTAL_WEEKS - RACE_WEEK) semaines en arrière.
+  return addDays(programEnd, -(TOTAL_WEEKS - RACE_WEEK) * 7);
 }
 
 function getProgramStartDate() {
@@ -2581,20 +2648,21 @@ function renderProgramEndControl(editing = false) {
 function updateHeaderSubtitle() {
   const el = document.getElementById('header-subtitle');
   if (!el) return;
-  const programEnd = getProgramEndDate();
-  if (!programEnd) {
+  const raceDate = getRaceDate();
+  if (!raceDate) {
     el.textContent = '// Mon plan d\'entrainement';
     return;
   }
-  const programEndDay = new Date(programEnd.getFullYear(), programEnd.getMonth(), programEnd.getDate());
-  const diffDays = Math.round((programEndDay - startOfToday()) / 86_400_000);
+  const raceDateDay = new Date(raceDate.getFullYear(), raceDate.getMonth(), raceDate.getDate());
+  const diffDays = Math.round((raceDateDay - startOfToday()) / 86_400_000);
   const activeWeek = getCalendarActiveWeekNum();
   const phase = getWeekPhase(activeWeek);
 
   let full, compact;
   if (diffDays < 0) {
-    el.textContent = '// COURSE TERMINÉE';
-    return;
+    // Course terminée — afficher la phase en cours (récupération) sans countdown négatif
+    full    = '// ' + phase.name + ' · SEMAINE ' + activeWeek + '/' + TOTAL_WEEKS;
+    compact = '// ' + phase.name + ' · S' + activeWeek + '/' + TOTAL_WEEKS;
   } else if (diffDays === 0) {
     full    = '// JOUR J · ' + phase.name + ' · SEMAINE ' + activeWeek + '/' + TOTAL_WEEKS;
     compact = '// JOUR J · ' + phase.name + ' · S' + activeWeek + '/' + TOTAL_WEEKS;
@@ -3141,6 +3209,17 @@ function buildWeekView(weekNum) {
   buildRemainingSessionsPanel();
 }
 
+function goToNextSession(id) {
+  currentWeekView = getCalendarActiveWeekNum();
+  buildWeekView(currentWeekView);
+  requestAnimationFrame(function() {
+    var card = document.getElementById('week-card-' + id);
+    if (!card) return;
+    openWeekSessionDetail(id);
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
 function buildRemainingSessionsPanel() {
   const panel = document.getElementById('remaining-sessions-panel');
   if (!panel) return;
@@ -3167,16 +3246,24 @@ function buildRemainingSessionsPanel() {
     return;
   }
 
-  const rows = remaining.map(({ session, disciplineKey }) => {
+  const rows = remaining.map(function({ session, disciplineKey }, idx) {
     const config = DISCIPLINE_CONFIG[disciplineKey];
-    return `
-      <div class="rsw-row">
-        <span class="rsw-disc-dot" style="background:${config.accent}"></span>
-        <span class="rsw-session-name">${getSessionDisplayName(session)}</span>
-        <span class="wsc-badge ${disciplineKey}">${getDistLabel(session, disciplineKey)}</span>
-        <button class="rsw-done-btn" onclick="currentWeekView=getCalendarActiveWeekNum();if(navigator.vibrate)navigator.vibrate(40);wvToggleDone('${session.id}')">✓ Fait</button>
-      </div>
-    `;
+    const isNext = idx === 0;
+    const rowClass = isNext ? 'rsw-row rsw-row-next' : 'rsw-row';
+    const nextBadge = isNext
+      ? '<span class="rsw-badge-next">PROCHAIN</span>'
+      : '';
+    const nextBtn = isNext
+      ? '<button class="rsw-next-btn" onclick="goToNextSession(\'' + session.id + '\')" aria-label="Aller aux blocs de la prochaine séance">&#x2192; Blocs</button>'
+      : '';
+    return '<div class="' + rowClass + '">'
+      + '<span class="rsw-disc-dot" style="background:' + config.accent + '"></span>'
+      + nextBadge
+      + '<span class="rsw-session-name">' + getSessionDisplayName(session) + '</span>'
+      + '<span class="wsc-badge ' + disciplineKey + '">' + getDistLabel(session, disciplineKey) + '</span>'
+      + '<button class="rsw-done-btn" onclick="currentWeekView=getCalendarActiveWeekNum();if(navigator.vibrate)navigator.vibrate(40);wvToggleDone(\'' + session.id + '\')">&#x2713; Fait</button>'
+      + nextBtn
+      + '</div>';
   }).join('');
 
   panel.innerHTML = `
@@ -3658,6 +3745,9 @@ function showToast(state) {
   else if (state === 'perf-skipped') { t.textContent = 'Séance validée ✏ résultats à saisir'; t.style.background = 'var(--muted)'; }
   else if (state === 'snapshot-restored') { t.textContent = 'Données restaurées depuis la sauvegarde'; t.style.background = 'var(--green)'; }
   else if (state === 'snapshot-none')     { t.textContent = 'Aucune sauvegarde disponible'; t.style.background = 'var(--muted)'; }
+  else if (state === 'storage-quota') { t.textContent = 'Stockage plein — données non sauvegardées'; t.style.background = 'var(--red)'; }
+  else if (state === 'sw-update')  { t.textContent = 'Nouvelle version dispo — recharge la page'; t.style.background = 'var(--accent)'; }
+  else if (state === 'sw-offline') { t.textContent = 'Disponible hors-ligne'; t.style.background = 'var(--green)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
@@ -4619,7 +4709,27 @@ document.body.insertAdjacentHTML('beforeend', [
 ].join(''));
 initHistorySheetSwipe();
 
-takeSnapshotIfNeeded();
+if (_corruptionDetected) {
+  var _bootRing = [];
+  try { _bootRing = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]'); } catch { _bootRing = []; }
+  if (Array.isArray(_bootRing) && _bootRing.length > 0) {
+    // Données corrompues ET snapshot disponible : proposer la restauration
+    // Ne PAS appeler takeSnapshotIfNeeded() ici — cela écraserait le snapshot sain
+    var _bodyEl = document.getElementById('snapshotModalBody');
+    var _btnEl  = document.getElementById('snapshotConfirmBtn');
+    if (_bodyEl && _btnEl) {
+      _bodyEl.textContent = 'Données incomplètes détectées — restaurer la sauvegarde du ' + formatSnapshotDate(_bootRing[0].ts) + ' ?';
+      _btnEl.onclick = function() { restoreSnapshot(0); };
+      document.getElementById('snapshot-confirm-backdrop').style.display = 'block';
+      document.getElementById('snapshot-confirm-modal').style.display    = 'flex';
+    }
+  } else {
+    // Corruption mais aucun snapshot exploitable : continuer normalement
+    takeSnapshotIfNeeded();
+  }
+} else {
+  takeSnapshotIfNeeded();
+}
 
 renderProgramEndControl();
 updateHeaderSubtitle();
@@ -4643,7 +4753,24 @@ if ('serviceWorker' in navigator) {
     stale.forEach(r => r.unregister());
   });
   navigator.serviceWorker.register('./sw.js')
-    .catch(err => console.warn('SW non disponible :', err.message));
+    .then(function(reg) {
+      reg.addEventListener('updatefound', function() {
+        var installing = reg.installing;
+        if (!installing) return;
+        installing.addEventListener('statechange', function() {
+          if (installing.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // Mise à jour disponible (remplacement d'une version active)
+              showToast('sw-update');
+            } else {
+              // Premier install réussi — app désormais disponible hors-ligne
+              showToast('sw-offline');
+            }
+          }
+        });
+      });
+    })
+    .catch(function(err) { console.warn('SW non disponible :', err.message); });
 }
 </script>
 </body>
