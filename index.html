@@ -1928,7 +1928,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v13</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v14</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -2032,7 +2032,7 @@ const weeklyPlan = [
           { "type": "main", "dist": "27 min", "desc": "Course continue Z2 à 4:50–5:10/km. Effort conversationnel, fréquence cardiaque basse.", "tip": "Si les jambes sont lourdes en sortie de prépa annulée, descends à 5:10 sans hésiter." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min. Respirations profondes.", "tip": "" }
         ],
-        "tip": "Semaine 1 : décompression active après l'Ironman annulé deux jours avant le départ. Tu ne recommences pas une préparation : tu prolonges une base déjà construite vers le 23 août."
+        "tip": "Semaine 1 : décompression active après l'Ironman annulé deux jours avant le départ. Tu ne recommences pas une préparation : tu prolonges une base déjà construite vers le 23 août. (allure Z3 endurance active = effort conversationnel difficile, souffle présent mais contrôlé — ne pas courir à votre Z2 \"facile\" 5:50+/km)"
       },
       {
         "id": "rw1b",
@@ -2097,7 +2097,7 @@ const weeklyPlan = [
           { "type": "main", "dist": "37 min", "desc": "Course continue Z2 à 4:50–5:10/km. Allure régulière sans variations. Surface souple recommandée.", "tip": "Allure Z2 constante sur le plat. Si les côtes te sortent de Z2, marche les montées et récupère sans t'en vouloir." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
-        "tip": "Le volume Z2 entretient la base construite pendant la prépa Ironman. Cette séance doit nourrir la continuité, pas créer une nouvelle dette de fatigue."
+        "tip": "Le volume Z2 entretient la base construite pendant la prépa Ironman. Cette séance doit nourrir la continuité, pas créer une nouvelle dette de fatigue. (allure Z3 endurance active = effort conversationnel difficile, souffle présent mais contrôlé — ne pas courir à votre Z2 \"facile\" 5:50+/km)"
       },
       {
         "id": "rw2b",
@@ -2176,21 +2176,22 @@ const weeklyPlan = [
           { "type": "main", "dist": "40 min", "desc": "Course continue Z2 à 4:50–5:10/km. Allure régulière, effort constant. Surface souple recommandée.", "tip": "À 55 min de Z2, la tentation de dériver vers 4:40 existe. Résiste — chaque minute à 4:40 au lieu de 5:00 est une dette de récupération pour les séances qui suivent." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
-        "tip": "S3 rentre dans la phase d'entretien actif. Le volume run progresse légèrement — non pour construire une base inexistante, mais pour maintenir le moteur aérobie en température à mesure que l'objectif du 23 août se précise. Garde la discipline sur l'allure Z2 — c'est ton capital pour les séances de seuil qui arrivent."
+        "tip": "S3 rentre dans la phase d'entretien actif. Le volume run progresse légèrement — non pour construire une base inexistante, mais pour maintenir le moteur aérobie en température à mesure que l'objectif du 23 août se précise. Garde la discipline sur l'allure Z2 — c'est ton capital pour les séances de seuil qui arrivent. (allure Z3 endurance active = effort conversationnel difficile, souffle présent mais contrôlé — ne pas courir à votre Z2 \"facile\" 5:50+/km)"
       },
       {
         "id": "rw3b",
-        "name": "Run Tempo — Progression",
+        "name": "Run Tempo + intro seuil",
         "type": "r-tempo",
-        "typeLabel": "55 min · Tempo",
-        "dist": 55,
+        "typeLabel": "70 min · Tempo + intro seuil",
+        "dist": 70,
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "12 min", "desc": "10 min trot Z1, puis 2 min accélération vers Z2. Éducatifs : 3 × 30 m montées de genoux + 3 × 30 m talons-fesses.", "tip": "" },
           { "type": "interval", "dist": "3 × 10 min", "desc": "3 blocs de 10 min à allure tempo 4:20–4:30/km. Récupération 2 min 30 trot Z1 entre blocs. Progression vs S2 : 3 blocs au lieu de 2.", "tip": "Le 3e bloc est le plus dur. Si tu es à 4:35 sur le 3e, c'est acceptable en S3. Si tu passes à 4:50, tu es sorti du tempo — raccourcis le bloc plutôt que de le bâcler." },
+          { "type": "interval", "dist": "2 × 5 min", "desc": "2 blocs de 5 min à 4:05–4:10/km. Récupération 2 min marche entre blocs. Premier contact seuil. Si inconfort dès le 1er bloc, rester à 4:10–4:15/km. C'est une introduction, pas une séance seuil complète.", "tip": "Ces 2 blocs seuil arrivent après 30 min de tempo — les jambes seront déjà sollicitées. Ne pas forcer : l'objectif est de sentir l'allure seuil, pas de la tenir à tout prix." },
           { "type": "cool", "dist": "8 min", "desc": "Trot Z1 décroissant puis marche 3 min.", "tip": "" }
         ],
-        "tip": "3 × 10 min tempo : rappel de qualité sans refaire un pic Ironman. Cette allure 4:20–4:30 entretient le moteur pour le 23 août, avec maîtrise plutôt qu'agressivité."
+        "tip": "3 × 10 min tempo + 2 × 5 min intro seuil : rappel de qualité et première exposition à l'intensité seuil avant la séance complète de S4. L'allure 4:20–4:30 entretient le moteur, les 2 × 5 min à 4:05–4:10/km posent les jalons neuronaux pour rw6b."
       },
       {
         "id": "sw3a",
@@ -2270,7 +2271,7 @@ const weeklyPlan = [
           { "type": "main", "dist": "25 min", "desc": "Course continue Z2 à 4:50–5:10/km. Allure régulière, effort constant. Surface souple recommandée. Volume réduit (40 min au lieu de 60 min) — compensation directe de la sortie longue vélo bw4a en S4.", "tip": "À 35 min tu vas commencer à sentir les jambes. Maintiens l'allure et la respiration — c'est exactement là que le travail physiologique se fait." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
-        "tip": "Séance raccourcie de 60 à 40 min : la contrepartie explicite de bw4a (2h15 Z2). 25 min de Z2 propre — le stimulus aérobie est maintenu, la charge globale de S4 reste maîtrisée."
+        "tip": "Séance raccourcie de 60 à 40 min : la contrepartie explicite de bw4a (2h15 Z2). 25 min de Z2 propre — le stimulus aérobie est maintenu, la charge globale de S4 reste maîtrisée. (allure Z3 endurance active = effort conversationnel difficile, souffle présent mais contrôlé — ne pas courir à votre Z2 \"facile\" 5:50+/km)"
       },
       {
         "id": "rw6b",
@@ -2284,7 +2285,7 @@ const weeklyPlan = [
           { "type": "interval", "dist": "5 × 5 min", "desc": "5 répétitions de 5 min à allure seuil 4:00–4:10/km. Récupération 90 s trot Z1 entre reps. Première séance seuil du programme — volume d'emblée au maximum car la base Ironman permet de sauter l'introduction progressive.", "tip": "Récupération 90 s : tu ne récupères pas totalement entre les reps — c'est voulu. Décision à prendre avant la séance, pas pendant : si à la sortie de la 3e rep tu n'es plus dans 4:05–4:10/km, tu t'arrêtes à 4 reps. Pas d'improvisation, pas d'ego. Dans la semaine de pic, 4 reps propres valent plus que 5 reps dégradées. La 4e rep qui finit dans 4:05–4:10 valide la séance." },
           { "type": "cool", "dist": "10 min", "desc": "Trot Z1 décroissant 8 min puis marche 2 min.", "tip": "" }
         ],
-        "tip": "5 × 5 min seuil à 90 s de récup : séance de qualité la plus exigeante du programme run, placée dans la semaine de pic. Si tu arrives en S4 sans résidu de fatigue de S3, tu dois tenir. Bonne séance seuil ici = tu es sur la trajectoire pour courir 4:35–4:45/km le 23 août après 90 km de vélo. S'arrêter à 4 reps propres si le garde-fou s'active : c'est la bonne décision, pas un échec."
+        "tip": "5 × 5 min seuil à 90 s de récup : séance de qualité la plus exigeante du programme run, placée dans la semaine de pic. Si tu arrives en S4 sans résidu de fatigue de S3, tu dois tenir. Bonne séance seuil ici = tu es sur la trajectoire pour courir 4:35–4:45/km le 23 août après 90 km de vélo. S'arrêter à 4 reps propres si le garde-fou s'active : c'est la bonne décision, pas un échec. \u{1F4C5} PLACEMENT S4 : faire cette séance AVANT bw4a (sortie longue vélo) ou au moins 48h APRÈS bw4a. Ne jamais la placer à moins de 36h de brw6a (brick long). Séquence recommandée : rw6b lundi ou mardi → bw4a mercredi → repos → brw6a samedi."
       },
       {
         "id": "sw4a",
@@ -2377,7 +2378,7 @@ const weeklyPlan = [
           { "type": "main", "dist": "27 min", "desc": "Course Z2 à 4:50–5:10/km, allure confortable. Pas de strides, pas de tempo — juste du Z2 propre et relâché.", "tip": "En semaine récup, le Z2 devient ta zone haute. Ne dépasse pas 5:00/km sauf si tu te sens réellement très frais." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
-        "tip": "Cette séance doit te laisser frais à la fin. Si tu finis fatigué, tu es allé trop vite ou la récupération n'est pas complète — signale-le."
+        "tip": "Cette séance doit te laisser frais à la fin. Si tu finis fatigué, tu es allé trop vite ou la récupération n'est pas complète — signale-le. (allure Z3 endurance active = effort conversationnel difficile, souffle présent mais contrôlé — ne pas courir à votre Z2 \"facile\" 5:50+/km)"
       },
       {
         "id": "sw5a",
@@ -2440,22 +2441,22 @@ const weeklyPlan = [
           { "type": "main", "dist": "32 min", "desc": "Course continue Z2 à 4:50–5:10/km. Volume réduit intentionnellement. La sensation de légèreté en fin de séance est le signal attendu — si tu finis en voulant en faire plus, c'est parfait.", "tip": "Semaine d'affûtage : si tu te sens bien et frais, c'est que le programme fonctionne. Résiste à l'envie d'aller plus vite ou plus loin." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1, marche 2 min.", "tip": "" }
         ],
-        "tip": "S6 = affûtage. Volume fortement réduit vs S4. La forme monte pendant les jours de repos relatif — moins c'est mieux cette semaine sur les séances Z2."
+        "tip": "S6 = affûtage. Volume fortement réduit vs S4. La forme monte pendant les jours de repos relatif — moins c'est mieux cette semaine sur les séances Z2. (allure Z3 endurance active = effort conversationnel difficile, souffle présent mais contrôlé — ne pas courir à votre Z2 \"facile\" 5:50+/km)"
       },
       {
         "id": "bw7a",
-        "name": "Vélo — Activation taper sweetspot + race pace",
+        "name": "Vélo — Activation taper Z2 + race pace",
         "type": "b-sweetspot",
-        "typeLabel": "75 min · Activation sweetspot",
-        "dist": 75,
+        "typeLabel": "60 min · Activation affûtage",
+        "dist": 60,
         "unit": "min",
         "sets": [
-          { "type": "warm", "dist": "15 min", "desc": "15 min progressif de Z1 (<126 W) à Z2 (140–155 W). Cadence 85–90 rpm.", "tip": "" },
-          { "type": "interval", "dist": "2 × 15 min", "desc": "2 blocs de 15 min à sweetspot 168–189 W (80–90% FTP). Récupération 5 min Z1 entre blocs. Cadence 85–90 rpm. Volume divisé par 4 vs S6 — les jambes doivent se sentir légères à la fin.", "tip": "15 min vs 25 min en S6 : si tu as l'impression de te retenir, c'est parfait. L'affûtage, c'est inconfortable psychologiquement et bénéfique physiologiquement." },
-          { "type": "interval", "dist": "2 × 5 min", "desc": "2 blocs de 5 min à allure race vélo : 175–185 W (83–88% FTP). Récupération 3 min Z1. Activation des sensations de compétition sur courte durée.", "tip": "Ces 5 min à allure race sont un check de l'allumage musculaire, pas un effort. Si 180 W semble facile sur 5 min, c'est que la super-compensation de l'affûtage arrive." },
+          { "type": "warm", "dist": "10 min", "desc": "10 min progressif de Z1 (<126 W) à Z2 basse (135–145 W). Cadence 85–90 rpm.", "tip": "" },
+          { "type": "main", "dist": "25 min", "desc": "25 min Z2 à 140–155 W. Effort d'endurance de base, conversationnel. Cadence 85–90 rpm. Objectif : activer sans fatiguer — les jambes doivent se sentir légères à la fin de ce bloc.", "tip": "Z2 pur en semaine d'affûtage : pas de sweetspot, pas d'effort prolongé au seuil. Cette zone entretient la circulation et les adaptations aérobies sans créer de dette de récupération." },
+          { "type": "interval", "dist": "3 × 5 min", "desc": "3 blocs de 5 min à allure race vélo : 175–185 W (83–88% FTP). Récupération 3 min Z1 entre blocs. Activation neuromusculaire ciblée — rappeler les sensations de puissance course sans entamer les réserves.", "tip": "Si 180 W semble facile sur 5 min, c'est que la super-compensation de l'affûtage arrive. Arrêt immédiat si jambes lourdes sur les blocs race pace — ça ne doit pas demander d'effort." },
           { "type": "cool", "dist": "10 min", "desc": "Retour progressif à <126 W, pédalage très souple 5 min.", "tip": "" }
         ],
-        "tip": "Volume vélo fortement réduit vs S4 (135 min + 110 min brick). L'intensité reste présente sur courtes fenêtres pour garder les fibres rapides actives. Cette séance touche l'allure race sur 5 min — ancrage de la sensation avant J-9 à J-7."
+        "tip": "Séance d'affûtage vélo. 25 min Z2 basse pour activer sans fatiguer, puis 3 × 5 min à allure race (175–185 W) avec 3 min récup entre chaque. Objectif : rappeler les sensations de puissance course sans entamer les réserves. Arrêt immédiat si jambes lourdes sur les blocs race pace."
       },
       {
         "id": "rw7b",
@@ -2485,7 +2486,7 @@ const weeklyPlan = [
           { "type": "main", "dist": "10 min run", "desc": "10 min à allure 70.3 : 4:35–4:45/km. Legs check final. Si les 2 premières minutes s'installent sans chaos, la machine est prête.", "tip": "10 min seulement. Si les jambes sont excellentes, résiste à la tentation d'aller plus loin — l'affûtage se protège." },
           { "type": "cool", "dist": "5 min", "desc": "Marche 5 min.", "tip": "" }
         ],
-        "tip": "Dernier brick du cycle. Court, ciblé, pour confirmer les sensations. Pas de record, pas d'exploit — juste la validation que le corps sait faire la transition vélo→course à allure de compétition."
+        "tip": "Dernier brick du cycle. Court, ciblé, pour confirmer les sensations. Pas de record, pas d'exploit — juste la validation que le corps sait faire la transition vélo→course à allure de compétition. \u{1F4C5} PLACEMENT S6 : sw7a (lac) et rw7b (run allure race) en début de semaine (lundi–mardi). bw7a et brw7a espacés de 48h minimum. RIEN d'intensif après le jeudi — vendredi et samedi de S6 = repos complet avant la race week."
       },
       {
         "id": "sw7a",
