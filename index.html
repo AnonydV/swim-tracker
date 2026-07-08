@@ -2251,7 +2251,7 @@ body.outdoor-mode .wsb-lbl {
         aria-label="Basculer mode plein soleil"
         aria-pressed="false"
         title="Mode plein soleil">&#x263D;</button>
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v15</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v16</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -2293,6 +2293,7 @@ body.outdoor-mode .wsb-lbl {
       <button id="programEndEditBtn" onclick="enableProgramEndEdit()" style="display:none">✏️ modifier la date de fin</button>
       <button onclick="copyAllSessionNotes()">📋 Copier toutes mes notes</button>
       <button onclick="exportData()">📤 Exporter</button>
+      <button onclick="exportCoachReport()">📊 Rapport Coach</button>
       <button onclick="openSnapshotsPanel()">🔒 Sauvegardes</button>
       <button onclick="triggerImport()">📥 Importer</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
@@ -4894,6 +4895,143 @@ function exportData() {
   const date = new Date().toISOString().slice(0, 10);
   a.href = url;
   a.download = `hiplan-backup-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function formatSecondsToMMSS(totalSeconds) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = Math.round(totalSeconds % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function exportCoachReport() {
+  const activeWeekNum = getCalendarActiveWeekNum();
+
+  // En-tête
+  const todayDate = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const phaseName = WEEK_PHASES.find(p => p.weeks.includes(activeWeekNum))?.name || '';
+  const raceDate = new Date(2026, 7, 23);
+  const today = startOfToday();
+  const diffJours = Math.round((raceDate - today) / 86_400_000);
+  const weeksLeft = RACE_WEEK - activeWeekNum;
+  const weeksLeftStr = weeksLeft <= 0 ? 'Semaine de course' : weeksLeft + ' semaine(s) avant course';
+
+  let md = '';
+  md += '# HIPLAN — Rapport Coach\n';
+  md += '**Généré le:** ' + todayDate + '\n';
+  md += '**Semaine active:** S' + activeWeekNum + ' — ' + phaseName + '\n';
+  md += '**Date de course:** 23 août 2026 (J-' + diffJours + ')\n';
+  md += '**Semaines restantes:** ' + weeksLeftStr + '\n\n';
+
+  // Sections par semaine
+  const maxWeek = Math.min(activeWeekNum, TOTAL_WEEKS);
+  for (let n = 1; n <= maxWeek; n++) {
+    const sessions = (weeklyPlan.find(w => w.weekNum === n) || {}).sessions || [];
+    const dates = getWeekDateRangeDates(n);
+    const dateRange = dates ? formatWeekDateRange(dates.start, dates.end) : '';
+    const weekPhaseName = WEEK_PHASES.find(p => p.weeks.includes(n))?.name || '';
+
+    const nbDone = sessions.filter(s => completed[s.id]).length;
+    const nbSkipped = sessions.filter(s => skipped[s.id]).length;
+    const nbTotal = sessions.length;
+
+    let titleLine = '## S' + n + ' — ' + weekPhaseName + ' · ' + dateRange;
+    if (n === activeWeekNum) titleLine += ' ← SEMAINE EN COURS';
+    md += titleLine + '\n';
+    md += '> ' + nbDone + '/' + nbTotal + ' séances réalisées · ' + nbSkipped + ' sautée(s)\n';
+
+    // Check-in hebdomadaire
+    if (dates) {
+      const startMs = dates.start.getTime();
+      const endMs = dates.end.getTime() + (24 * 3600 * 1000 - 1);
+      const weekCheckins = Object.entries(checkinData).filter(([k]) => {
+        const d = new Date(k);
+        return d.getTime() >= startMs && d.getTime() <= endMs;
+      }).map(([, v]) => v);
+      if (weekCheckins.length > 0) {
+        const avg = (field) => {
+          const vals = weekCheckins.map(v => Number(v[field])).filter(x => !isNaN(x));
+          return vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '?';
+        };
+        md += '> Check-in: Sommeil ' + avg('sleep') + '/5 · Jambes ' + avg('legs') + '/5 · Energie ' + avg('energy') + '/5\n';
+      }
+    }
+
+    // Tableau des séances
+    md += '\n| Séance | Discipline | Statut | Durée | Résultat | RPE | Note |\n';
+    md += '|--------|-----------|--------|-------|----------|-----|------|\n';
+
+    for (const s of sessions) {
+      // Discipline
+      const disc = getDiscipline(s.id);
+      const discLabel = disc === 'swim' ? 'Natation'
+        : disc === 'bike' ? 'Vélo'
+        : disc === 'run' ? 'Course'
+        : disc === 'str' ? 'Muscu'
+        : disc === 'brick' ? 'Brick'
+        : disc || '';
+
+      // Statut
+      let statut;
+      if (completed[s.id] && adapted[s.id]) {
+        statut = '≈ Adapté';
+      } else if (completed[s.id]) {
+        statut = '✓ Fait';
+      } else if (skipped[s.id]) {
+        statut = '⊘ Sauté';
+      } else {
+        statut = '○ À faire';
+      }
+
+      // Durée
+      const duree = (s.dist || s.dist === 0) ? s.dist + ' min' : '—';
+
+      // Résultat
+      const perf = perfResults[s.id];
+      let resultat;
+      if (!perf) {
+        resultat = '—';
+      } else if (disc === 'swim') {
+        const paceStr = perf.paceS ? formatSecondsToMMSS(perf.paceS) + '/100m' : '';
+        const distStr = perf.distM ? perf.distM + 'm' : '';
+        resultat = [distStr, paceStr].filter(Boolean).join(' · ') || '—';
+      } else if (disc === 'bike') {
+        const wStr = perf.watts ? perf.watts + 'W' : '';
+        const dStr = perf.distKm ? perf.distKm + 'km' : '';
+        resultat = [wStr, dStr].filter(Boolean).join(' · ') || '—';
+      } else if (disc === 'run') {
+        const paceStr = perf.paceKmS ? formatSecondsToMMSS(perf.paceKmS) + '/km' : '';
+        const dStr = perf.distKm ? perf.distKm + 'km' : '';
+        resultat = [paceStr, dStr].filter(Boolean).join(' · ') || '—';
+      } else if (disc === 'str') {
+        resultat = perf.chargesNote ? perf.chargesNote.slice(0, 60) : '—';
+      } else {
+        resultat = '—';
+      }
+
+      // RPE
+      const rpeStr = perf && perf.rpe != null ? perf.rpe + '/10' : '—';
+
+      // Note — sessionNotes (pas notes)
+      const noteStr = sessionNotes[s.id] || '';
+
+      // Échapper les | dans les cellules pour ne pas casser le tableau
+      const escape = (str) => String(str).replace(/\|/g, '\\|').replace(/\n/g, ' ');
+
+      md += '| ' + escape(s.id) + ' | ' + escape(discLabel) + ' | ' + escape(statut) + ' | ' + escape(duree) + ' | ' + escape(resultat) + ' | ' + escape(rpeStr) + ' | ' + escape(noteStr) + ' |\n';
+    }
+
+    md += '\n';
+  }
+
+  // Téléchargement
+  const isoDate = today.toISOString().slice(0, 10);
+  const blob = new Blob([md], { type: 'text/markdown; charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'hiplan-rapport-coach-' + isoDate + '.md';
   a.click();
   URL.revokeObjectURL(url);
 }
