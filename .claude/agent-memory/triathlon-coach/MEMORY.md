@@ -1,0 +1,6 @@
+- [Profil athlète](user-athlete-profile.md) — perf référence (FTP 210W, semi 1h37, 69kg), matériel haltères+élastiques, zones Z1-Z5
+- [Structure tracker HIPLAN](project-tracker-structure.md) — architecture SPA 14 semaines (weekNums 1-14), plans actifs, dead code, lacunes fonctionnelles identifiées
+- [Programme actif 10 sem](project-active-program.md) — REPLAN COMPLET v11 : race weekNum 7 (dim. 23 août), S1=6 juil., muscu abandonnée, 3 lacs, long ride S4, date fin 2026-09-13
+- [Zones running 70.3 Vichy](project-running-zones-semi130.md) — semi 1h30 abandonné ; allure run 70.3 = 4:35–4:45/km ; seuil entraînement 4:00–4:10/km maintenu
+- [Révision natation 2026-07-05](project-swim-revision.md) — 21 sessions révisées (OWS piscine + battement 2T triathlète), fichier JSON dev prêt
+- [Replan 70.3 Vichy 2026-07-06](project-replan-vichy.md) — v8+v10+v11 cumulés ; doc de référence : coach-replan-v11-7-semaines.md

@@ -1,0 +1,1 @@
+- [Triathlon Tracker — Project](project-triathlon-tracker.md) — PWA single-file, dark theme, 4 disciplines, charte couleurs par discipline, touch targets 44px

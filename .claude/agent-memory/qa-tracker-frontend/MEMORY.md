@@ -1,0 +1,3 @@
+- [Architecture de l'app HIPLAN](project-app-structure.md) — plans de données, clés localStorage, détection semaine active, total 14 semaines (restructuré juillet 2026)
+- [Bugs et risques QA connus](known-bugs.md) — CRITIQUE: SW install fail (SVG absents), favicon manquant, import silencieux, DST, code mort
+- [Profil utilisateur](user-profile.md) — dev solo vanilla JS, tests manuels navigateur, langue FR

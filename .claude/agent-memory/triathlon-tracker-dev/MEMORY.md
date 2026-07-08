@@ -1,0 +1,3 @@
+- [Architecture du projet](project-architecture.md) - Plan unifie weeklyPlan, STORE, getDiscipline, validatePlan, ordre declaration, deploiement GitHub Pages (juillet 2026)
+- [Notes de deploiement](deployment-notes.md) - Correctif GitHub Pages Actions: artefact unique par run pour eviter les doublons `github-pages` (2026-07-06)
+- [Replan v11](project-replan-v11.md) - Course en wN7 (23 aout), muscu supprimee, 3 sorties lac, 48 sessions, fin programme 2026-09-13

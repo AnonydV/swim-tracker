@@ -1,0 +1,2 @@
+- [HIPLAN Project](project-hiplan.md) — architecture, design system actuel vs charte, dette UX connue (audit 2026-07-01)
+- [User Profile](user-profile.md) — développeur solo, triathlète HIM, répond en français, veut des specs concrètes
