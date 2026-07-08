@@ -1559,6 +1559,366 @@ body {
 }
 .rsw-next-btn:hover,
 .rsw-next-btn:active { background: rgba(56,189,248,0.15); }
+
+/* ─── RACE CHECKLIST CARD ─── */
+.rc-card {
+  background: #0e1117;
+  border: 1px solid rgba(251,146,60,0.35);
+  border-left: 3px solid var(--orange);
+  border-radius: 10px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+.rc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 14px;
+  cursor: pointer;
+  user-select: none;
+  min-height: 44px;
+}
+.rc-card-icon { font-size: 20px; flex-shrink: 0; }
+.rc-card-title-block { flex: 1; min-width: 0; }
+.rc-card-title {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--orange);
+}
+.rc-card-subtitle {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.rc-total-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--orange);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.rc-fiche-btn {
+  background: rgba(251,146,60,0.12);
+  border: 1px solid rgba(251,146,60,0.4);
+  border-radius: 6px;
+  color: var(--orange);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.rc-fiche-btn:active { background: rgba(251,146,60,0.25); }
+.rc-card-arrow {
+  color: var(--muted);
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.rc-card.rc-open .rc-card-arrow { transform: rotate(180deg); }
+.rc-card-body { display: none; padding: 0 14px 12px; }
+.rc-card.rc-open .rc-card-body { display: block; }
+/* Sections internes */
+.rc-section { margin-bottom: 8px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.02); }
+.rc-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+  min-height: 44px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.rc-section-title {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #e2eaf4;
+  text-transform: uppercase;
+}
+.rc-section-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  white-space: nowrap;
+}
+.rc-section-arrow {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.rc-section.rc-section-open .rc-section-arrow { transform: rotate(180deg); }
+.rc-section-body { display: none; padding: 4px 0; }
+.rc-section.rc-section-open .rc-section-body { display: block; }
+/* Items */
+.rc-item-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  min-height: 44px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.rc-item-label:last-child { border-bottom: none; }
+.rc-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid rgba(251,146,60,0.4);
+  border-radius: 4px;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.rc-checkbox.rc-checked {
+  background: var(--orange);
+  border-color: var(--orange);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5l2.5 2.5L8 3' stroke='%230e1117' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px;
+}
+.rc-item-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #c8d8e8;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* ─── RACE DAY SHEET ─── */
+#race-day-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-height: 92vh;
+  background: #0e1117;
+  border-radius: 18px 18px 0 0;
+  z-index: 210;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#race-day-sheet.open { transform: translateY(0); }
+.rds-handle {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.rds-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.rds-sheet-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--orange);
+}
+.rds-close-btn {
+  background: transparent; border: none; color: var(--muted);
+  font-size: 18px; cursor: pointer; padding: 4px 8px; min-height: 44px; min-width: 44px;
+}
+.rds-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 14px 32px;
+  flex: 1;
+}
+/* Blocs discipline */
+.rds-block { margin-bottom: 20px; }
+.rds-block-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 2px;
+}
+.rds-block-emoji { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.rds-block-title-wrap { flex: 1; }
+.rds-block-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.8px;
+  line-height: 1.2;
+}
+.rds-target-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: #e2eaf4;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.rds-target-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+/* Sections */
+.rds-section {
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 12px;
+}
+.rds-section-planb {
+  background: rgba(251,146,60,0.05);
+  border-left: 2px solid rgba(251,146,60,0.3);
+}
+.rds-section-heading {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.rds-section-planb .rds-section-heading { color: var(--orange); }
+.rds-item-list { list-style: none; padding: 0; margin: 0; }
+.rds-item {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #c8d8e8;
+  line-height: 1.5;
+  padding: 3px 0 3px 12px;
+  position: relative;
+}
+.rds-item::before {
+  content: '\2014';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+/* Pi\00E8ge */
+.rds-trap {
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 0 0 8px 8px;
+  padding: 8px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #f87171;
+  line-height: 1.4;
+}
+.rds-trap-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: rgba(248,113,113,0.2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+/* Header race btn */
+#header-race-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(251,146,60,0.12);
+  border: 1px solid rgba(251,146,60,0.4);
+  border-radius: 6px;
+  color: var(--orange);
+  cursor: pointer;
+  padding: 4px 10px;
+  min-height: 44px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+#header-race-btn:active { background: rgba(251,146,60,0.25); }
+
+/* ─── BANDEAU NUTRITION ─── */
+.nb-banner {
+  border: 1px solid rgba(251,146,60,0.25);
+  border-radius: 8px;
+  margin: 10px 0;
+  overflow: hidden;
+  background: rgba(251,146,60,0.04);
+}
+.nb-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+  min-height: 44px;
+}
+.nb-icon { font-size: 16px; flex-shrink: 0; }
+.nb-title {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--orange);
+  text-transform: uppercase;
+}
+.nb-arrow {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+.nb-banner.nb-open .nb-arrow { transform: rotate(180deg); }
+.nb-body { display: none; padding: 0 12px 10px; }
+.nb-banner.nb-open .nb-body { display: block; }
+.nb-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+.nb-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--orange);
+  white-space: nowrap;
+  padding: 5px 10px 5px 0;
+  vertical-align: top;
+  width: 80px;
+}
+.nb-content {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #c8d8e8;
+  padding: 5px 0;
+  line-height: 1.4;
+}
+.nb-notes { list-style: none; padding: 0; margin: 0; }
+.nb-note {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+  padding: 3px 0 3px 10px;
+  position: relative;
+}
+.nb-note::before { content: '\2022'; position: absolute; left: 0; color: var(--orange); }
 </style>
 </head>
 <body>
@@ -1568,8 +1928,9 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v12</small></h1>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v13</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
+      <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
     <div class="progress-global">
       <div class="progress-label">PROGRESSION GLOBALE</div>
@@ -2453,6 +2814,11 @@ function loadStoredState(key) {
   }
 }
 
+// Migration v12→v13 : programEnd 2026-09-13 → DEFAULT 2026-08-23
+if (localStorage.getItem(STORE.programEnd) === '2026-09-13') {
+  localStorage.removeItem(STORE.programEnd);
+}
+
 let completed    = loadStoredState(STORE.completed);
 let skipped      = loadStoredState(STORE.skipped);
 let sessionNotes = loadStoredState(STORE.notes);
@@ -2491,8 +2857,215 @@ function toggleSkip(id) {
 // ═══════════════════════════════════════════════════
 let currentSport = 'week';
 let currentWeekView = null; // null = auto (active week)
-const TOTAL_WEEKS = 10;
+const TOTAL_WEEKS = 7;
 const RACE_WEEK = 7; // Semaine de la course (Vichy 70.3) dans le plan
+
+const RACE_CHECKLIST = [
+  {
+    id: 'T1',
+    title: 'Sac T1',
+    items: [
+      { id: 't1_0', text: 'Combinaison (joints poignets et chevilles lubrifiés à la Vaseline)' },
+      { id: 't1_1', text: 'Casque vélo (attaches vérifiées)' },
+      { id: 't1_2', text: 'Lunettes vélo (+ paire de secours dans le sac)' },
+      { id: 't1_3', text: 'Lunettes de natation de rechange' },
+      { id: 't1_4', text: 'Chaussures vélo (propres, SPD/Look vérifiés)' },
+      { id: 't1_5', text: 'Nutrition vélo scotchée sur le cadre (gels, barre)' },
+      { id: 't1_6', text: 'Bidons remplis montés sur le vélo (eau + boisson énergie)' },
+      { id: 't1_7', text: 'Anti-frottements (appliquer avant la nage : aisselles, cou, chevilles)' },
+      { id: 't1_8', text: 'Chambre à air + bombe anti-crevaison attachées au cadre' },
+    ],
+  },
+  {
+    id: 'T2',
+    title: 'Sac T2',
+    items: [
+      { id: 't2_0', text: 'Chaussures de course (lacets coulissants ou élastiques, semelles vérifiées)' },
+      { id: 't2_1', text: 'Dossard sur ceinture élastique (prêt à clipser)' },
+      { id: 't2_2', text: 'Casquette ou visière' },
+      { id: 't2_3', text: '3 à 4 gels de poche pour le run' },
+      { id: 't2_4', text: 'Anti-frottements (pieds si besoin)' },
+      { id: 't2_5', text: 'Bonnet solaire si prévu' },
+    ],
+  },
+  {
+    id: 'VE',
+    title: 'Veille J-1',
+    items: [
+      { id: 've_0', text: 'Préparer et vérifier les deux sacs complets (ne rien laisser au matin)' },
+      { id: 've_1', text: 'Pasta party légère : pâtes blanches ou riz blanc, sauce simple, blanc de poulet ou poisson — pas de fibres crues, pas de légumes crus, pas de légumineuses' },
+      { id: 've_2', text: 'Hydratation : 2,5 à 3 L d’eau dans la journée + électrolytes' },
+      { id: 've_3', text: 'Éviter : alcool, aliments gras, épicés, tout nouvel aliment' },
+      { id: 've_4', text: 'Tenues de course posées sur une chaise, triées dans l’ordre d’utilisation' },
+      { id: 've_5', text: 'Coucher à 22h00 maximum' },
+    ],
+  },
+  {
+    id: 'MJ',
+    title: 'Matin jour J',
+    items: [
+      { id: 'mj_0', text: 'Réveil : 2h30 à 3h avant le départ (selon heure de départ)' },
+      { id: 'mj_1', text: 'Petit-déjeuner 2h–2h30 avant le départ : pain blanc + confiture/miel, 1 banane, café si habituel — 400 à 600 kcal, aucun aliment nouveau' },
+      { id: 'mj_2', text: 'Au réveil : 500 ml d’eau' },
+      { id: 'mj_3', text: '30 min avant le départ : 200 à 250 ml d’eau' },
+      { id: 'mj_4', text: 'Arrivée sur site : 60 à 90 min avant le départ (récupération des sacs, repérage T1/T2)' },
+      { id: 'mj_5', text: 'Échauffement 15–20 min : 8 min trot léger Z1, mobilité dynamique (leg swings, cercles de hanches), 200 m nage souple si accès eau' },
+    ],
+  },
+];
+
+const RACE_DAY_DATA = [
+  {
+    id: 'swim', color: '#38bdf8', emoji: '\u{1F3C4}',
+    title: 'NATATION — 1900 m',
+    targetFigure: 'Nage relaxée, économique, conservatrice',
+    targetMono: false,
+    sections: [
+      { heading: 'Avant le départ', items: [
+        'Positionne-toi à l’extérieur ou à l’arrière de la masse — évite les contacts',
+        'Juste avant le coup de feu : immerge le visage, souffle les bulles lentement, pars',
+        '200 premiers mètres : allure conservatrice même si l’adrénaline pousse fort',
+      ]},
+      { heading: 'Pendant la nage', items: [
+        'Sighting toutes les 8 brassées : yeux au niveau de l’eau, pas la tête entière',
+        'Battement 2 temps : les jambes stabilisent, elles ne propulsent pas',
+        'Si le souffle s’emballe : 3 expirations forcées sous l’eau en continuant à nager — ça suffit',
+      ]},
+      { heading: 'Avec combinaison (eau ≤ 24,5°C)', items: [
+        'La flottabilité remonte les hanches passivement — tu as pratiqué ça au lac en S4',
+        'Rythme de bras légèrement raccourci, pas forcé',
+      ]},
+      { heading: 'Sans combinaison (eau > 24,5°C)', items: [
+        'Active le 2T dès les premiers mètres, hanches hautes, orteils pointés vers l’arrière',
+        'Tu as répété exactement ce scénario au lac en S6',
+      ]},
+    ],
+    trap: 'Partir trop vite les 200 premiers mètres. L’adrénaline fausse la perception — un départ trop rapide provoque l’emballement respiratoire et coûte plus que les secondes gagnées.',
+  },
+  {
+    id: 't1', color: '#fb923c', emoji: '⇄',
+    title: 'T1 — Natation vers Vélo',
+    targetFigure: '< 90 s',
+    targetMono: true,
+    sections: [
+      { heading: 'Séquence (dans cet ordre)', items: [
+        'Retirer la combinaison : humidifie les chevilles et les poignets avant d’enlever, ne tire pas la fermeture à la va-vite',
+        'Casque ON et attaché',
+        'Lunettes vélo ON',
+        'Chaussures vélo ON',
+        'Vélo en main, départ vélo zone',
+      ]},
+    ],
+    trap: 'Chaque seconde de panique coûte 5 secondes. Calme et automatique.',
+  },
+  {
+    id: 'bike', color: '#facc15', emoji: '\u{1F6B4}',
+    title: 'VÉLO — 90 km',
+    targetFigure: '175–185 W (83–88% FTP)',
+    targetMono: true,
+    sections: [
+      { heading: 'Km 0–15 : phase de contrôle', items: [
+        'Ne dépasse pas 170 W même si les sensations sont excellentes',
+        'La chaleur et l’excitation de départ faussent la perception',
+        'Cadence 85–90 rpm, position économique',
+      ]},
+      { heading: 'Km 15–90 : phase régulière', items: [
+        'Maintien 175–185 W, cadence 85–90 rpm',
+        'Si bonnes sensations sur portions plates : marge jusqu’à 180–190 W, sans chercher',
+        'Ta base Ironman te donne cette marge — ne la cherche pas, mais ne la refuse pas',
+      ]},
+      { heading: 'Nutrition (dès le km 1)', items: [
+        '1 gel toutes les 25–30 min (60–80 g de glucides/heure)',
+        '500–750 ml de liquide par heure',
+        'Ne pas attendre d’avoir faim ou soif',
+      ]},
+      { heading: 'Plan B chaleur (> 25°C)', items: [
+        'Cible vélo abaissée à 170–180 W',
+        'Hydratation : 750 ml/h minimum',
+        'Éponger nuque et tête à chaque ravito',
+      ], isPlanB: true},
+    ],
+    trap: 'Chasser les autres cyclistes et dépasser 190 W. Chaque watt au-delà se paie sur le run. La course se joue sur les 21 derniers kilomètres, pas sur le vélo.',
+  },
+  {
+    id: 't2', color: '#fb923c', emoji: '⇄',
+    title: 'T2 — Vélo vers Run',
+    targetFigure: '< 75 s',
+    targetMono: true,
+    sections: [
+      { heading: 'Séquence (dans cet ordre)', items: [
+        'Rack vélo',
+        'Casque OFF',
+        'Chaussures de course ON',
+        'Dossard/ceinture si pas déjà mis sur le vélo',
+        'Casquette ON',
+        'Gels de poche vérifiés',
+      ]},
+    ],
+    trap: 'Séquence automatique — tu l’as pratiquée en brw7a.',
+  },
+  {
+    id: 'run', color: '#a3e635', emoji: '\u{1F3C3}',
+    title: 'RUN — 21,1 km',
+    targetFigure: '4:35–4:45/km',
+    targetMono: true,
+    sections: [
+      { heading: 'Km 1–7 : phase de contrôle', items: [
+        'Cours à 4:45–4:50/km strict, même si tu te sens très bien',
+        'Les jambes sortent du mode vélo — laisse-les s’adapter sans forcer',
+        'L’adrénaline + la chaleur faussent la perception de 15 à 20%',
+      ]},
+      { heading: 'Km 7–15 : allure cible', items: [
+        'Régularité à 4:35–4:45/km',
+        'Ne cherche pas à accélérer — maintenir l’allure sur cette portion est la vraie performance',
+        'Eau à chaque ravito, gel si prévu par le protocole',
+      ]},
+      { heading: 'Km 15–21,1 : tout ce qui reste', items: [
+        'Si les réserves sont là et que les jambes répondent : lâche',
+        'Si la chaleur ou la fatigue limite : maintiens 4:45–4:50/km jusqu’à la ligne',
+      ]},
+      { heading: 'Plan B chaleur (> 25°C)', items: [
+        'Km 1–7 : 4:55–5:00/km',
+        'Éponger tête et nuque à chaque ravito',
+        'Accepter que l’allure cible soit 4:45–4:55/km sur l’ensemble — mieux vaut finir fort',
+      ], isPlanB: true},
+    ],
+    trap: 'Km 1 à 4:20/km sous l’effet de l’adrénaline. Un km 1 trop rapide peut coûter 5 minutes sur les 6 derniers kilomètres.',
+  },
+];
+
+const NUTRITION_PROTOCOLS = {
+  bike: {
+    title: 'Nutrition vélo — protocole horodaté',
+    rows: [
+      { time: 'T+0',       content: 'Départ + bidon eau (250 ml)' },
+      { time: 'T+20 min',  content: '1 gel (25–30 g glucides) + 150 ml eau' },
+      { time: 'T+45 min',  content: '1 gel ou 1/2 barre (25–30 g glucides) + 150 ml eau' },
+      { time: 'T+70 min',  content: '1 gel (25–30 g glucides) + 150 ml eau' },
+      { time: 'T+95 min',  content: '1 gel ou barre + 200 ml eau' },
+      { time: 'T+120 min', content: '1 gel + 200 ml eau' },
+    ],
+    notes: [
+      'Objectif : 60–80 g de glucides/heure, 500 ml de liquide minimum/heure',
+      'Par temps chaud : monter à 750 ml/h',
+      'La sortie bw4a (135 min, S4) est le test grandeur nature — répète exactement ce protocole',
+    ],
+  },
+  run: {
+    title: 'Nutrition run — protocole horodaté',
+    rows: [
+      { time: 'T+0',      content: 'Départ hydraté (dernier verre 30 min avant)' },
+      { time: 'T+30 min', content: '1 gel (25 g glucides) + eau au ravito suivant' },
+      { time: 'T+60 min', content: '1 gel (25 g glucides) + eau' },
+      { time: 'T+80 min', content: 'Cola 100 ml si bien toléré, sinon 1 gel + eau' },
+    ],
+    notes: [
+      'Objectif : 40–60 g de glucides/heure (absorption réduite par rapport au vélo)',
+      'Le cola (sucre rapide + caféine) peut être très efficace après 50–60 min — à tester impérativement en S4 ou S5',
+      'Rien de nouveau le jour J : uniquement ce qui a été testé',
+    ],
+  },
+};
 
 const DISCIPLINE_CONFIG = {
   swim:  { label: 'Natation', emoji: '🏊', color: 'swim',  accent: '#38bdf8', defaultUnit: 'min', prefix: 'sw'  },
@@ -2524,8 +3097,9 @@ const SESSION_TYPE_LABELS = {
 const WEEK_PHASES = [
   { phase: 1, name: 'BASE AÉROBIE',      weeks: [1, 2] },
   { phase: 2, name: 'CONSTRUCTION 70.3', weeks: [3, 4] },
-  { phase: 3, name: 'AFFÛTAGE & RACE',   weeks: [5, 6, 7] },
-  { phase: 4, name: 'RÉCUPÉRATION',      weeks: [8, 9, 10] },
+  { phase: 3, name: 'RÉCUPÉRATION',      weeks: [5] },
+  { phase: 4, name: 'AFFÛTAGE',          weeks: [6] },
+  { phase: 5, name: 'COURSE',            weeks: [7] },
 ];
 
 function addDays(date, days) {
@@ -2548,15 +3122,22 @@ function toIsoLocalDate(date) {
   return `${year}-${month}-${day}`;
 }
 
+const DEFAULT_PROGRAM_END = '2026-08-23';
+
 function getProgramEndDate() {
   const storedEnd = parseIsoLocalDate(localStorage.getItem(STORE.programEnd));
   if (storedEnd) return storedEnd;
 
   const legacyStart = parseIsoLocalDate(localStorage.getItem(STORE.legacyStart));
-  if (!legacyStart) return null;
-  const migratedEnd = addDays(legacyStart, (TOTAL_WEEKS * 7) - 1);
-  localStorage.setItem(STORE.programEnd, toIsoLocalDate(migratedEnd));
-  return migratedEnd;
+  if (legacyStart) {
+    const migratedEnd = addDays(legacyStart, (TOTAL_WEEKS * 7) - 1);
+    localStorage.setItem(STORE.programEnd, toIsoLocalDate(migratedEnd));
+    return migratedEnd;
+  }
+
+  // Fallback : programme non configuré → date de course par défaut
+  const defaultEnd = parseIsoLocalDate(DEFAULT_PROGRAM_END);
+  return defaultEnd;
 }
 
 function getRaceDate() {
@@ -2674,6 +3255,16 @@ function updateHeaderSubtitle() {
   el.textContent = full;
   if (el.scrollWidth > el.clientWidth) {
     el.textContent = compact;
+  }
+
+  // Lot 2 + Lot 4 — bouton fiche course et accent orange race week
+  var raceBtn = document.getElementById('header-race-btn');
+  if (raceDate && diffDays >= 0 && diffDays <= 7) {
+    if (raceBtn) raceBtn.style.display = 'inline-block';
+    el.style.color = 'var(--orange)';
+  } else {
+    if (raceBtn) raceBtn.style.display = 'none';
+    el.style.color = '';
   }
 }
 
@@ -2888,7 +3479,7 @@ function buildLoadChart() {
   const PHASE_COLORS = { 1: '#38bdf8', 2: '#facc15', 3: '#fb923c', 4: '#4ade80' };
   const activeWeek = getCalendarActiveWeekNum();
 
-  const weeks = weeklyPlan.map(w => {
+  const weeks = weeklyPlan.filter(w => w.weekNum <= TOTAL_WEEKS).map(w => {
     const totalMin = w.sessions.reduce((a, s) => a + (s.dist || 0), 0);
     const phase = getWeekPhase(w.weekNum).phase;
     const allDone = w.sessions.every(s => completed[s.id] || skipped[s.id]);
@@ -3043,6 +3634,36 @@ function formatSetDesc(desc) {
   return introHtml + listHtml || escapeHtml(desc);
 }
 
+function buildNutritionBannerHtml(session, disciplineKey) {
+  var proto = null;
+  if (disciplineKey === 'bike' && session.unit === 'min' && session.dist > 60) {
+    proto = NUTRITION_PROTOCOLS.bike;
+  } else if (disciplineKey === 'run' && session.unit === 'min' && session.dist > 75) {
+    proto = NUTRITION_PROTOCOLS.run;
+  }
+  if (!proto) return '';
+
+  var rowsHtml = proto.rows.map(function(row) {
+    return '<tr><td class="nb-time">' + row.time + '</td><td class="nb-content">' + row.content + '</td></tr>';
+  }).join('');
+  var notesHtml = proto.notes.map(function(note) {
+    return '<li class="nb-note">' + note + '</li>';
+  }).join('');
+  var bannerId = 'nb-' + session.id;
+
+  return '<div class="nb-banner" id="' + bannerId + '">'
+    + '<div class="nb-header" onclick="document.getElementById(\'' + bannerId + '\').classList.toggle(\'nb-open\')">'
+    + '<span class="nb-icon">⛽</span>'
+    + '<span class="nb-title">' + proto.title + '</span>'
+    + '<span class="nb-arrow">▾</span>'
+    + '</div>'
+    + '<div class="nb-body">'
+    + '<table class="nb-table">' + rowsHtml + '</table>'
+    + '<ul class="nb-notes">' + notesHtml + '</ul>'
+    + '</div>'
+    + '</div>';
+}
+
 function buildSessionSetsHtml(session, disciplineKey) {
   const config = DISCIPLINE_CONFIG[disciplineKey] || DISCIPLINE_CONFIG.swim;
   return session.sets.map(set => {
@@ -3084,6 +3705,7 @@ function buildSessionDetailHtml(session, disciplineKey) {
     <div class="session-detail" id="week-detail-${session.id}">
       ${buildSessionSetsHtml(session, disciplineKey)}
       ${session.tip ? `<div class="session-tip-box"><strong>💡 Conseil :</strong> ${session.tip}</div>` : ''}
+      ${buildNutritionBannerHtml(session, disciplineKey)}
       ${buildSessionResultHtml(session)}
       ${buildSessionNoteHtml(session.id)}
     </div>
@@ -3124,6 +3746,134 @@ function buildSessionCard(session, disciplineKey) {
       ${buildSessionDetailHtml(session, disciplineKey)}
     </div>
   `;
+}
+
+function buildRaceDaySheetContent() {
+  return RACE_DAY_DATA.map(function(block) {
+    var sectionsHtml = block.sections.map(function(sec) {
+      var itemsHtml = sec.items.map(function(item) {
+        return '<li class="rds-item">' + item + '</li>';
+      }).join('');
+      var sectionClass = sec.isPlanB ? 'rds-section rds-section-planb' : 'rds-section';
+      return '<div class="' + sectionClass + '">'
+        + '<div class="rds-section-heading">' + sec.heading + '</div>'
+        + '<ul class="rds-item-list">' + itemsHtml + '</ul>'
+        + '</div>';
+    }).join('');
+
+    var targetHtml = block.targetMono
+      ? '<div class="rds-target-mono">' + block.targetFigure + '</div>'
+      : '<div class="rds-target-text">' + block.targetFigure + '</div>';
+
+    return '<div class="rds-block" id="rds-block-' + block.id + '">'
+      + '<div class="rds-block-header" style="border-left:3px solid ' + block.color + '">'
+      + '<span class="rds-block-emoji">' + block.emoji + '</span>'
+      + '<div class="rds-block-title-wrap">'
+      + '<div class="rds-block-title" style="color:' + block.color + '">' + block.title + '</div>'
+      + targetHtml
+      + '</div>'
+      + '</div>'
+      + sectionsHtml
+      + '<div class="rds-trap"><span class="rds-trap-label">PIÈGE</span> ' + block.trap + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function openRaceDaySheet() {
+  var backdrop = document.getElementById('race-day-backdrop');
+  var sheet    = document.getElementById('race-day-sheet');
+  var body     = document.getElementById('race-day-body');
+  if (!backdrop || !sheet || !body) return;
+  body.innerHTML = buildRaceDaySheetContent();
+  backdrop.style.display = 'block';
+  sheet.style.display    = 'block';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { sheet.classList.add('open'); });
+  });
+}
+
+function closeRaceDaySheet() {
+  var sheet    = document.getElementById('race-day-sheet');
+  var backdrop = document.getElementById('race-day-backdrop');
+  if (!sheet) return;
+  sheet.style.transition = '';
+  sheet.style.transform  = '';
+  requestAnimationFrame(function() {
+    sheet.classList.remove('open');
+    setTimeout(function() {
+      sheet.style.display = 'none';
+      if (backdrop) backdrop.style.display = 'none';
+    }, 350);
+  });
+}
+
+function toggleRaceChecklistItem(itemId) {
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem('hi_tri_race_checklist_v1') || '{}'); } catch(e) { state = {}; }
+  state[itemId] = !state[itemId];
+  safeWrite('hi_tri_race_checklist_v1', JSON.stringify(state));
+  var cb = document.getElementById('rc-cb-' + itemId);
+  if (cb) cb.classList.toggle('rc-checked', !!state[itemId]);
+  RACE_CHECKLIST.forEach(function(section) {
+    var done = section.items.filter(function(it) { return !!state[it.id]; }).length;
+    var counterEl = document.getElementById('rc-count-' + section.id);
+    if (counterEl) counterEl.textContent = done + '/' + section.items.length + ' prêts';
+  });
+  var allItems = RACE_CHECKLIST.flatMap(function(s) { return s.items; });
+  var totalDone = allItems.filter(function(it) { return !!state[it.id]; }).length;
+  var totalEl = document.getElementById('rc-total-count');
+  if (totalEl) totalEl.textContent = totalDone + '/' + allItems.length + ' prêts';
+}
+
+function buildRaceChecklistCard() {
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem('hi_tri_race_checklist_v1') || '{}'); } catch(e) { state = {}; }
+
+  var raceDate = getRaceDate();
+  var diffDays = 99;
+  if (raceDate) {
+    var rd = new Date(raceDate.getFullYear(), raceDate.getMonth(), raceDate.getDate());
+    diffDays = Math.round((rd - startOfToday()) / 86400000);
+  }
+  var defaultOpen = (diffDays >= 0 && diffDays <= 7);
+
+  var allItems = RACE_CHECKLIST.flatMap(function(s) { return s.items; });
+  var totalDone = allItems.filter(function(it) { return !!state[it.id]; }).length;
+
+  var sectionsHtml = RACE_CHECKLIST.map(function(section) {
+    var done = section.items.filter(function(it) { return !!state[it.id]; }).length;
+    var itemsHtml = section.items.map(function(item) {
+      var checked = !!state[item.id];
+      return '<label class="rc-item-label" onclick="event.stopPropagation()">'
+        + '<span id="rc-cb-' + item.id + '" class="rc-checkbox' + (checked ? ' rc-checked' : '') + '" onclick="toggleRaceChecklistItem(\'' + item.id + '\')" role="checkbox" aria-checked="' + checked + '" tabindex="0"></span>'
+        + '<span class="rc-item-text">' + item.text + '</span>'
+        + '</label>';
+    }).join('');
+    return '<div class="rc-section' + (defaultOpen ? ' rc-section-open' : '') + '">'
+      + '<div class="rc-section-header" onclick="this.parentNode.classList.toggle(\'rc-section-open\')">'
+      + '<span class="rc-section-title">' + section.title + '</span>'
+      + '<span class="rc-section-count" id="rc-count-' + section.id + '">' + done + '/' + section.items.length + ' prêts</span>'
+      + '<span class="rc-section-arrow">▾</span>'
+      + '</div>'
+      + '<div class="rc-section-body">' + itemsHtml + '</div>'
+      + '</div>';
+  }).join('');
+
+  var card = document.createElement('div');
+  card.className = 'rc-card' + (defaultOpen ? ' rc-open' : '');
+  card.id = 'race-checklist-card';
+  card.innerHTML = '<div class="rc-card-header" onclick="document.getElementById(\'race-checklist-card\').classList.toggle(\'rc-open\')">'
+    + '<span class="rc-card-icon">🏁</span>'
+    + '<div class="rc-card-title-block">'
+    + '<span class="rc-card-title">CHECKLIST COURSE</span>'
+    + '<span class="rc-card-subtitle">VICHY 70.3 — 23 août 2026</span>'
+    + '</div>'
+    + '<span class="rc-total-count" id="rc-total-count">' + totalDone + '/' + allItems.length + ' prêts</span>'
+    + '<button class="rc-fiche-btn" onclick="event.stopPropagation(); openRaceDaySheet()" aria-label="Ouvrir la fiche course">🏁 Fiche course</button>'
+    + '<span class="rc-card-arrow">▾</span>'
+    + '</div>'
+    + '<div class="rc-card-body">' + sectionsHtml + '</div>';
+  return card;
 }
 
 function buildWeekView(weekNum) {
@@ -3206,6 +3956,9 @@ function buildWeekView(weekNum) {
   });
 
   container.appendChild(grid);
+  if (weekNum === RACE_WEEK) {
+    container.appendChild(buildRaceChecklistCard());
+  }
   buildRemainingSessionsPanel();
 }
 
@@ -3760,6 +4513,7 @@ function updateStats() {
   let minSwim = 0, minBike = 0, minRun = 0;
 
   weeklyPlan.forEach(w => {
+    if (w.weekNum > TOTAL_WEEKS) return;
     w.sessions.forEach(s => {
       total++;
       if (completed[s.id]) {
@@ -4620,6 +5374,19 @@ function initWeeklyRecapSwipe() {
 
 // Default to week view on load
 currentSport = 'week';
+
+// Injection du bottom sheet fiche course (Lot 2 v13)
+document.body.insertAdjacentHTML('beforeend',
+  '<div id="race-day-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200" onclick="closeRaceDaySheet()"></div>' +
+  '<div id="race-day-sheet" style="display:none">' +
+    '<div class="rds-handle"></div>' +
+    '<div class="rds-sheet-header">' +
+      '<span class="rds-sheet-title">FICHE COURSE — VICHY 70.3</span>' +
+      '<button class="rds-close-btn" onclick="closeRaceDaySheet()" aria-label="Fermer">&#x2715;</button>' +
+    '</div>' +
+    '<div class="rds-body" id="race-day-body"></div>' +
+  '</div>'
+);
 
 // Injection du bottom sheet perf (fils direct de body, jamais dans #plan)
 document.body.insertAdjacentHTML('beforeend', `
