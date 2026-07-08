@@ -1,4 +1,4 @@
-const CACHE = 'hiplan-v14';
+const CACHE = 'hiplan-v15';
 const SHELL = [
   '/swim-tracker/',
   '/swim-tracker/index.html',

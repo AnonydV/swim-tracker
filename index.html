@@ -1919,6 +1919,314 @@ body {
   position: relative;
 }
 .nb-note::before { content: '\2022'; position: absolute; left: 0; color: var(--orange); }
+
+/* ─── LOT 1 — MODE PLEIN SOLEIL ─── */
+#outdoor-toggle-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 110;
+  transition: background 0.15s, color 0.15s;
+}
+#outdoor-toggle-btn[aria-pressed="true"] {
+  color: #facc15;
+  border-color: rgba(250,204,21,0.4);
+  background: rgba(250,204,21,0.08);
+}
+#outdoor-toggle-btn:active { background: rgba(255,255,255,0.08); }
+
+/* Mode outdoor : overrides ciblés uniquement */
+body.outdoor-mode {
+  --muted: #8ab5cc;
+}
+body.outdoor-mode .wsc-badge {
+  font-size: 12px;
+}
+body.outdoor-mode .wsc-name {
+  font-size: 15px;
+}
+body.outdoor-mode .session-note-label,
+body.outdoor-mode .set-desc,
+body.outdoor-mode .session-tip-box {
+  font-size: 14px;
+}
+body.outdoor-mode .week-nav-title,
+body.outdoor-mode .wsb-lbl {
+  font-size: 13px;
+}
+
+/* ─── LOT 2 — ÉTAT ADAPTÉ ─── */
+.wsc-btn.adapted {
+  background: var(--orange-dim);
+  border: 1px solid rgba(251,146,60,0.5);
+  color: var(--orange);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.wsc-btn.adapted:active { background: rgba(251,146,60,0.25); }
+.wsc-btn.unadapted {
+  background: transparent;
+  border: 1px solid rgba(251,146,60,0.3);
+  color: var(--muted);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.wsc-badge-adapted {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--orange);
+  background: rgba(251,146,60,0.15);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.week-session-card.wc-adapted {
+  border-left: 3px solid var(--orange);
+  opacity: 0.85;
+}
+
+/* ─── LOT 3 — CHECK-IN MATINAL ─── */
+.ci-container {
+  background: rgba(250,204,21,0.04);
+  border: 1px solid rgba(250,204,21,0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 0;
+}
+.ci-form-title, .ci-summary-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #facc15;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ci-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 8px;
+  min-height: 44px;
+}
+.ci-slider {
+  flex: 1;
+  accent-color: #facc15;
+  height: 6px;
+  cursor: pointer;
+}
+.ci-submit-btn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  background: rgba(250,204,21,0.12);
+  border: 1px solid rgba(250,204,21,0.4);
+  border-radius: 8px;
+  color: #facc15;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+.ci-submit-btn:active { background: rgba(250,204,21,0.25); }
+.ci-summary-scores {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ci-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+}
+.ci-avg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #facc15;
+}
+.ci-edit-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 10px;
+  min-height: 44px;
+}
+.ci-alert {
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.3);
+  border-radius: 8px;
+  color: #f87171;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 10px 14px;
+  margin: 6px 0 10px;
+}
+.ci-curve-panel {
+  margin: 6px 0 12px;
+  min-height: 60px;
+}
+
+/* ─── LOT 4 — GUIDE SÉANCE SAUTÉE ─── */
+#missed-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-height: 80vh;
+  background: #0e1117;
+  border-radius: 18px 18px 0 0;
+  z-index: 210;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#missed-sheet.open { transform: translateY(0); }
+.mss-handle {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.mss-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.mss-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.mss-close-btn {
+  background: transparent; border: none; color: var(--muted);
+  font-size: 18px; cursor: pointer; padding: 4px 8px;
+  min-height: 44px; min-width: 44px;
+}
+.mss-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px 32px;
+  flex: 1;
+}
+.mss-q {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  margin-top: 14px;
+}
+.mss-q:first-child { margin-top: 0; }
+.mss-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.mss-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.12s, border-color 0.12s;
+}
+.mss-radio-label:has(input:checked) {
+  background: rgba(56,189,248,0.1);
+  border-color: rgba(56,189,248,0.4);
+  color: var(--accent);
+}
+.mss-radio-label input[type=radio] {
+  accent-color: var(--accent);
+  width: 16px; height: 16px;
+}
+.mss-advice {
+  background: rgba(56,189,248,0.06);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.55;
+  padding: 14px 16px;
+  margin-top: 18px;
+}
+/* Lien discret "Séance impossible ?" dans le détail de séance */
+.missed-link-row {
+  margin-top: 14px;
+  text-align: right;
+}
+.missed-link-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.missed-link-btn:hover { color: var(--text); }
 </style>
 </head>
 <body>
@@ -1928,7 +2236,12 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>HALF <span>IRONMAN</span> <small class="app-version">v14</small></h1>
+      <button id="outdoor-toggle-btn"
+        onclick="toggleOutdoorMode()"
+        aria-label="Basculer mode plein soleil"
+        aria-pressed="false"
+        title="Mode plein soleil">&#x263D;</button>
+      <h1>HALF <span>IRONMAN</span> <small class="app-version">v15</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -1989,6 +2302,7 @@ body {
     </div>
     <svg id="load-chart-svg" width="100%" height="130" style="display:block; overflow:visible"></svg>
   </div>
+  <div id="checkin-curve-panel" class="ci-curve-panel" style="display:none"></div>
 
   <!-- PROGRESSION PANEL -->
   <div id="progression-panel" class="load-chart-panel">
@@ -2826,6 +3140,16 @@ let sessionNotes = loadStoredState(STORE.notes);
 let sessionResults = loadStoredState(STORE.results);
 let perfResults  = loadStoredState(STORE.perfResults);
 
+var adapted = {};
+(function() {
+  try { adapted = JSON.parse(localStorage.getItem('hi_tri_adapted_v1') || '{}'); } catch(e) { adapted = {}; }
+})();
+
+var checkinData = {};
+(function() {
+  try { checkinData = JSON.parse(localStorage.getItem('hi_tri_checkin_v1') || '{}'); } catch(e) { checkinData = {}; }
+})();
+
 function safeWrite(key, value) {
   try {
     localStorage.setItem(key, value);
@@ -2857,6 +3181,7 @@ function toggleSkip(id) {
 // BUILD UI
 // ═══════════════════════════════════════════════════
 let currentSport = 'week';
+let outdoorMode = false;
 let currentWeekView = null; // null = auto (active week)
 const TOTAL_WEEKS = 7;
 const RACE_WEEK = 7; // Semaine de la course (Vichy 70.3) dans le plan
@@ -3076,6 +3401,12 @@ const DISCIPLINE_CONFIG = {
   brick: { label: 'Brick',    emoji: '🧱', color: 'brick', accent: '#fb923c', defaultUnit: 'min', prefix: 'brw' },
 };
 
+var OPEN_WATER_IDS = { 'sw1c': true, 'sw4c': true, 'sw7a': true };
+
+function isOpenWaterSession(sessionId) {
+  return !!OPEN_WATER_IDS[sessionId];
+}
+
 function getDiscipline(sessionId) {
   // brw testé avant bw pour éviter le faux positif
   const sorted = Object.entries(DISCIPLINE_CONFIG).sort((a, b) => b[1].prefix.length - a[1].prefix.length);
@@ -3225,6 +3556,26 @@ function renderProgramEndControl(editing = false) {
 
   const activeWeek = getCalendarActiveWeekNum();
   status.innerHTML = `Fin cible <span>${formatDateShort(programEnd)}</span> · début calculé ${formatDateShort(programStart)} · semaine calendaire <span>S${activeWeek}</span>`;
+}
+
+function toggleOutdoorMode() {
+  outdoorMode = !outdoorMode;
+  safeWrite('hi_tri_outdoor_v1', outdoorMode ? 'true' : 'false');
+  document.body.classList.toggle('outdoor-mode', outdoorMode);
+  var btn = document.getElementById('outdoor-toggle-btn');
+  if (btn) btn.textContent = outdoorMode ? '☀' : '☽';
+  if (btn) btn.setAttribute('aria-pressed', String(outdoorMode));
+}
+
+function initOutdoorMode() {
+  var stored = localStorage.getItem('hi_tri_outdoor_v1');
+  outdoorMode = (stored === 'true');
+  document.body.classList.toggle('outdoor-mode', outdoorMode);
+  var btn = document.getElementById('outdoor-toggle-btn');
+  if (btn) {
+    btn.textContent = outdoorMode ? '☀' : '☽';
+    btn.setAttribute('aria-pressed', String(outdoorMode));
+  }
 }
 
 function updateHeaderSubtitle() {
@@ -3701,7 +4052,79 @@ function buildSessionNoteHtml(sessionId) {
   `;
 }
 
+var MISSED_ADVICE = {
+  'fatigue-1':  'Reporter à J+1 à 85% du volume, intensité maintenue. Pas de compensation après.',
+  'fatigue-2':  'Récupérer d\'abord. Reprendre à la prochaine séance prévue sans rattraper.',
+  'fatigue-3':  'Récupérer d\'abord. Reprendre à la prochaine séance prévue sans rattraper.',
+  'imprevu-1':  'Reporter demain si possible. Sinon laisser tomber sans compensation.',
+  'imprevu-2':  'Laisser tomber. Le programme le gère.',
+  'imprevu-3':  'Laisser tomber. Le programme le gère.',
+  'douleur-1':  'Stop. Consulte avant de reprendre quelle que soit la situation.',
+  'douleur-2':  'Stop. Consulte avant de reprendre quelle que soit la situation.',
+  'douleur-3':  'Stop. Consulte avant de reprendre quelle que soit la situation.',
+  'meteo-1':    'Adapter ou reporter si sécurité en jeu. Sinon remplacer par séance indoor équivalente.',
+  'meteo-2':    'Adapter ou reporter si sécurité en jeu. Sinon remplacer par séance indoor équivalente.',
+  'meteo-3':    'Adapter ou reporter si sécurité en jeu. Sinon remplacer par séance indoor équivalente.',
+};
+var MISSED_TAPER_NOTE = 'En affûtage : laisser tomber. Ne jamais compenser à moins de 14j de la course.';
+
+function buildMissedSessionSheet() {
+  var raison = document.querySelector('#missed-sheet input[name="missed-raison"]:checked');
+  var delai  = document.querySelector('#missed-sheet input[name="missed-delai"]:checked');
+  var raisonVal = raison ? raison.value : null;
+  var delaiVal  = delai  ? delai.value  : null;
+  var advEl = document.getElementById('missed-advice-text');
+  if (!advEl) return;
+  if (!raisonVal || !delaiVal) {
+    advEl.textContent = 'Sélectionne une raison et un délai pour voir la recommandation.';
+    advEl.style.display = 'block';
+    return;
+  }
+  var key = raisonVal + '-' + delaiVal;
+  var advice = MISSED_ADVICE[key] || 'Évalue la situation et reprends selon tes sensations.';
+  // Semaine d\'affûtage (S6) ou semaine course (S7) — ajoute la note taper sauf si douleur
+  var activeWeek = getCalendarActiveWeekNum();
+  if ((activeWeek === 6 || activeWeek === 7) && raisonVal !== 'douleur') {
+    advice += ' ' + MISSED_TAPER_NOTE;
+  }
+  advEl.textContent = advice;
+  advEl.style.display = 'block';
+}
+
+function openMissedSessionSheet() {
+  var backdrop = document.getElementById('missed-session-backdrop');
+  var sheet    = document.getElementById('missed-sheet');
+  if (!backdrop || !sheet) return;
+  // Reset les sélections et le conseil à chaque ouverture
+  sheet.querySelectorAll('input[type=radio]').forEach(function(r) { r.checked = false; });
+  var advEl = document.getElementById('missed-advice-text');
+  if (advEl) { advEl.textContent = ''; advEl.style.display = 'none'; }
+  backdrop.style.display = 'block';
+  sheet.style.display    = 'block';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { sheet.classList.add('open'); });
+  });
+}
+
+function closeMissedSessionSheet() {
+  var sheet    = document.getElementById('missed-sheet');
+  var backdrop = document.getElementById('missed-session-backdrop');
+  if (!sheet) return;
+  sheet.classList.remove('open');
+  setTimeout(function() {
+    sheet.style.display = 'none';
+    if (backdrop) backdrop.style.display = 'none';
+  }, 350);
+}
+
 function buildSessionDetailHtml(session, disciplineKey) {
+  const isDone    = !!completed[session.id];
+  const isSkipped = !!skipped[session.id];
+  const isAdapted = isOpenWaterSession(session.id) && !!adapted[session.id];
+  const canShowMissed = !isDone && !isSkipped && !isAdapted;
+  const missedLink = canShowMissed
+    ? `<div class="missed-link-row"><button class="missed-link-btn" onclick="event.stopPropagation(); openMissedSessionSheet()">Séance impossible ?</button></div>`
+    : '';
   return `
     <div class="session-detail" id="week-detail-${session.id}">
       ${buildSessionSetsHtml(session, disciplineKey)}
@@ -3709,6 +4132,7 @@ function buildSessionDetailHtml(session, disciplineKey) {
       ${buildNutritionBannerHtml(session, disciplineKey)}
       ${buildSessionResultHtml(session)}
       ${buildSessionNoteHtml(session.id)}
+      ${missedLink}
     </div>
   `;
 }
@@ -3718,27 +4142,35 @@ function buildSessionCard(session, disciplineKey) {
   const config = DISCIPLINE_CONFIG[disciplineKey] || DISCIPLINE_CONFIG.swim;
   const isDone = !!completed[session.id];
   const isSkipped = !!skipped[session.id];
+  const isAdapted = isOpenWaterSession(session.id) && !!adapted[session.id];
   const isOptional = session.typeLabel && session.typeLabel.includes('Optionnel');
   const hasNote = getSessionNote(session.id).trim().length > 0;
   const noteIndicator = hasNote ? `<span class="note-indicator" title="Note enregistrée">📝</span>` : '';
   const result = getSessionResult(session.id).trim();
   const resultIndicator = result ? `<span class="result-indicator" title="Résultat">⏱ ${escapeHtml(result)}</span>` : '';
+  const adaptedBadge = isAdapted ? '<span class="wsc-badge-adapted">ADAPTÉ</span>' : '';
   let actionBtns = '';
   if (isDone) {
     actionBtns = `<button class="wsc-btn uncheck" onclick="event.stopPropagation(); wvToggleDone('${session.id}')">✕ Annuler</button>`;
   } else if (isSkipped) {
     actionBtns = `<button class="wsc-btn unskip" onclick="event.stopPropagation(); wvToggleSkip('${session.id}')">↩ Unskip</button>`;
+  } else if (isAdapted) {
+    actionBtns = `<button class="wsc-btn unadapted" onclick="event.stopPropagation(); toggleAdapted('${session.id}')">↩ Désadapter</button>`;
   } else {
+    var adaptedBtn = isOpenWaterSession(session.id)
+      ? `<button class="wsc-btn adapted" onclick="event.stopPropagation(); toggleAdapted('${session.id}')">~ Adapté</button>`
+      : '';
     actionBtns = `
       <button class="wsc-btn check" onclick="event.stopPropagation(); wvToggleDone('${session.id}')">✓ Fait</button>
       <button class="wsc-btn skip" onclick="event.stopPropagation(); wvToggleSkip('${session.id}')">⏭ Skip</button>
+      ${adaptedBtn}
     `;
   }
 
   return `
-    <div class="week-session-card wc-${config.color}${isDone ? ' wc-done' : ''}${isSkipped ? ' wc-skipped' : ''}${isOptional ? ' wc-optional' : ''}" id="week-card-${session.id}">
+    <div class="week-session-card wc-${config.color}${isDone ? ' wc-done' : ''}${isSkipped ? ' wc-skipped' : ''}${isAdapted ? ' wc-adapted' : ''}${isOptional ? ' wc-optional' : ''}" id="week-card-${session.id}">
       <div class="wsc-top" role="button" tabindex="0" aria-expanded="false" onclick="toggleWeekSessionDetail('${session.id}')" onkeydown="handleWeekSessionKey(event, '${session.id}')">
-        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${noteIndicator}${resultIndicator} <span class="session-expand-icon">▾</span></div>
+        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${noteIndicator}${resultIndicator}${adaptedBadge} <span class="session-expand-icon">▾</span></div>
         <div class="wsc-badge ${config.color}">${getDistLabel(session, disciplineKey)}</div>
       </div>
       <div class="wsc-meta">${session.typeLabel || ''}</div>
@@ -3877,6 +4309,125 @@ function buildRaceChecklistCard() {
   return card;
 }
 
+function saveCheckin(sleep, legs, energy) {
+  var today = toIsoLocalDate(startOfToday());
+  checkinData[today] = { sleep: sleep, legs: legs, energy: energy };
+  safeWrite('hi_tri_checkin_v1', JSON.stringify(checkinData));
+  buildCheckinWidget();
+  renderCheckinCurve();
+  showToast('checkin-saved');
+}
+
+function buildCheckinForm() {
+  var el = document.getElementById('checkin-widget');
+  if (!el) return;
+  var today = toIsoLocalDate(startOfToday());
+  var existing = checkinData[today] || { sleep: 3, legs: 3, energy: 3 };
+  el.innerHTML = '<div class="ci-form">'
+    + '<div class="ci-form-title">Check-in matinal &mdash; ' + today + '</div>'
+    + '<label class="ci-label">&#x1F634; Sommeil <span id="ci-val-sleep">' + existing.sleep + '</span>/5'
+    + '<input class="ci-slider" type="range" min="1" max="5" value="' + existing.sleep + '" oninput="document.getElementById(\'ci-val-sleep\').textContent=this.value"></label>'
+    + '<label class="ci-label">&#x1F9B5; Jambes <span id="ci-val-legs">' + existing.legs + '</span>/5'
+    + '<input class="ci-slider" type="range" min="1" max="5" value="' + existing.legs + '" oninput="document.getElementById(\'ci-val-legs\').textContent=this.value"></label>'
+    + '<label class="ci-label">&#x26A1; &Eacute;nergie <span id="ci-val-energy">' + existing.energy + '</span>/5'
+    + '<input class="ci-slider" type="range" min="1" max="5" value="' + existing.energy + '" oninput="document.getElementById(\'ci-val-energy\').textContent=this.value"></label>'
+    + '<button class="ci-submit-btn" onclick="'
+    + 'saveCheckin('
+    + 'parseInt(document.querySelectorAll(\'#checkin-widget input[type=range]\')[0].value),'
+    + 'parseInt(document.querySelectorAll(\'#checkin-widget input[type=range]\')[1].value),'
+    + 'parseInt(document.querySelectorAll(\'#checkin-widget input[type=range]\')[2].value)'
+    + ')">Valider le check-in</button>'
+    + '</div>';
+}
+
+function buildCheckinWidget() {
+  var el = document.getElementById('checkin-widget');
+  if (!el) return;
+  var today = toIsoLocalDate(startOfToday());
+  var existing = checkinData[today];
+
+  if (existing) {
+    var avg = ((existing.sleep + existing.legs + existing.energy) / 3).toFixed(1);
+    el.innerHTML = '<div class="ci-summary">'
+      + '<div class="ci-summary-title">Check-in du jour</div>'
+      + '<div class="ci-summary-scores">'
+      + '<span class="ci-score">&#x1F634; ' + existing.sleep + '/5</span>'
+      + '<span class="ci-score">&#x1F9B5; ' + existing.legs + '/5</span>'
+      + '<span class="ci-score">&#x26A1; ' + existing.energy + '/5</span>'
+      + '<span class="ci-avg">Moy. ' + avg + '</span>'
+      + '</div>'
+      + '<button class="ci-edit-btn" onclick="buildCheckinForm()">Modifier</button>'
+      + '</div>';
+  } else {
+    buildCheckinForm();
+  }
+}
+
+function renderCheckinCurve() {
+  // Récupère les 14 derniers jours avec un check-in, triés chronologiquement
+  var today = startOfToday();
+  var points = [];
+  for (var i = 13; i >= 0; i--) {
+    var d = addDays(today, -i);
+    var key = toIsoLocalDate(d);
+    if (checkinData[key]) {
+      var e = checkinData[key];
+      var avg = (e.sleep + e.legs + e.energy) / 3;
+      points.push({ date: key, avg: avg });
+    }
+  }
+
+  // Affichage du panel
+  var curvePanelEl = document.getElementById('checkin-curve-panel');
+  if (curvePanelEl) curvePanelEl.style.display = (points.length >= 2) ? 'block' : 'none';
+
+  // Alerte : score < 2.5 deux jours consécutifs en semaine de charge (S3 ou S4)
+  var activeWeek = getCalendarActiveWeekNum();
+  if (activeWeek === 3 || activeWeek === 4) {
+    var lowCount = 0;
+    for (var j = points.length - 1; j >= 0 && lowCount < 2; j--) {
+      if (points[j].avg < 2.5) { lowCount++; } else { break; }
+    }
+    var alertEl = document.getElementById('checkin-alert');
+    if (lowCount >= 2) {
+      if (alertEl) {
+        alertEl.style.display = 'block';
+        alertEl.textContent = 'Attention : fatigue élevée 2 jours de suite en semaine de charge. Envisage de réduire le volume de la prochaine séance.';
+      }
+    } else {
+      if (alertEl) alertEl.style.display = 'none';
+    }
+  }
+
+  // Courbe dans le mini-panel
+  if (!curvePanelEl || points.length < 2) return;
+
+  var W = curvePanelEl.clientWidth || 300;
+  var H = 60;
+  var padL = 4, padR = 4, padT = 6, padB = 14;
+  var chartW = W - padL - padR;
+  var chartH = H - padT - padB;
+  var n = points.length;
+  var step = n > 1 ? chartW / (n - 1) : 0;
+
+  var pathD = points.map(function(p, i) {
+    var x = (padL + i * step).toFixed(1);
+    var y = (padT + chartH - ((p.avg - 1) / 4) * chartH).toFixed(1);
+    return (i === 0 ? 'M' : 'L') + x + ',' + y;
+  }).join(' ');
+
+  var labelsOut = points.map(function(p, i) {
+    if (i !== 0 && i !== n - 1 && i !== Math.floor(n / 2)) return '';
+    var x = (padL + i * step).toFixed(1);
+    return '<text x="' + x + '" y="' + (H - 2) + '" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" fill="#3a5570">' + p.date.slice(5) + '</text>';
+  }).join('');
+
+  curvePanelEl.innerHTML = '<svg width="100%" height="' + H + '" style="display:block">'
+    + '<path d="' + pathD + '" stroke="#facc15" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>'
+    + labelsOut
+    + '</svg>';
+}
+
 function buildWeekView(weekNum) {
   if (weekNum === null) weekNum = getCalendarActiveWeekNum();
   currentWeekView = weekNum;
@@ -3914,6 +4465,19 @@ function buildWeekView(weekNum) {
 	    <button class="week-nav-btn" onclick="buildWeekView(${weekNum + 1})" ${weekNum >= TOTAL_WEEKS ? 'disabled' : ''}>${weekNum < TOTAL_WEEKS ? 'S' + getWeekLabel(weekNum + 1) : 'Fin'} →</button>
 	  `;
   container.appendChild(nav);
+
+  // Widget check-in — semaine active uniquement
+  if (isActive) {
+    var ciDiv = document.createElement('div');
+    ciDiv.id = 'checkin-widget';
+    ciDiv.className = 'ci-container';
+    container.appendChild(ciDiv);
+    var ciAlert = document.createElement('div');
+    ciAlert.id = 'checkin-alert';
+    ciAlert.className = 'ci-alert';
+    ciAlert.style.display = 'none';
+    container.appendChild(ciAlert);
+  }
 
   // Summary bar
   const summary = document.createElement('div');
@@ -3961,6 +4525,11 @@ function buildWeekView(weekNum) {
     container.appendChild(buildRaceChecklistCard());
   }
   buildRemainingSessionsPanel();
+
+  if (isActive) {
+    buildCheckinWidget();
+    renderCheckinCurve();
+  }
 }
 
 function goToNextSession(id) {
@@ -3984,7 +4553,7 @@ function buildRemainingSessionsPanel() {
   const remaining = [];
   Object.entries(sessionsBySport).forEach(([disciplineKey, sessions]) => {
     sessions.forEach(s => {
-      if (!completed[s.id] && !skipped[s.id]) {
+      if (!completed[s.id] && !skipped[s.id] && !adapted[s.id]) {
         remaining.push({ session: s, disciplineKey });
       }
     });
@@ -4028,6 +4597,25 @@ function buildRemainingSessionsPanel() {
   `;
 }
 
+function toggleAdapted(id) {
+  var openCards = getOpenWeekSessionIds();
+  if (adapted[id]) {
+    delete adapted[id];
+  } else {
+    adapted[id] = true;
+    delete completed[id];
+    delete skipped[id];
+    save();
+  }
+  safeWrite('hi_tri_adapted_v1', JSON.stringify(adapted));
+  updateStats();
+  buildWeekView(currentWeekView);
+  restoreOpenWeekSessions(openCards);
+  if (adapted[id]) {
+    showToast('adapted');
+  }
+}
+
 function wvToggleDone(id) {
   const openCards = getOpenWeekSessionIds();
   if (completed[id]) {
@@ -4040,6 +4628,8 @@ function wvToggleDone(id) {
   } else {
     completed[id] = true;
     delete skipped[id];
+    delete adapted[id];
+    safeWrite('hi_tri_adapted_v1', JSON.stringify(adapted));
     save();
     openPerfSheet(id, openCards);
   }
@@ -4052,6 +4642,8 @@ function wvToggleSkip(id) {
   } else {
     skipped[id] = true;
     delete completed[id];
+    delete adapted[id];
+    safeWrite('hi_tri_adapted_v1', JSON.stringify(adapted));
   }
   save();
   updateStats();
@@ -4502,6 +5094,8 @@ function showToast(state) {
   else if (state === 'storage-quota') { t.textContent = 'Stockage plein — données non sauvegardées'; t.style.background = 'var(--red)'; }
   else if (state === 'sw-update')  { t.textContent = 'Nouvelle version dispo — recharge la page'; t.style.background = 'var(--accent)'; }
   else if (state === 'sw-offline') { t.textContent = 'Disponible hors-ligne'; t.style.background = 'var(--green)'; }
+  else if (state === 'adapted') { t.textContent = 'Séance marquée Adapté'; t.style.background = 'var(--orange)'; }
+  else if (state === 'checkin-saved') { t.textContent = '✓ Check-in enregistré'; t.style.background = 'var(--green)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
@@ -4517,7 +5111,7 @@ function updateStats() {
     if (w.weekNum > TOTAL_WEEKS) return;
     w.sessions.forEach(s => {
       total++;
-      if (completed[s.id]) {
+      if (completed[s.id] || adapted[s.id]) {
         done++;
         weeksActive.add(w.weekNum);
         const disc = getDiscipline(s.id);
@@ -5477,6 +6071,34 @@ document.body.insertAdjacentHTML('beforeend', [
 ].join(''));
 initHistorySheetSwipe();
 
+// Injection bottom sheet guide séance sautée (Lot 4 v15)
+document.body.insertAdjacentHTML('beforeend',
+  '<div id="missed-session-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200" onclick="closeMissedSessionSheet()"></div>' +
+  '<div id="missed-sheet" style="display:none">' +
+    '<div class="mss-handle"></div>' +
+    '<div class="mss-header">' +
+      '<span class="mss-title">Séance impossible ?</span>' +
+      '<button class="mss-close-btn" onclick="closeMissedSessionSheet()" aria-label="Fermer">&#x2715;</button>' +
+    '</div>' +
+    '<div class="mss-body">' +
+      '<div class="mss-q">Raison</div>' +
+      '<div class="mss-radios">' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-raison" value="fatigue" onchange="buildMissedSessionSheet()"> Fatigue</label>' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-raison" value="imprevu" onchange="buildMissedSessionSheet()"> Imprévu</label>' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-raison" value="douleur" onchange="buildMissedSessionSheet()"> Douleur</label>' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-raison" value="meteo" onchange="buildMissedSessionSheet()"> Météo</label>' +
+      '</div>' +
+      '<div class="mss-q">Jours avant prochaine séance intense</div>' +
+      '<div class="mss-radios">' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-delai" value="1" onchange="buildMissedSessionSheet()"> 1 jour</label>' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-delai" value="2" onchange="buildMissedSessionSheet()"> 2 jours</label>' +
+        '<label class="mss-radio-label"><input type="radio" name="missed-delai" value="3" onchange="buildMissedSessionSheet()"> 3 jours ou +</label>' +
+      '</div>' +
+      '<div id="missed-advice-text" class="mss-advice" style="display:none"></div>' +
+    '</div>' +
+  '</div>'
+);
+
 if (_corruptionDetected) {
   var _bootRing = [];
   try { _bootRing = JSON.parse(localStorage.getItem(STORE.snapshots) || '[]'); } catch { _bootRing = []; }
@@ -5499,6 +6121,7 @@ if (_corruptionDetected) {
   takeSnapshotIfNeeded();
 }
 
+initOutdoorMode();
 renderProgramEndControl();
 updateHeaderSubtitle();
 // Re-mesure du débordement une fois JetBrains Mono chargée (fonts async)
@@ -5507,6 +6130,7 @@ buildWeekView(null);
 updateStats();
 validatePlan();
 buildLoadChart();
+renderCheckinCurve();
 buildWeeklyRecap();
 
 if (!document._progTooltipListenerAdded) {
