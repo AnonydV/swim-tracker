@@ -1527,6 +1527,16 @@ body {
   padding-right: 6px;
   margin-left: -6px;
   margin-right: -6px;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.rsw-next-actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding-left: 20px;
 }
 .rsw-badge-next {
   font-family: 'JetBrains Mono', monospace;
@@ -4579,13 +4589,21 @@ function buildRemainingSessionsPanel() {
     const nextBtn = isNext
       ? '<button class="rsw-next-btn" onclick="goToNextSession(\'' + session.id + '\')" aria-label="Aller aux blocs de la prochaine séance">&#x2192; Blocs</button>'
       : '';
+    var distBadge = '<span class="wsc-badge ' + disciplineKey + '">' + getDistLabel(session, disciplineKey) + '</span>';
+    var doneBtn = '<button class="rsw-done-btn" onclick="currentWeekView=getCalendarActiveWeekNum();if(navigator.vibrate)navigator.vibrate(40);wvToggleDone(\'' + session.id + '\')">&#x2713; Fait</button>';
+    if (isNext) {
+      return '<div class="' + rowClass + '">'
+        + '<span class="rsw-disc-dot" style="background:' + config.accent + '"></span>'
+        + nextBadge
+        + '<span class="rsw-session-name">' + getSessionDisplayName(session) + '</span>'
+        + '<div class="rsw-next-actions">' + distBadge + doneBtn + nextBtn + '</div>'
+        + '</div>';
+    }
     return '<div class="' + rowClass + '">'
       + '<span class="rsw-disc-dot" style="background:' + config.accent + '"></span>'
-      + nextBadge
       + '<span class="rsw-session-name">' + getSessionDisplayName(session) + '</span>'
-      + '<span class="wsc-badge ' + disciplineKey + '">' + getDistLabel(session, disciplineKey) + '</span>'
-      + '<button class="rsw-done-btn" onclick="currentWeekView=getCalendarActiveWeekNum();if(navigator.vibrate)navigator.vibrate(40);wvToggleDone(\'' + session.id + '\')">&#x2713; Fait</button>'
-      + nextBtn
+      + distBadge
+      + doneBtn
       + '</div>';
   }).join('');
 
