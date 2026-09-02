@@ -1,7 +1,7 @@
 {
-  "name": "Half Ironman — Tracker Triathlon",
-  "short_name": "HIPLAN",
-  "description": "Tracker d'entraînement triathlon + semi-marathon",
+  "name": "Semi-marathon — Tracker Course",
+  "short_name": "SEMI",
+  "description": "Tracker d'entraînement semi-marathon — objectif 11 octobre 2026",
   "start_url": "/swim-tracker/",
   "scope": "/swim-tracker/",
   "display": "standalone",
