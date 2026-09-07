@@ -2018,7 +2018,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v19</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v20</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -2115,8 +2115,8 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "10 min", "desc": "10 min trot Z1 progressif vers Z2.", "tip": "" },
-          { "type": "main", "dist": "50 min", "desc": "50 min continue Z2 à 5:20–5:40/km. Régularité, hydratation si chaleur.", "tip": "" },
-          { "type": "interval", "dist": "10 min", "desc": "10 min à allure tempo confort 4:45–4:55/km, enchaînés sans pause après le bloc Z2.", "tip": "Ce n'est pas une accélération finale au sprint — une transition contrôlée qui réhabitue les jambes à un rythme proche de l'objectif semi, en fin d'effort, comme elles le seront le 11/10." },
+          { "type": "main", "dist": "50 min", "desc": "50 min continue Z2 à 5:20–5:40/km. Régularité, hydratation si chaleur. FC <155 bpm (75% FCmax).", "tip": "" },
+          { "type": "interval", "dist": "10 min", "desc": "10 min à allure tempo confort 4:45–4:55/km, enchaînés sans pause après le bloc Z2. FC <170 bpm (82% FCmax).", "tip": "Ce n'est pas une accélération finale au sprint — une transition contrôlée qui réhabitue les jambes à un rythme proche de l'objectif semi, en fin d'effort, comme elles le seront le 11/10." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
         "tip": "La base aérobie construite pour l'Ironman est un capital énorme pour un objectif semi-marathon — cette sortie ne fait que la réactiver. À partir de S2, le volume sert à convertir cette endurance profonde en vitesse tenue plus longtemps."
@@ -2164,7 +2164,7 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:45/km, progressif.", "tip": "" },
-          { "type": "main", "dist": "32 min", "desc": "32 min course continue Z2 à 5:15–5:35/km. Allure régulière.", "tip": "" },
+          { "type": "main", "dist": "32 min", "desc": "32 min course continue Z2 à 5:15–5:35/km. Allure régulière. FC <155 bpm (75% FCmax).", "tip": "" },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
         "tip": "Le volume Z2 progresse légèrement — non pour construire une base inexistante, mais pour maintenir le moteur aérobie en température pendant que les séances de qualité montent en charge."
@@ -2206,8 +2206,8 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "10 min", "desc": "10 min trot Z1 progressif vers Z2.", "tip": "" },
-          { "type": "main", "dist": "55 min", "desc": "55 min continue Z2 à 5:15–5:35/km. Hydratation si chaleur.", "tip": "" },
-          { "type": "interval", "dist": "15 min", "desc": "15 min à allure tempo 4:40–4:50/km, enchaînés sans pause après le bloc Z2.", "tip": "" },
+          { "type": "main", "dist": "55 min", "desc": "55 min continue Z2 à 5:15–5:35/km. Hydratation si chaleur. FC <155 bpm (75% FCmax).", "tip": "" },
+          { "type": "interval", "dist": "15 min", "desc": "15 min à allure tempo 4:40–4:50/km, enchaînés sans pause après le bloc Z2. FC <170 bpm (82% FCmax).", "tip": "" },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
         "tip": "Progression contrôlée : +10 min de volume total et +5 min de finale tempo vs S1. La sortie longue est l'endroit où l'endurance profonde et la vitesse spécifique se rencontrent — chaque semaine, la portion rapide s'allonge un peu."
@@ -2255,7 +2255,7 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:45/km, progressif.", "tip": "" },
-          { "type": "main", "dist": "37 min", "desc": "37 min course continue Z2 à 5:15–5:35/km. Allure régulière, effort constant.", "tip": "À 50 min de Z2, la tentation de dériver vers 5:00 existe. Résiste — chaque minute plus rapide que Z2 est une dette de récupération pour les séances de qualité de la semaine." },
+          { "type": "main", "dist": "37 min", "desc": "37 min course continue Z2 à 5:15–5:35/km. Allure régulière, effort constant. FC <155 bpm (75% FCmax).", "tip": "À 50 min de Z2, la tentation de dériver vers 5:00 existe. Résiste — chaque minute plus rapide que Z2 est une dette de récupération pour les séances de qualité de la semaine." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
         "tip": "S3 est la semaine de plus gros volume total du cycle (avec S4). Garde la discipline sur l'allure Z2 — c'est ton capital pour le tempo, le VO2 et la sortie longue qui suivent."
@@ -2297,8 +2297,8 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "10 min", "desc": "10 min trot Z1 progressif vers Z2.", "tip": "" },
-          { "type": "main", "dist": "55 min", "desc": "55 min continue Z2 à 5:15–5:35/km. Hydratation obligatoire.", "tip": "" },
-          { "type": "interval", "dist": "25 min", "desc": "25 min à allure objectif 4:25–4:35/km, enchaînés sans pause après le bloc Z2.", "tip": "Premier vrai test de l'allure objectif en fin de sortie longue, jambes déjà sollicitées — exactement la situation du km 15 à 21 le jour de la course. Si ça tient sans lutte excessive, l'objectif est réaliste." },
+          { "type": "main", "dist": "55 min", "desc": "55 min continue Z2 à 5:15–5:35/km. Hydratation obligatoire. FC <155 bpm (75% FCmax).", "tip": "" },
+          { "type": "interval", "dist": "25 min", "desc": "25 min à allure objectif 4:25–4:35/km, enchaînés sans pause après le bloc Z2. FC <175 bpm (85% FCmax).", "tip": "Premier vrai test de l'allure objectif en fin de sortie longue, jambes déjà sollicitées — exactement la situation du km 15 à 21 le jour de la course. Si ça tient sans lutte excessive, l'objectif est réaliste." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
         "tip": "La séance la plus informative du cycle avant le pic de S4. 25 min à allure objectif après 65 min d'effort : c'est la meilleure simulation possible des 6 derniers kilomètres du 11 octobre."
@@ -2346,7 +2346,7 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:45/km, progressif.", "tip": "" },
-          { "type": "main", "dist": "32 min", "desc": "32 min course continue Z2 à 5:15–5:35/km.", "tip": "" },
+          { "type": "main", "dist": "32 min", "desc": "32 min course continue Z2 à 5:15–5:35/km. FC <155 bpm (75% FCmax).", "tip": "" },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
         "tip": "Semaine de pic — cette sortie Z2 légèrement réduite laisse de la fraîcheur pour le seuil, les blocs allure course et la sortie longue qui suivent."
@@ -2388,8 +2388,8 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "10 min", "desc": "10 min trot Z1 progressif vers Z2.", "tip": "" },
-          { "type": "main", "dist": "60 min", "desc": "60 min continue Z2 à 5:15–5:35/km. Hydratation et gel si besoin après 45 min.", "tip": "" },
-          { "type": "interval", "dist": "30 min", "desc": "30 min à allure objectif 4:25–4:35/km, enchaînés sans pause après le bloc Z2.", "tip": "30 min à allure objectif après 70 min d'effort : c'est la simulation la plus proche possible des 10 derniers kilomètres du 11 octobre, jambes fatiguées comprises. Note ton ressenti — c'est l'information la plus fiable du cycle sur la faisabilité du chrono visé." },
+          { "type": "main", "dist": "60 min", "desc": "60 min continue Z2 à 5:15–5:35/km. Hydratation et gel si besoin après 45 min. FC <155 bpm (75% FCmax).", "tip": "" },
+          { "type": "interval", "dist": "30 min", "desc": "30 min à allure objectif 4:25–4:35/km, enchaînés sans pause après le bloc Z2. FC <175 bpm (85% FCmax).", "tip": "30 min à allure objectif après 70 min d'effort : c'est la simulation la plus proche possible des 10 derniers kilomètres du 11 octobre, jambes fatiguées comprises. Note ton ressenti — c'est l'information la plus fiable du cycle sur la faisabilité du chrono visé." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
         "tip": "Sortie la plus longue et la plus exigeante du programme. Après celle-ci, le volume ne fait plus que descendre jusqu'à la course — cette séance est le dernier vrai test de la préparation."
@@ -2437,7 +2437,7 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "8 min", "desc": "Trot Z1 à >5:45/km, progressif.", "tip": "" },
-          { "type": "main", "dist": "22 min", "desc": "22 min course continue Z2 à 5:15–5:35/km.", "tip": "" },
+          { "type": "main", "dist": "22 min", "desc": "22 min course continue Z2 à 5:15–5:35/km. FC <155 bpm (75% FCmax).", "tip": "" },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 2 min.", "tip": "" }
         ],
         "tip": "L'affûtage commence : le volume baisse d'environ 30% cette semaine. La fraîcheur qui s'accumule maintenant se transforme en jambes rapides le 11 octobre — résiste à l'envie d'en faire plus."
@@ -2479,8 +2479,8 @@ const weeklyPlan = [
         "unit": "min",
         "sets": [
           { "type": "warm", "dist": "10 min", "desc": "10 min trot Z1 progressif vers Z2.", "tip": "" },
-          { "type": "main", "dist": "35 min", "desc": "35 min continue Z2 à 5:15–5:35/km.", "tip": "" },
-          { "type": "interval", "dist": "15 min", "desc": "15 min à allure objectif 4:25–4:35/km, enchaînés sans pause après le bloc Z2.", "tip": "Volume divisé par presque 2 vs S4 (100 → 60 min) — c'est voulu. La sortie longue de S4 a déjà donné la réponse sur la faisabilité du chrono ; celle-ci ne fait qu'entretenir la mémoire de l'allure." },
+          { "type": "main", "dist": "35 min", "desc": "35 min continue Z2 à 5:15–5:35/km. FC <155 bpm (75% FCmax).", "tip": "" },
+          { "type": "interval", "dist": "15 min", "desc": "15 min à allure objectif 4:25–4:35/km, enchaînés sans pause après le bloc Z2. FC <175 bpm (85% FCmax).", "tip": "Volume divisé par presque 2 vs S4 (100 → 60 min) — c'est voulu. La sortie longue de S4 a déjà donné la réponse sur la faisabilité du chrono ; celle-ci ne fait qu'entretenir la mémoire de l'allure." },
           { "type": "cool", "dist": "5 min", "desc": "Trot Z1 puis marche 3 min.", "tip": "" }
         ],
         "tip": "Dernière sortie longue avant la course. Après celle-ci, plus aucune séance ne dépassera 30 min jusqu'au 11 octobre — profite de celle-ci pour ancrer une dernière fois la sensation de l'allure objectif."
