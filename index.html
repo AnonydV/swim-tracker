@@ -1993,6 +1993,22 @@ body {
   margin: 10px 0;
 }
 .fit-export-btn:active { background: rgba(56,189,248,0.25); }
+
+.fit-export-week-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--accent-dim);
+  border: 1px solid rgba(56,189,248,0.4);
+  border-radius: 5px;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 4px 8px;
+  min-height: 40px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fit-export-week-btn:active { background: rgba(56,189,248,0.25); }
 </style>
 </head>
 <body>
@@ -2002,7 +2018,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v18</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v19</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -3501,6 +3517,7 @@ function buildWeekView(weekNum) {
         <span class="sport-emoji">${sport.emoji}</span>
         <span class="sport-label">${sport.label}</span>
         <span class="sport-count">${doneInSport}/${sessions.length}</span>
+        ${sessions.length > 0 ? `<button class="fit-export-week-btn" onclick="exportWeekSessionsFit(${weekNum}, '${disciplineKey}')" aria-label="Exporter toutes les séances ${sport.label} de la semaine en .FIT">⌚ Tout .FIT</button>` : ''}
       </div>
     `;
 
@@ -4013,12 +4030,8 @@ function encodeFitWorkout(steps, sportEnum, workoutName) {
   return new Uint8Array(fileBytes);
 }
 
-function exportSessionFit(id) {
-  const session = getAllProgramSessions().find(s => s.id === id);
-  if (!session) return;
-  const disciplineKey = session.disciplineKey || getDiscipline(id);
+function downloadSessionFit(session, disciplineKey) {
   const sportEnum = FIT_SPORT_BY_DISCIPLINE[disciplineKey] != null ? FIT_SPORT_BY_DISCIPLINE[disciplineKey] : 0;
-
   const steps = buildFitStepsForSession(session);
   const bytes = encodeFitWorkout(steps, sportEnum, session.name);
 
@@ -4026,10 +4039,28 @@ function exportSessionFit(id) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'HIPLAN-' + id + '.fit';
+  a.download = 'HIPLAN-' + session.id + '.fit';
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function exportSessionFit(id) {
+  const session = getAllProgramSessions().find(s => s.id === id);
+  if (!session) return;
+  const disciplineKey = session.disciplineKey || getDiscipline(id);
+  downloadSessionFit(session, disciplineKey);
   showToast('fit-exported');
+}
+
+// Télécharge en une fois tous les .fit d'une discipline pour une semaine donnée.
+// Les déclenchements sont espacés pour éviter le blocage navigateur des téléchargements multiples simultanés.
+function exportWeekSessionsFit(weekNum, disciplineKey) {
+  const sessions = getWeekSessions(weekNum)[disciplineKey] || [];
+  if (sessions.length === 0) return;
+  sessions.forEach((session, i) => {
+    setTimeout(() => downloadSessionFit(session, disciplineKey), i * 350);
+  });
+  showToast(sessions.length > 1 ? 'fit-exported-week' : 'fit-exported');
 }
 
 function exportData() {
@@ -4381,6 +4412,7 @@ function showToast(state) {
   else if (state === 'sw-offline') { t.textContent = 'Disponible hors-ligne'; t.style.background = 'var(--green)'; }
   else if (state === 'adapted') { t.textContent = 'Séance marquée Adapté'; t.style.background = 'var(--orange)'; }
   else if (state === 'fit-exported') { t.textContent = '⌚ Fichier .FIT téléchargé'; t.style.background = 'var(--green)'; }
+  else if (state === 'fit-exported-week') { t.textContent = '⌚ Fichiers .FIT téléchargés'; t.style.background = 'var(--green)'; }
   else                       { t.textContent = '↩ Skip annulé';       t.style.background = 'var(--muted)'; }
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
