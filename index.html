@@ -2018,7 +2018,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v20</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v21</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -2319,17 +2319,18 @@ const weeklyPlan = [
       },
       {
         "id": "sw3a",
-        "name": "Natation — Technique",
+        "name": "Natation — Technique + endurance modérée",
         "type": "s-technique",
-        "typeLabel": "40 min · Technique",
-        "dist": 40,
+        "typeLabel": "45 min · ~1150 m",
+        "dist": 45,
         "unit": "min",
         "sets": [
-          { "type": "warm", "dist": "200 m", "desc": "200 m crawl progressif.", "tip": "" },
-          { "type": "main", "dist": "6 × 100 m", "desc": "6 × 100 m technique : bilatérale toutes les 3 brassées sur les 50 premiers mètres, puis nage libre relâchée sur les 50 suivants. Récupération 20 s.", "tip": "" },
-          { "type": "cool", "dist": "100 m", "desc": "100 m crawl très souple.", "tip": "" }
+          { "type": "warm", "dist": "250 m", "desc": "250 m échauffement mixte : 150 m crawl souple + 100 m dos ou éducatifs jambes au choix. Zone 1, aucune structure.", "tip": "" },
+          { "type": "main", "dist": "450 m", "desc": "Bloc technique : 150 m rattrapé + 150 m un bras (75 m par bras, l'autre tendu devant) + 150 m sculling avant (appuis, mains qui dessinent un 8 devant la tête). Focus sensation et appui, pas la vitesse.", "tip": "" },
+          { "type": "interval", "dist": "4 × 75 m", "desc": "4 × 75 m à allure modérée, effort conversationnel (zone 1-2, jamais essoufflé). Récupération 20 s (repos à l'appui).", "tip": "" },
+          { "type": "cool", "dist": "150 m", "desc": "150 m crawl très souple.", "tip": "" }
         ],
-        "tip": "Séance courte et technique dans une semaine dense côté course — juste assez pour garder les automatismes sans ajouter de fatigue."
+        "tip": "Première séance du format nat progressif (S3 → S6), qui remplace la version simple des semaines précédentes. Toujours sur ton jour de récup léger existant, jamais la veille ni le lendemain d'une séance qualité course (seuil, tempo, fractionné, allure objectif). Intensité basse du début à la fin — zone 1-2 y compris sur le bloc modéré, c'est un complément de récupération et de technique, pas une séance de performance. Fatigue ou jambes lourdes cette semaine : raccourcis ou saute sans hésiter, aucun impact sur la prépa."
       }
     ]
   },
@@ -2410,17 +2411,18 @@ const weeklyPlan = [
       },
       {
         "id": "sw4a",
-        "name": "Natation — Endurance",
-        "type": "s-endurance",
-        "typeLabel": "45 min · Endurance",
-        "dist": 45,
+        "name": "Natation — Technique + endurance modérée",
+        "type": "s-technique",
+        "typeLabel": "50 min · ~1350 m",
+        "dist": 50,
         "unit": "min",
         "sets": [
-          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
-          { "type": "main", "dist": "900 m", "desc": "900 m crawl continu à allure régulière, décomposé en 3 × 300 m avec pause facultative 25 s (repos à l'appui).", "tip": "" },
+          { "type": "warm", "dist": "250 m", "desc": "250 m échauffement mixte : 150 m crawl souple + 100 m dos ou éducatifs jambes au choix. Zone 1, aucune structure.", "tip": "" },
+          { "type": "main", "dist": "600 m", "desc": "Bloc technique : 200 m rattrapé + 200 m un bras (100 m par bras) + 200 m sculling avant. Léger volume en plus vs S3 — toujours focus sensation, pas vitesse.", "tip": "" },
+          { "type": "interval", "dist": "4 × 100 m", "desc": "4 × 100 m à allure modérée, effort conversationnel (zone 1-2). Récupération 25 s (repos à l'appui).", "tip": "Si la fatigue générale de la semaine est haute, réduis à 3 × 100 m plutôt que de forcer — cette séance ne doit jamais entamer la fraîcheur pour le run." },
           { "type": "cool", "dist": "100 m", "desc": "100 m crawl très souple.", "tip": "" }
         ],
-        "tip": "Cardio bas-impact dans la semaine la plus chargée du cycle — récupération active entre les séances de qualité course."
+        "tip": "Pic de volume nat du cycle (~1350 m), en miroir du pic run de la semaine. Toujours jour de récup léger, jamais adjacent à une séance qualité course. Zone 1-2 stricte du début à la fin — en cas de doute entre pousser un peu plus ou lever le pied, lève le pied."
       }
     ]
   },
@@ -2501,17 +2503,18 @@ const weeklyPlan = [
       },
       {
         "id": "sw5a",
-        "name": "Natation — Technique légère",
+        "name": "Natation — Technique légère (affûtage)",
         "type": "s-technique",
-        "typeLabel": "30 min · Technique",
-        "dist": 30,
+        "typeLabel": "35 min · ~1000 m",
+        "dist": 35,
         "unit": "min",
         "sets": [
-          { "type": "warm", "dist": "200 m", "desc": "200 m crawl souple.", "tip": "" },
-          { "type": "main", "dist": "4 × 100 m", "desc": "4 × 100 m technique relâchée, bilatérale toutes les 4 brassées. Récupération 25 s.", "tip": "" },
+          { "type": "warm", "dist": "200 m", "desc": "200 m échauffement mixte crawl souple + éducatifs jambes.", "tip": "" },
+          { "type": "main", "dist": "400 m", "desc": "Bloc technique familier : 150 m rattrapé + 150 m un bras (75 m par bras) + 100 m sculling avant. Rien de nouveau cette semaine — uniquement des gestes déjà pratiqués en S3-S4.", "tip": "" },
+          { "type": "interval", "dist": "3 × 100 m", "desc": "3 × 100 m à allure modérée, effort conversationnel (zone 1-2). Récupération 25 s (repos à l'appui).", "tip": "" },
           { "type": "cool", "dist": "100 m", "desc": "100 m crawl très souple.", "tip": "" }
         ],
-        "tip": "Séance courte et facile — l'affûtage privilégie la fraîcheur des jambes sur tout le reste."
+        "tip": "Volume réduit à ~1000 m comme pour la course — l'affûtage s'applique aussi à la natation. Aucune nouveauté technique introduite. Comme toujours, séance sautable sans impact si la fraîcheur pour le 11/10 prime."
       }
     ]
   },
@@ -2555,7 +2558,7 @@ const weeklyPlan = [
         "sets": [
           { "type": "main", "dist": "500 m", "desc": "500 m crawl très souple, sans structure, sans allure cible.", "tip": "" }
         ],
-        "tip": "Séance optionnelle si les jambes ou l'emploi du temps le permettent — sinon, repos complet à la place, sans hésitation."
+        "tip": "Séance optionnelle, à faire uniquement en tout début de semaine (jamais après mercredi) si besoin de bouger un peu. Si les jambes ou l'emploi du temps ne s'y prêtent pas — repos complet à la place, sans hésitation. Aucune nat prévue après mercredi cette semaine, pour ne rien ajouter dans les jours qui précèdent le 11/10."
       },
       {
         "id": "rw6b",
