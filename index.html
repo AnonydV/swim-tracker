@@ -1565,7 +1565,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v27</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v28</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -3462,6 +3462,21 @@ function exportData() {
   URL.revokeObjectURL(url);
 }
 
+// Cible principale d'une séance (allure ou FC du bloc main/interval), pour comparaison
+// avec des données externes (ex. Strava) — retourne le texte tel qu'écrit dans le plan.
+function extractSessionTargetLabel(session) {
+  const mainSet = (session.sets || []).find(s => s.type === 'main') || (session.sets || []).find(s => s.type === 'interval');
+  if (!mainSet) return '—';
+  const desc = mainSet.desc || '';
+  if (mainSet.type === 'main') {
+    const hrMatch = desc.match(/FC\s*<\s*\d+\s*bpm/i);
+    if (hrMatch) return hrMatch[0];
+  }
+  const paceMatch = desc.match(/\d:\d{2}[–-]\d:\d{2}\/km/);
+  if (paceMatch) return paceMatch[0];
+  return mainSet.dist || '—';
+}
+
 function exportCoachReport() {
   const activeWeekNum = getCalendarActiveWeekNum();
 
@@ -3481,10 +3496,10 @@ function exportCoachReport() {
   md += '**Semaine active:** S' + activeWeekNum + ' — ' + phaseName + '\n';
   md += '**Date de course:** ' + raceDateStr + (diffJours !== null ? ' (J-' + diffJours + ')' : '') + '\n';
   md += '**Semaines restantes:** ' + weeksLeftStr + '\n\n';
+  md += '_Programme complet (6 semaines) avec statut de chaque séance — à recouper avec les activités Strava réelles pour évaluer l\'adhérence au plan._\n\n';
 
   // Sections par semaine
-  const maxWeek = Math.min(activeWeekNum, TOTAL_WEEKS);
-  for (let n = 1; n <= maxWeek; n++) {
+  for (let n = 1; n <= TOTAL_WEEKS; n++) {
     const sessions = (weeklyPlan.find(w => w.weekNum === n) || {}).sessions || [];
     const dates = getWeekDateRangeDates(n);
     const dateRange = dates ? formatWeekDateRange(dates.start, dates.end) : '';
@@ -3500,8 +3515,8 @@ function exportCoachReport() {
     md += '> ' + nbDone + '/' + nbTotal + ' séances réalisées · ' + nbSkipped + ' sautée(s)\n';
 
     // Tableau des séances
-    md += '\n| Séance | Discipline | Statut | Durée |\n';
-    md += '|--------|-----------|--------|-------|\n';
+    md += '\n| Séance | Discipline | Prescription | Cible | Durée | Statut |\n';
+    md += '|--------|-----------|--------------|-------|-------|--------|\n';
 
     for (const s of sessions) {
       // Discipline
@@ -3528,10 +3543,13 @@ function exportCoachReport() {
       // Durée
       const duree = (s.dist || s.dist === 0) ? s.dist + ' min' : '—';
 
+      // Cible (allure/FC du bloc principal)
+      const cible = extractSessionTargetLabel(s);
+
       // Échapper les | dans les cellules pour ne pas casser le tableau
       const escape = (str) => String(str).replace(/\|/g, '\\|').replace(/\n/g, ' ');
 
-      md += '| ' + escape(s.id) + ' | ' + escape(discLabel) + ' | ' + escape(statut) + ' | ' + escape(duree) + ' |\n';
+      md += '| ' + escape(s.name || s.id) + ' | ' + escape(discLabel) + ' | ' + escape(s.typeLabel || '—') + ' | ' + escape(cible) + ' | ' + escape(duree) + ' | ' + escape(statut) + ' |\n';
     }
 
     md += '\n';
