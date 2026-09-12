@@ -1565,7 +1565,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v25</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v26</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -3241,6 +3241,13 @@ function fitParseRecoverySeconds(desc) {
   return parseInt(m[1], 10);
 }
 
+const FIT_HR_ZONE_FLOOR_BPM = 120; // plancher générique sous lequel l'alerte FC n'a pas d'intérêt
+
+function fitParseHrCapBpm(desc) {
+  const m = String(desc || '').match(/FC\s*<\s*(\d+)\s*bpm/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+
 const FIT_INTENSITY_BY_SET_TYPE = { warm: 2, main: 0, interval: 0, cool: 3 };
 
 function fitMakeStep(opts) {
@@ -3282,12 +3289,21 @@ function buildFitStepsForSession(session) {
       durationValue = Math.round(seconds * 1000); // scale 1000 -> ms
     }
 
-    const paceRange = fitParsePaceRangeMs(set.desc);
     let targetType = 2, targetValue = 0, customLow = 0, customHigh = 0;
-    if (paceRange) {
-      targetType = 0; // speed
-      customLow = Math.round(paceRange.low * 1000);   // scale 1000 -> mm/s
-      customHigh = Math.round(paceRange.high * 1000);
+    const hrCapBpm = set.type === 'main' ? fitParseHrCapBpm(set.desc) : null;
+    if (hrCapBpm != null) {
+      // Bloc Z2 continu : la FC est plus fiable que l'allure ici (pas de décalage gênant
+      // sur un effort long et stable) — cible FC plutôt qu'allure pour ces blocs précis.
+      targetType = 1; // heart_rate
+      customLow = FIT_HR_ZONE_FLOOR_BPM + 100;
+      customHigh = hrCapBpm + 100;
+    } else {
+      const paceRange = fitParsePaceRangeMs(set.desc);
+      if (paceRange) {
+        targetType = 0; // speed
+        customLow = Math.round(paceRange.low * 1000);   // scale 1000 -> mm/s
+        customHigh = Math.round(paceRange.high * 1000);
+      }
     }
 
     const workStep = fitMakeStep({ name: stepLabel, durationType, durationValue, targetType, targetValue, customLow, customHigh, intensity });
