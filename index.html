@@ -500,91 +500,6 @@ body {
 }
 .session-tip-box strong { color: var(--accent); }
 
-.session-note-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-}
-.session-note-label {
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--muted2);
-  margin-bottom: 7px;
-}
-.session-note-input {
-  width: 100%;
-  min-height: 68px;
-  resize: vertical;
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--text);
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 9px;
-}
-.session-note-input::placeholder { color: var(--muted2); }
-.session-note-input:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-color: var(--accent);
-}
-.note-indicator {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 4px;
-  font-size: 12px;
-  vertical-align: middle;
-}
-.session-result-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  margin-top: 8px;
-}
-.session-result-input {
-  width: 100%;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  color: var(--text);
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 7px 10px;
-}
-.session-result-input::placeholder { color: var(--muted2); }
-.session-result-input:focus {
-  outline: 2px solid var(--green);
-  outline-offset: 2px;
-  border-color: var(--green);
-}
-.session-result-estimate {
-  display: none;
-  margin-top: 7px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--green);
-  background: var(--green-dim);
-  border-radius: 4px;
-  padding: 5px 9px;
-}
-.session-result-estimate.visible { display: block; }
-.result-indicator {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 5px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: var(--green);
-  vertical-align: middle;
-}
-
 /* ─── STATS BAR ─── */
 .stats-bar {
   display: grid;
@@ -1941,7 +1856,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v23</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v24</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -1979,7 +1894,6 @@ body {
       <input type="date" id="programEndInput" aria-label="Date de fin du programme">
       <button class="primary" id="programEndSaveBtn" onclick="saveProgramEndFromInput()">Valider</button>
       <button id="programEndEditBtn" onclick="enableProgramEndEdit()" style="display:none">✏️ modifier la date de fin</button>
-      <button onclick="copyAllSessionNotes()">📋 Copier toutes mes notes</button>
       <button onclick="exportData()">📤 Exporter</button>
       <button onclick="exportCoachReport()">📊 Rapport Coach</button>
       <button onclick="openSnapshotsPanel()">🔒 Sauvegardes</button>
@@ -2540,8 +2454,6 @@ function validatePlan() {
 const STORE = {
   completed:   'hi_swim_tracker_v3',
   skipped:     'hi_swim_skipped_v1',
-  notes:       'hi_tri_session_notes_v1',
-  results:     'hi_tri_session_results_v1',
   perfResults: 'hi_tri_perf_results_v1',
   programEnd:  'hi_tri_program_end',
   legacyStart: 'hi_tri_program_start',
@@ -2573,8 +2485,6 @@ if (localStorage.getItem('hi_tri_plan_version') !== PLAN_VERSION) {
 
 let completed    = loadStoredState(STORE.completed);
 let skipped      = loadStoredState(STORE.skipped);
-let sessionNotes = loadStoredState(STORE.notes);
-let sessionResults = loadStoredState(STORE.results);
 let perfResults  = loadStoredState(STORE.perfResults);
 
 var adapted = {};
@@ -2599,8 +2509,6 @@ function safeWrite(key, value) {
 function save() {
   safeWrite(STORE.completed,   JSON.stringify(completed));
   safeWrite(STORE.skipped,     JSON.stringify(skipped));
-  safeWrite(STORE.notes,       JSON.stringify(sessionNotes));
-  safeWrite(STORE.results,     JSON.stringify(sessionResults));
   safeWrite(STORE.perfResults, JSON.stringify(perfResults));
 }
 
@@ -3031,10 +2939,6 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function getSessionNote(id) {
-  return typeof sessionNotes[id] === 'string' ? sessionNotes[id] : '';
-}
-
 function formatSetDesc(desc) {
   const lines = desc.split('\n');
   const introLines = [];
@@ -3099,23 +3003,6 @@ function buildSessionSetsHtml(session, disciplineKey) {
       </div>
     `;
   }).join('');
-}
-
-function buildSessionNoteHtml(sessionId) {
-  const note = getSessionNote(sessionId);
-  return `
-    <div class="session-note-box">
-      <label class="session-note-label" for="session-note-${sessionId}">Note personnelle</label>
-      <textarea
-        class="session-note-input"
-        id="session-note-${sessionId}"
-        placeholder="Note : charges utilisées, sensations..."
-        onclick="event.stopPropagation()"
-        onkeydown="event.stopPropagation()"
-        onblur="saveSessionNote('${sessionId}', this.value)"
-      >${escapeHtml(note)}</textarea>
-    </div>
-  `;
 }
 
 var MISSED_ADVICE = {
@@ -3197,8 +3084,6 @@ function buildSessionDetailHtml(session, disciplineKey) {
       ${session.tip ? `<div class="session-tip-box"><strong>💡 Conseil :</strong> ${session.tip}</div>` : ''}
       ${buildNutritionBannerHtml(session, disciplineKey)}
       <button class="fit-export-btn" onclick="event.stopPropagation(); exportSessionFit('${session.id}')" aria-label="Exporter cette séance en fichier .FIT pour montre Garmin">⌚ Exporter .FIT (Garmin)</button>
-      ${buildSessionResultHtml(session)}
-      ${buildSessionNoteHtml(session.id)}
       ${missedLink}
     </div>
   `;
@@ -3211,10 +3096,6 @@ function buildSessionCard(session, disciplineKey) {
   const isSkipped = !!skipped[session.id];
   const isAdapted = isOpenWaterSession(session.id) && !!adapted[session.id];
   const isOptional = session.typeLabel && session.typeLabel.includes('Optionnel');
-  const hasNote = getSessionNote(session.id).trim().length > 0;
-  const noteIndicator = hasNote ? `<span class="note-indicator" title="Note enregistrée">📝</span>` : '';
-  const result = getSessionResult(session.id).trim();
-  const resultIndicator = result ? `<span class="result-indicator" title="Résultat">⏱ ${escapeHtml(result)}</span>` : '';
   const adaptedBadge = isAdapted ? '<span class="wsc-badge-adapted">ADAPTÉ</span>' : '';
   let actionBtns = '';
   if (isDone) {
@@ -3237,7 +3118,7 @@ function buildSessionCard(session, disciplineKey) {
   return `
     <div class="week-session-card wc-${config.color}${isDone ? ' wc-done' : ''}${isSkipped ? ' wc-skipped' : ''}${isAdapted ? ' wc-adapted' : ''}${isOptional ? ' wc-optional' : ''}" id="week-card-${session.id}">
       <div class="wsc-top" role="button" tabindex="0" aria-expanded="false" onclick="toggleWeekSessionDetail('${session.id}')" onkeydown="handleWeekSessionKey(event, '${session.id}')">
-        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${noteIndicator}${resultIndicator}${adaptedBadge} <span class="session-expand-icon">▾</span></div>
+        <div class="wsc-name ${isDone ? 'done-text' : ''}">${getSessionDisplayName(session)}${adaptedBadge} <span class="session-expand-icon">▾</span></div>
         <div class="wsc-badge ${config.color}">${getDistLabel(session, disciplineKey)}</div>
       </div>
       <div class="wsc-meta">${session.typeLabel || ''}</div>
@@ -3549,129 +3430,6 @@ function handleWeekSessionKey(event, id) {
 // ═══════════════════════════════════════════════════
 // INTERACTIONS
 // ═══════════════════════════════════════════════════
-function updateSessionNoteIndicator(id) {
-  const card = document.getElementById(`week-card-${id}`);
-  const name = card?.querySelector('.wsc-name');
-  const expandIcon = name?.querySelector('.session-expand-icon');
-  const existing = name?.querySelector('.note-indicator');
-  const hasNote = getSessionNote(id).trim().length > 0;
-  if (!name || !expandIcon) return;
-  if (hasNote && !existing) {
-    expandIcon.insertAdjacentHTML('beforebegin', '<span class="note-indicator" title="Note enregistrée">📝</span> ');
-  }
-  if (!hasNote && existing) {
-    existing.remove();
-  }
-}
-
-// Les notes sont stockées hors du plan statique pour préserver les IDs et les données d'origine.
-function saveSessionNote(id, value) {
-  const nextNote = String(value || '').trim();
-  const previousNote = getSessionNote(id).trim();
-  if (nextNote === previousNote) return;
-  if (nextNote) {
-    sessionNotes[id] = nextNote;
-  } else {
-    delete sessionNotes[id];
-  }
-  save();
-  updateSessionNoteIndicator(id);
-  showToast('note-saved');
-}
-
-function getSessionResult(id) {
-  return typeof sessionResults[id] === 'string' ? sessionResults[id] : '';
-}
-
-function parseTimeToSeconds(str) {
-  const s = str.trim().replace(/h/gi, ':').replace(/['"]/g, ':').replace(/\s/g, '');
-  const parts = s.split(':').map(Number);
-  if (parts.some(isNaN) || parts.length < 2 || parts.length > 3) return null;
-  return parts.length === 3
-    ? parts[0] * 3600 + parts[1] * 60 + parts[2]
-    : parts[0] * 60 + parts[1];
-}
-
-function formatSecondsToTime(s) {
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = Math.round(s % 60);
-  return h > 0
-    ? `${h}h${String(m).padStart(2,'0')}'${String(sec).padStart(2,'0')}`
-    : `${m}'${String(sec).padStart(2,'0')}`;
-}
-
-function calcEstimateHtml(value) {
-  const secs = parseTimeToSeconds(value);
-  if (!secs) return '';
-  const semiSecs = Math.round(secs * 2.1);
-  const paceSecs = Math.round(semiSecs / 21.097);
-  return `→ Semi estimé : ~${formatSecondsToTime(semiSecs)} · allure ${formatSecondsToTime(paceSecs)}/km`;
-}
-
-function buildSessionResultHtml(session) {
-  const qualityTypes = ['r-quality', 'r-race', 'r-threshold', 'r-tempo'];
-  const isRaceByName = session.name && session.name.startsWith('RACE');
-  if (!qualityTypes.includes(session.type) && !isRaceByName) return '';
-  const result   = getSessionResult(session.id);
-  const isTest10k = false;
-  const placeholder = isTest10k
-    ? 'Ex : 43:22 — estimation semi calculée automatiquement'
-    : session.type === 'r-race'
-      ? 'Temps final — ex : 1:29:45'
-      : "Ex : 6×400m à 3'52 — dernier à 3'55";
-  const estimate = isTest10k && result ? calcEstimateHtml(result) : '';
-  return `
-    <div class="session-result-box">
-      <label class="session-note-label" for="session-result-${session.id}">⏱ Résultat</label>
-      <input type="text" class="session-result-input"
-        id="session-result-${session.id}"
-        placeholder="${placeholder}"
-        value="${escapeHtml(result)}"
-        onclick="event.stopPropagation()"
-        onkeydown="event.stopPropagation()"
-        onblur="saveSessionResult('${session.id}', this.value)"
-        ${isTest10k ? `oninput="updateSemiEstimate('${session.id}', this.value)"` : ''}>
-      ${isTest10k ? `<div class="session-result-estimate${estimate ? ' visible' : ''}" id="result-estimate-${session.id}">${estimate}</div>` : ''}
-    </div>
-  `;
-}
-
-function saveSessionResult(id, value) {
-  const next = String(value || '').trim();
-  const prev = getSessionResult(id);
-  if (next === prev) return;
-  if (next) { sessionResults[id] = next; } else { delete sessionResults[id]; }
-  save();
-  updateResultIndicator(id);
-  showToast('result-saved');
-}
-
-function updateSemiEstimate(id, value) {
-  const el = document.getElementById(`result-estimate-${id}`);
-  if (!el) return;
-  const html = calcEstimateHtml(value);
-  el.textContent = html.replace(/^→\s*/, '→ ');
-  el.innerHTML = html;
-  el.classList.toggle('visible', !!html);
-}
-
-function updateResultIndicator(id) {
-  const card = document.getElementById(`week-card-${id}`);
-  const name = card?.querySelector('.wsc-name');
-  const expandIcon = name?.querySelector('.session-expand-icon');
-  const existing = name?.querySelector('.result-indicator');
-  const result = getSessionResult(id).trim();
-  if (!name || !expandIcon) return;
-  if (result && !existing) {
-    expandIcon.insertAdjacentHTML('beforebegin', `<span class="result-indicator" title="Résultat">⏱ ${escapeHtml(result)}</span> `);
-  } else if (result && existing) {
-    existing.textContent = `⏱ ${result}`;
-  } else if (!result && existing) {
-    existing.remove();
-  }
-}
-
 function getAllProgramSessions() {
   const sessions = [];
   for (let weekNum = 1; weekNum <= TOTAL_WEEKS; weekNum++) {
@@ -3685,49 +3443,11 @@ function getAllProgramSessions() {
   return sessions;
 }
 
-function writeTextToClipboard(text) {
-  if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(text);
-  }
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.setAttribute('readonly', '');
-  textarea.style.position = 'fixed';
-  textarea.style.top = '-999px';
-  document.body.appendChild(textarea);
-  textarea.select();
-  const copied = document.execCommand('copy');
-  textarea.remove();
-  return copied ? Promise.resolve() : Promise.reject(new Error('Clipboard unavailable'));
-}
-
-function copyAllSessionNotes() {
-  const lines = getAllProgramSessions()
-    .map(session => {
-      const note = getSessionNote(session.id).trim();
-      if (!note) return null;
-      const discipline = DISCIPLINE_CONFIG[session.disciplineKey]?.label || 'Séance';
-      return `Semaine ${getWeekLabel(session.weekNum)} · ${discipline} · ${getSessionDisplayName(session)}\n${note}`;
-    })
-    .filter(Boolean);
-
-  if (!lines.length) {
-    showToast('notes-empty');
-    return;
-  }
-
-  writeTextToClipboard(lines.join('\n\n'))
-    .then(() => showToast('notes-copied'))
-    .catch(() => showToast('notes-error'));
-}
-
 function collectStateSnapshot() {
   return {
     version:     1,
     completed:   JSON.parse(localStorage.getItem(STORE.completed)   || '{}'),
     skipped:     JSON.parse(localStorage.getItem(STORE.skipped)     || '{}'),
-    notes:       JSON.parse(localStorage.getItem(STORE.notes)       || '{}'),
-    results:     JSON.parse(localStorage.getItem(STORE.results)     || '{}'),
     perfResults: JSON.parse(localStorage.getItem(STORE.perfResults) || '{}'),
     programEnd:  localStorage.getItem(STORE.programEnd) || null,
   };
@@ -4044,8 +3764,8 @@ function exportCoachReport() {
     md += '> ' + nbDone + '/' + nbTotal + ' séances réalisées · ' + nbSkipped + ' sautée(s)\n';
 
     // Tableau des séances
-    md += '\n| Séance | Discipline | Statut | Durée | Résultat | RPE | Note |\n';
-    md += '|--------|-----------|--------|-------|----------|-----|------|\n';
+    md += '\n| Séance | Discipline | Statut | Durée | Résultat | RPE |\n';
+    md += '|--------|-----------|--------|-------|----------|-----|\n';
 
     for (const s of sessions) {
       // Discipline
@@ -4098,13 +3818,10 @@ function exportCoachReport() {
       // RPE
       const rpeStr = perf && perf.rpe != null ? perf.rpe + '/10' : '—';
 
-      // Note — sessionNotes (pas notes)
-      const noteStr = sessionNotes[s.id] || '';
-
       // Échapper les | dans les cellules pour ne pas casser le tableau
       const escape = (str) => String(str).replace(/\|/g, '\\|').replace(/\n/g, ' ');
 
-      md += '| ' + escape(s.id) + ' | ' + escape(discLabel) + ' | ' + escape(statut) + ' | ' + escape(duree) + ' | ' + escape(resultat) + ' | ' + escape(rpeStr) + ' | ' + escape(noteStr) + ' |\n';
+      md += '| ' + escape(s.id) + ' | ' + escape(discLabel) + ' | ' + escape(statut) + ' | ' + escape(duree) + ' | ' + escape(resultat) + ' | ' + escape(rpeStr) + ' |\n';
     }
 
     md += '\n';
@@ -4168,14 +3885,10 @@ function importData(event) {
         throw new Error('Format invalide');
       localStorage.setItem(STORE.completed,   JSON.stringify(data.completed));
       localStorage.setItem(STORE.skipped,     JSON.stringify(data.skipped));
-      localStorage.setItem(STORE.notes,       JSON.stringify(data.notes       || {}));
-      localStorage.setItem(STORE.results,     JSON.stringify(data.results     || {}));
       localStorage.setItem(STORE.perfResults, JSON.stringify(data.perfResults || {}));
       if (data.programEnd) localStorage.setItem(STORE.programEnd, data.programEnd);
       completed      = loadStoredState(STORE.completed);
       skipped        = loadStoredState(STORE.skipped);
-      sessionNotes   = loadStoredState(STORE.notes);
-      sessionResults = loadStoredState(STORE.results);
       perfResults    = loadStoredState(STORE.perfResults);
       refreshCalendarViews();
       showToast('import-ok');
@@ -4276,8 +3989,6 @@ function restoreSnapshot(idx) {
   try {
     localStorage.setItem(STORE.completed,   JSON.stringify(data.completed   || {}));
     localStorage.setItem(STORE.skipped,     JSON.stringify(data.skipped     || {}));
-    localStorage.setItem(STORE.notes,       JSON.stringify(data.notes       || {}));
-    localStorage.setItem(STORE.results,     JSON.stringify(data.results     || {}));
     localStorage.setItem(STORE.perfResults, JSON.stringify(data.perfResults || {}));
     if (data.programEnd) localStorage.setItem(STORE.programEnd, data.programEnd);
   } catch (e) {
@@ -4320,14 +4031,9 @@ function showToast(state) {
   else if (state === 'skip') { t.textContent = '⏭ Séance skippée';   t.style.background = 'var(--orange)'; }
   else if (state === 'date-saved') { t.textContent = '✓ Date de fin enregistrée'; t.style.background = 'var(--green)'; }
   else if (state === 'date-error') { t.textContent = 'Choisis une date valide'; t.style.background = 'var(--orange)'; }
-  else if (state === 'note-saved') { t.textContent = '✓ Note enregistrée'; t.style.background = 'var(--green)'; }
-  else if (state === 'notes-copied') { t.textContent = '📋 Notes copiées'; t.style.background = 'var(--green)'; }
-  else if (state === 'notes-empty') { t.textContent = 'Aucune note à copier'; t.style.background = 'var(--muted)'; }
-  else if (state === 'notes-error')  { t.textContent = 'Copie impossible';           t.style.background = 'var(--orange)'; }
   else if (state === 'import-ok')     { t.textContent = '✓ Données restaurées';        t.style.background = 'var(--green)'; }
   else if (state === 'import-error')  { t.textContent = '✗ Fichier invalide';          t.style.background = 'var(--red)'; }
   else if (state === 'import-version') { t.textContent = '⚠️ Format inconnu';           t.style.background = 'var(--orange)'; }
-  else if (state === 'result-saved')  { t.textContent = '⏱ Résultat enregistré';      t.style.background = 'var(--green)'; }
   else if (state === 'perf-saved')   { t.textContent = '✓ Résultats enregistrés';    t.style.background = 'var(--green)'; }
   else if (state === 'perf-skipped') { t.textContent = 'Séance validée ✏ résultats à saisir'; t.style.background = 'var(--muted)'; }
   else if (state === 'snapshot-restored') { t.textContent = 'Données restaurées depuis la sauvegarde'; t.style.background = 'var(--green)'; }
