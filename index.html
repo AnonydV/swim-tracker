@@ -1565,7 +1565,7 @@ body {
 <header class="app-header">
   <div class="header-inner">
     <div class="logo-block">
-      <h1>SEMI <span>MARATHON</span> <small class="app-version">v26</small></h1>
+      <h1>SEMI <span>MARATHON</span> <small class="app-version">v27</small></h1>
       <p id="header-subtitle">// Mon plan d'entrainement</p>
       <button id="header-race-btn" style="display:none" onclick="openRaceDaySheet()" aria-label="Fiche course">&#x1F3C1; Fiche course</button>
     </div>
@@ -3234,6 +3234,18 @@ function fitParsePaceRangeMs(desc) {
   return { low: Math.min(speedA, speedB), high: Math.max(speedA, speedB) };
 }
 
+const FIT_PACE_FLOOR_MS = 1.0; // plancher générique (~16:40/km) sous lequel l'alerte allure n'a pas d'intérêt
+
+// Échauffements formulés en plancher d'allure seul ("Trot Z1 à >5:45/km") plutôt qu'en
+// plage — traité comme un plafond de vitesse (ne pas dépasser), pas une bande stricte,
+// puisque l'échauffement est volontairement progressif.
+function fitParseWarmupPaceCeilingMs(desc) {
+  const m = String(desc || '').match(/>\s*(\d):(\d{2})\/km/);
+  if (!m) return null;
+  const t = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  return 1000 / t;
+}
+
 function fitParseRecoverySeconds(desc) {
   const m = String(desc || '').match(/Récupération\s+(\d+)\s*(min|s)(?:\s+(\d+))?/i);
   if (!m) return null;
@@ -3303,6 +3315,13 @@ function buildFitStepsForSession(session) {
         targetType = 0; // speed
         customLow = Math.round(paceRange.low * 1000);   // scale 1000 -> mm/s
         customHigh = Math.round(paceRange.high * 1000);
+      } else if (set.type === 'warm') {
+        const ceilingMs = fitParseWarmupPaceCeilingMs(set.desc);
+        if (ceilingMs != null) {
+          targetType = 0; // speed
+          customLow = Math.round(FIT_PACE_FLOOR_MS * 1000);
+          customHigh = Math.round(ceilingMs * 1000);
+        }
       }
     }
 
